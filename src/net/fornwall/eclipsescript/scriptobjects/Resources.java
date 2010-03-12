@@ -32,10 +32,6 @@ public class Resources {
 		this.scriptProject = scriptProject;
 	}
 
-	public IFile[] filesMatching(final String patternString) {
-		return filesMatching(patternString, getWorkspace().getRoot());
-	}
-
 	public IFile[] filesMatching(final String patternString, IResource startingPoint) {
 		final Pattern pattern = compile(patternString);
 		final List<IFile> result = new ArrayList<IFile>();
