@@ -53,9 +53,9 @@
    		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    	</extension>
 
-    <extension id="net.fornwall.eclipsescript.scriptproblemmarker" point="org.eclipse.core.resources.markers" name="%markerName">
-       	<super type="org.eclipse.core.resources.problemmarker"/>
-    </extension>
+	<extension id="net.fornwall.eclipsescript.scriptproblemmarker" point="org.eclipse.core.resources.markers" name="%markerName">
+		<super type="org.eclipse.core.resources.problemmarker"/>
+	</extension>
 
 	<extension point="org.eclipse.ui.console.consolePageParticipants">
 		<consolePageParticipant class="net.fornwall.eclipsescript.ui.CloseConsolePageParticipant" id="net.fornwall.eclipsescript.ui.CloseConsolePageParticipant">
