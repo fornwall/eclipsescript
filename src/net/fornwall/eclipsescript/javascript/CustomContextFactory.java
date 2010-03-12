@@ -46,9 +46,10 @@ class CustomContextFactory extends ContextFactory {
 	@Override
 	protected void observeInstructionCount(Context cx, int instructionCount) {
 		MyContext mcx = (MyContext) cx;
+		final int MAX_SECONDS = 10;
 		long currentTime = System.currentTimeMillis();
-		if (currentTime - mcx.startTime > 5 * 1000) {
-			JavascriptHandler.dieRunningScript("Timeout");
+		if (currentTime - mcx.startTime > MAX_SECONDS * 1000) {
+			JavascriptHandler.dieRunningScript("Script timeout after " + MAX_SECONDS);
 		}
 	}
 
