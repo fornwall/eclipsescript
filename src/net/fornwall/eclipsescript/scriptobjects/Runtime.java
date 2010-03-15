@@ -138,7 +138,7 @@ public class Runtime {
 		return EclipseUtils.getWindowShell();
 	}
 
-	public void inBackground(final IJobRunnable runnable) {
+	public void schedule(final IJobRunnable runnable) {
 		String jobName = NLS.bind(Messages.scriptBackgroundJobName, scriptRuntime.getStartingScript().getName());
 		Job job = new Job(jobName) {
 			@Override
