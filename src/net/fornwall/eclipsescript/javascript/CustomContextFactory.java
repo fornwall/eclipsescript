@@ -1,7 +1,9 @@
 package net.fornwall.eclipsescript.javascript;
 
+import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.scripts.ScriptClassLoader;
 
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.PlatformUI;
 import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
@@ -62,7 +64,7 @@ class CustomContextFactory extends ContextFactory {
 		final int MAX_SECONDS = 10;
 		long currentTime = System.currentTimeMillis();
 		if (currentTime - mcx.startTime > MAX_SECONDS * 1000) {
-			JavascriptHandler.dieRunningScript("Script timeout after " + MAX_SECONDS);
+			JavascriptHandler.dieRunningScript(NLS.bind(Messages.scriptTimeout, MAX_SECONDS));
 		}
 	}
 
