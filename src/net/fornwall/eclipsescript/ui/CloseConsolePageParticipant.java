@@ -11,15 +11,23 @@ import org.eclipse.ui.part.IPageSite;
 
 public class CloseConsolePageParticipant implements IConsolePageParticipant {
 
+    @Override
 	public void activated() {
+        // do nothing
 	}
 
+    @Override
 	public void deactivated() {
+        // do nothing
 	}
 
+    @Override
 	public void dispose() {
+        // do nothing
 	}
 
+    /** Method overridden to add close console action to the console toolbar. */
+    @Override
 	public void init(IPageBookViewPage page, IConsole console) {
 		CloseConsoleAction action = new CloseConsoleAction(console);
 		IPageSite site = page.getSite();
@@ -29,6 +37,7 @@ public class CloseConsolePageParticipant implements IConsolePageParticipant {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public Object getAdapter(Class adapter) {
 		return adapter.isInstance(this) ? this : null;
 	}
