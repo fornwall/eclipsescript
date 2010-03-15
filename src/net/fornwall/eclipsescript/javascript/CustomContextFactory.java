@@ -2,6 +2,7 @@ package net.fornwall.eclipsescript.javascript;
 
 import net.fornwall.eclipsescript.scripts.ScriptClassLoader;
 
+import org.eclipse.ui.PlatformUI;
 import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
@@ -32,7 +33,10 @@ class CustomContextFactory extends ContextFactory {
 		// interpreted mode
 		cx.setOptimizationLevel(-1);
 
-		cx.setInstructionObserverThreshold(5000);
+		if (Thread.currentThread().equals(PlatformUI.getWorkbench().getDisplay().getThread())) {
+			// only observe instructions in UI thread to avoid locking UI
+			cx.setInstructionObserverThreshold(5000);
+		}
 		cx.setApplicationClassLoader(new ScriptClassLoader(cx.getApplicationClassLoader()));
 		cx.setLanguageVersion(Context.VERSION_1_7);
 		cx.getWrapFactory().setJavaPrimitiveWrap(false);
