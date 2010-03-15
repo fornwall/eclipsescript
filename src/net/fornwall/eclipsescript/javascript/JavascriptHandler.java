@@ -12,7 +12,6 @@ import net.fornwall.eclipsescript.scriptobjects.Runtime;
 import net.fornwall.eclipsescript.scriptobjects.Utils;
 import net.fornwall.eclipsescript.scriptobjects.Window;
 import net.fornwall.eclipsescript.scripts.ScriptAbortException;
-import net.fornwall.eclipsescript.scripts.ScriptClassLoader;
 import net.fornwall.eclipsescript.scripts.ScriptException;
 import net.fornwall.eclipsescript.scripts.ScriptLanguageSupport;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
@@ -44,17 +43,6 @@ public class JavascriptHandler implements ScriptLanguageSupport {
 
 		Context context = Context.enter();
 		try {
-			context.setApplicationClassLoader(new ScriptClassLoader(context.getApplicationClassLoader()));
-
-			context.setLanguageVersion(Context.VERSION_1_7);
-
-			// make sure methods as string.replace() returns javascript string
-			context.getWrapFactory().setJavaPrimitiveWrap(false);
-
-			// prevent generating of java class files loaded into the JVM, use
-			// interpreted mode
-			context.setOptimizationLevel(-1);
-
 			ScriptableObject scope = new ImporterTopLevel(context);
 
 			JavascriptRuntime jsRuntime = new JavascriptRuntime(context, scope, script.getFile());
