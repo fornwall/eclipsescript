@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import net.fornwall.eclipsescript.core.Activator;
+import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.scripts.IScriptRuntime;
 import net.fornwall.eclipsescript.scripts.ScriptClassLoader;
 import net.fornwall.eclipsescript.util.EclipseUtils;
@@ -15,8 +16,13 @@ import net.fornwall.eclipsescript.util.EclipseUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.progress.IJobRunnable;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
@@ -131,4 +137,18 @@ public class Runtime {
 	public Shell getShell() {
 		return EclipseUtils.getWindowShell();
 	}
+
+	public void inBackground(final IJobRunnable runnable) {
+		String jobName = NLS.bind(Messages.scriptBackgroundJobName, scriptRuntime.getStartingScript().getName());
+		Job job = new Job(jobName) {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				return runnable.run(monitor);
+			}
+		};
+		job.setSystem(false);
+		job.setUser(true);
+		job.schedule();
+	}
+
 }

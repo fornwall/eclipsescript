@@ -17,6 +17,7 @@ public class Messages extends NLS {
 	public static String quickAccessPressKeyToShowAllMatches;
 	public static String quickAccessStartTypingToFindMatches;
 	public static String runScriptBeforeRunningLast;
+	public static String scriptBackgroundJobName;
 	public static String scriptConsoleName;
 	public static String scriptErrorWhenRunningScriptDialogText;
 	public static String scriptErrorWhenRunningScriptDialogTitle;
