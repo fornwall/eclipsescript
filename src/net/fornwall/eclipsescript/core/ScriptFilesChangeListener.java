@@ -33,12 +33,8 @@ public class ScriptFilesChangeListener implements IResourceChangeListener {
 
 	public static String FILE_SUFFIX = ".eclipse.js";
 
-	public static boolean iEclipseScript(IFile file) {
-		return isEclipseScript(file.getFullPath().toString());
-	}
-
-	public static boolean isEclipseScript(String fullPath) {
-		return fullPath.endsWith(FILE_SUFFIX);
+	public static boolean isEclipseScript(IFile file) {
+		return file.getFullPath().toString().endsWith(FILE_SUFFIX);
 	}
 
 	void processNewOrChangedScript(final IFile file) {
@@ -56,7 +52,7 @@ public class ScriptFilesChangeListener implements IResourceChangeListener {
 					if (resource.isDerived())
 						return false;
 					final IFile file = (IFile) resource;
-					if (iEclipseScript(file))
+					if (isEclipseScript(file))
 						processNewOrChangedScript(file);
 					return true;
 				}
@@ -79,12 +75,12 @@ public class ScriptFilesChangeListener implements IResourceChangeListener {
 			public boolean visit(final IResourceDelta delta) {
 				if (!(delta.getResource() instanceof IFile))
 					return true;
-				if (delta.getResource().isDerived())
+				final IFile file = (IFile) delta.getResource();
+				if (file.isDerived())
 					return false;
 
 				final String fullPath = delta.getFullPath().toString();
-				if (isEclipseScript(fullPath)) {
-					final IFile file = (IFile) delta.getResource();
+				if (isEclipseScript(file)) {
 					switch (delta.getKind()) {
 					case ADDED:
 						processNewOrChangedScript(file);

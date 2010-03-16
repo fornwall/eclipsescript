@@ -19,7 +19,7 @@ public class RunCurrentHandler extends ErrorHandlingHandler {
 		if (editorInput instanceof FileEditorInput) {
 			FileEditorInput fileInput = (FileEditorInput) editorInput;
 			IFile editedFile = fileInput.getFile();
-			boolean isScriptFile = ScriptFilesChangeListener.iEclipseScript(editedFile);
+			boolean isScriptFile = ScriptFilesChangeListener.isEclipseScript(editedFile);
 			if (isScriptFile) {
 				ScriptMetadata m = new ScriptMetadata(fileInput.getFile());
 				ScriptStore.executeScript(m);
