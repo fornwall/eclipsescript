@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
@@ -25,8 +26,10 @@ public class Console {
 		if (console == null) {
 			console = new ConsoleClass(name, null);
 			out = console.newMessageStream();
-			ConsolePlugin.getDefault().getConsoleManager().addConsoles(new IConsole[] { console });
-			ConsolePlugin.getDefault().getConsoleManager().showConsoleView(console);
+			ConsolePlugin consolePlugin = ConsolePlugin.getDefault();
+			IConsoleManager consoleManager = consolePlugin.getConsoleManager();
+			consoleManager.addConsoles(new IConsole[] { console });
+			consoleManager.showConsoleView(console);
 		}
 	}
 
