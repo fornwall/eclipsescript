@@ -27,6 +27,7 @@ public class Messages extends NLS {
 	public static String scriptShortcutConflictsWithExisting;
 	public static String scriptShortcutConflictsWithExistingScript;
 	public static String scriptTimeout;
+	public static String rescanScriptsJobName;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

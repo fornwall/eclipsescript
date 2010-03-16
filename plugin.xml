@@ -2,8 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-	<extension point="org.eclipse.ui.startup" id="net.fornwall.eclipsescript.startup"/>
-
 	<extension point="org.eclipse.ui.commands">
 		<category
 	            name="%commandCategoryName"

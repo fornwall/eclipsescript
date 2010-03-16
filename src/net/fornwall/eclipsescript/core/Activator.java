@@ -16,7 +16,6 @@ import org.eclipse.osgi.service.resolver.ExportPackageDescription;
 import org.eclipse.osgi.service.resolver.PlatformAdmin;
 import org.eclipse.osgi.service.resolver.Resolver;
 import org.eclipse.osgi.service.resolver.State;
-import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -25,14 +24,13 @@ import org.osgi.framework.ServiceReference;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin implements IStartup {
+public class Activator extends AbstractUIPlugin {
 
 	private static Activator plugin;
-	private static BundleContext context;
-	private static BundleDescription bundleDescription;
-	private static Resolver resolver;
-
-	public static final String PLUGIN_ID = "net.fornwall.eclipsescript"; //$NON-NLS-1$
+	private BundleContext context;
+	private BundleDescription bundleDescription;
+	private Resolver resolver;
+	final ScriptFilesChangeListener scriptFilesChangeListener = new ScriptFilesChangeListener();
 
 	/**
 	 * Returns the shared instance
@@ -43,7 +41,7 @@ public class Activator extends AbstractUIPlugin implements IStartup {
 
 	public static void logError(final Throwable exception) {
 		Activator.getDefault().getLog().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, exception.getMessage(), exception));
+				new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), exception.getMessage(), exception));
 
 		EclipseUtils.runInDisplayThread(new Runnable() {
 
@@ -58,46 +56,43 @@ public class Activator extends AbstractUIPlugin implements IStartup {
 	public void start(BundleContext bundleContext) throws Exception {
 		super.start(bundleContext);
 
+		System.out.println("starting: '" + getBundle().getSymbolicName() + "'");
+
 		Activator.plugin = this;
-		Activator.context = bundleContext;
+		context = bundleContext;
 
 		{
 			ServiceReference platformAdminServiceRef = context.getServiceReference(PlatformAdmin.class.getName());
 			PlatformAdmin platformAdminService = (PlatformAdmin) context.getService(platformAdminServiceRef);
 
-			Activator.resolver = platformAdminService.createResolver();
+			resolver = platformAdminService.createResolver();
 			State state = platformAdminService.getState(false);
 			context.ungetService(platformAdminServiceRef);
 			resolver.setState(state);
-			Activator.bundleDescription = state.getBundle(plugin.getBundle().getSymbolicName(), null);
+			bundleDescription = state.getBundle(plugin.getBundle().getSymbolicName(), null);
 		}
 
-		final ScriptFilesChangeListener listener = new ScriptFilesChangeListener();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		workspace.addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE);
+		workspace.addResourceChangeListener(scriptFilesChangeListener, IResourceChangeEvent.POST_CHANGE);
 
-		Job job = new Job(Activator.PLUGIN_ID + ".rescanjob") { //$NON-NLS-1$
+		Job job = new Job(Messages.rescanScriptsJobName) {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				listener.rescanAllFiles();
+				scriptFilesChangeListener.rescanAllFiles();
 				return Status.OK_STATUS;
 			}
 		};
 		job.setSystem(true);
 		job.schedule();
-
 	}
 
-	// @Override
 	@Override
 	public void stop(BundleContext bundleContext) throws Exception {
-		plugin = null;
-		super.stop(bundleContext);
-	}
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		workspace.removeResourceChangeListener(scriptFilesChangeListener);
 
-	@Override
-	public void earlyStartup() {
-		// do nothing
+		super.stop(bundleContext);
+		Activator.plugin = null;
 	}
 
 	public static Bundle getBundleExportingClass(String className) {
@@ -111,11 +106,11 @@ public class Activator extends AbstractUIPlugin implements IStartup {
 
 			String packageName = className.substring(0, lastIndexOfDot);
 
-			ExportPackageDescription desc = resolver.resolveDynamicImport(bundleDescription, packageName);
+			ExportPackageDescription desc = plugin.resolver.resolveDynamicImport(plugin.bundleDescription, packageName);
 			if (desc != null) {
 				BundleDescription exporter = desc.getExporter();
 				long exporterBundleId = exporter.getBundleId();
-				Bundle exportingBundle = context.getBundle(exporterBundleId);
+				Bundle exportingBundle = plugin.context.getBundle(exporterBundleId);
 				return exportingBundle;
 			}
 
