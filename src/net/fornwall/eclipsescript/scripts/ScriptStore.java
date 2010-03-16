@@ -44,7 +44,7 @@ public class ScriptStore {
 
 		// since this may be called from a IResourceChangeListener we may not modify resources directly, instead do it
 		// in a job
-		Job job = new Job(Activator.PLUGIN_ID + ".markerupdatejob") { //$NON-NLS-1$
+		Job job = new Job(Messages.clearMarkersJobName) {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				MarkerManager.clearMarkers(file);
