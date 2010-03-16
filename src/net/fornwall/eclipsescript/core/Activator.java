@@ -56,8 +56,6 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext bundleContext) throws Exception {
 		super.start(bundleContext);
 
-		System.out.println("starting: '" + getBundle().getSymbolicName() + "'");
-
 		Activator.plugin = this;
 		context = bundleContext;
 
