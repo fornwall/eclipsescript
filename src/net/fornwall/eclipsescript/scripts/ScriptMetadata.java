@@ -17,7 +17,7 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 
 	private static final AtomicInteger counter = new AtomicInteger();
 
-	ScriptMetadata(IFile file) {
+	public ScriptMetadata(IFile file) {
 		this.instanceId = counter.getAndIncrement();
 		this.file = file;
 		this.fullPath = file.getFullPath().toString();

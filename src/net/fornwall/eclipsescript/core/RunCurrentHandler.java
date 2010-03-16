@@ -6,6 +6,7 @@ import net.fornwall.eclipsescript.ui.ErrorHandlingHandler;
 import net.fornwall.eclipsescript.util.EclipseUtils;
 
 import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
@@ -17,15 +18,11 @@ public class RunCurrentHandler extends ErrorHandlingHandler {
 		IEditorInput editorInput = EclipseUtils.getCurrentEditorInput();
 		if (editorInput instanceof FileEditorInput) {
 			FileEditorInput fileInput = (FileEditorInput) editorInput;
-			boolean isScriptFile = ScriptFilesChangeListener.iEclipseScript(fileInput.getFile());
+			IFile editedFile = fileInput.getFile();
+			boolean isScriptFile = ScriptFilesChangeListener.iEclipseScript(editedFile);
 			if (isScriptFile) {
-				for (ScriptMetadata m : ScriptStore.getAllMetadatas()) {
-					if (m.getFile().equals(fileInput.getFile())) {
-						ScriptStore.executeScript(m);
-						return;
-					}
-				}
-				Activator.logError(new RuntimeException("Could not find current file in script store"));
+				ScriptMetadata m = new ScriptMetadata(fileInput.getFile());
+				ScriptStore.executeScript(m);
 				return;
 			}
 		}
