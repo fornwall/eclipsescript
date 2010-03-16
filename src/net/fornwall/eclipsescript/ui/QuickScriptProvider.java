@@ -8,13 +8,12 @@ import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 import net.fornwall.eclipsescript.scripts.ScriptStore;
 import net.fornwall.eclipsescript.util.EclipseUtils;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 public class QuickScriptProvider extends QuickAccessProvider {
 
-	static final ImageDescriptor imageDescriptor = ImageDescriptor.createFromURL(Platform.getBundle(
-			Activator.PLUGIN_ID).getEntry("icons/run_script.gif"));
+	static final ImageDescriptor imageDescriptor = ImageDescriptor.createFromURL(Activator.getDefault().getBundle()
+			.getEntry("icons/run_script.gif"));
 
 	@Override
 	public QuickAccessElement[] getElements() {
@@ -57,7 +56,6 @@ public class QuickScriptProvider extends QuickAccessProvider {
 		}
 		return elements;
 	}
-
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
