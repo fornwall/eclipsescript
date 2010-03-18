@@ -2,6 +2,7 @@ package net.fornwall.eclipsescript.scriptobjects;
 
 import net.fornwall.eclipsescript.util.EclipseUtils;
 import net.fornwall.eclipsescript.util.JavaUtils;
+import net.fornwall.eclipsescript.util.JavaUtils.MutableObject;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.BadLocationException;
@@ -11,7 +12,11 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -78,4 +83,31 @@ public class Editors {
 			}
 		}, true);
 	}
+
+	public void setClipboard(final String text) {
+		EclipseUtils.runInDisplayThread(new Runnable() {
+			@Override
+			public void run() {
+				Display display = Display.getCurrent();
+				Clipboard clipboard = new Clipboard(display);
+				clipboard.setContents(new Object[] { text }, new Transfer[] { TextTransfer.getInstance() });
+				clipboard.dispose();
+			}
+		}, true);
+	}
+
+	public String getClipboard() {
+		final MutableObject<String> result = new MutableObject<String>();
+		EclipseUtils.runInDisplayThread(new Runnable() {
+			@Override
+			public void run() {
+				Display display = Display.getCurrent();
+				Clipboard clipboard = new Clipboard(display);
+				result.value = (String) clipboard.getContents(TextTransfer.getInstance());
+				clipboard.dispose();
+			}
+		}, true);
+		return result.value;
+	}
+
 }
