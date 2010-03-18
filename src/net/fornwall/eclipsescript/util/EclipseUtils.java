@@ -24,26 +24,32 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 public class EclipseUtils {
 
-	public static void runInDisplayThread(final Runnable runnable) {
+	/** A runnable to run in the display thread. */
+	public static interface DisplayThreadRunnable {
+		public void runWithDisplay(Display display);
+	}
+
+	public static void runInDisplayThreadAsync(final DisplayThreadRunnable runnable) {
 		runInDisplayThread(runnable, false);
 	}
 
-	public static Shell getWindowShell() {
-		return activeWindow().getShell();
+	public static void runInDisplayThreadSync(final DisplayThreadRunnable runnable) {
+		runInDisplayThread(runnable, true);
 	}
 
-	public static void runInDisplayThread(final Runnable runnable, boolean sync) {
+	private static void runInDisplayThread(final DisplayThreadRunnable runnable, boolean sync) {
+		final Display display = PlatformUI.getWorkbench().getDisplay();
+
 		Runnable showExceptionWrapper = new Runnable() {
 			public void run() {
 				try {
-					runnable.run();
+					runnable.runWithDisplay(display);
 				} catch (Exception e) {
 					Activator.logError(e);
 				}
 			}
 		};
 
-		Display display = PlatformUI.getWorkbench().getDisplay();
 		if (Thread.currentThread().equals(display.getThread())) {
 			showExceptionWrapper.run();
 		} else {
@@ -53,6 +59,10 @@ public class EclipseUtils {
 				display.asyncExec(showExceptionWrapper);
 			}
 		}
+	}
+
+	public static Shell getWindowShell() {
+		return activeWindow().getShell();
 	}
 
 	public static IWorkbenchPage activePage() {

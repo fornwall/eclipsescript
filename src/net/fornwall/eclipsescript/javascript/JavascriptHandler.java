@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.scriptobjects.Console;
 import net.fornwall.eclipsescript.scriptobjects.Editors;
 import net.fornwall.eclipsescript.scriptobjects.Resources;
@@ -17,7 +16,6 @@ import net.fornwall.eclipsescript.scripts.ScriptLanguageSupport;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.osgi.util.NLS;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.ImporterTopLevel;
@@ -50,8 +48,7 @@ public class JavascriptHandler implements ScriptLanguageSupport {
 			Scriptable eclipseObject = context.newObject(scope);
 			ScriptableObject.putConstProperty(scope, "eclipse", eclipseObject);
 
-			String consoleName = NLS.bind(Messages.scriptConsoleName, script.getFile().getName());
-			Console console = new Console(consoleName);
+			Console console = new Console(jsRuntime);
 			ScriptableObject.putProperty(eclipseObject, "console", Context.javaToJS(console, scope));
 
 			Window window = new Window();

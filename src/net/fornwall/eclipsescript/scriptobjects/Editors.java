@@ -2,6 +2,7 @@ package net.fornwall.eclipsescript.scriptobjects;
 
 import net.fornwall.eclipsescript.util.EclipseUtils;
 import net.fornwall.eclipsescript.util.JavaUtils;
+import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 import net.fornwall.eclipsescript.util.JavaUtils.MutableObject;
 
 import org.eclipse.core.resources.IFile;
@@ -65,9 +66,9 @@ public class Editors {
 	}
 
 	public void replaceSelection(final String newText) {
-		EclipseUtils.runInDisplayThread(new JavaUtils.BaseRunnable() {
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
-			public void doRun() throws BadLocationException {
+			public void runWithDisplay(Display display) {
 				TextSelection selection = EclipseUtils.getCurrentEditorSelection();
 				if (selection == null)
 					throw new IllegalArgumentException("No selection selected!");
@@ -78,35 +79,37 @@ public class Editors {
 				if (document == null)
 					throw new IllegalArgumentException("No document selected!");
 
-				document.replace(selection.getOffset(), selection.getLength(), newText);
-				editor.selectAndReveal(selection.getOffset(), newText.length());
+				try {
+					document.replace(selection.getOffset(), selection.getLength(), newText);
+					editor.selectAndReveal(selection.getOffset(), newText.length());
+				} catch (BadLocationException e) {
+					throw JavaUtils.asRuntime(e);
+				}
 			}
-		}, true);
+		});
 	}
 
 	public void setClipboard(final String text) {
-		EclipseUtils.runInDisplayThread(new Runnable() {
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
-			public void run() {
-				Display display = Display.getCurrent();
+			public void runWithDisplay(Display display) {
 				Clipboard clipboard = new Clipboard(display);
 				clipboard.setContents(new Object[] { text }, new Transfer[] { TextTransfer.getInstance() });
 				clipboard.dispose();
 			}
-		}, true);
+		});
 	}
 
 	public String getClipboard() {
 		final MutableObject<String> result = new MutableObject<String>();
-		EclipseUtils.runInDisplayThread(new Runnable() {
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
-			public void run() {
-				Display display = Display.getCurrent();
+			public void runWithDisplay(Display display) {
 				Clipboard clipboard = new Clipboard(display);
 				result.value = (String) clipboard.getContents(TextTransfer.getInstance());
 				clipboard.dispose();
 			}
-		}, true);
+		});
 		return result.value;
 	}
 

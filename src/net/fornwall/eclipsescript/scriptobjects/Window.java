@@ -1,8 +1,10 @@
 package net.fornwall.eclipsescript.scriptobjects;
 
 import net.fornwall.eclipsescript.util.EclipseUtils;
+import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 import net.fornwall.eclipsescript.util.JavaUtils.MutableObject;
 
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -10,18 +12,26 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartSite;
 
 public class Window {
 
 	public static void alert(final String message) {
-		EclipseUtils.runInDisplayThread(new Runnable() {
-			public void run() {
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) {
 				MessageDialog.openInformation(EclipseUtils.activeWindow().getShell(), "Script Alert", message);
 			}
-		}, true);
+		});
 	}
 
 	public static String prompt(final String message) {
@@ -30,20 +40,20 @@ public class Window {
 
 	public static boolean confirm(final String message) {
 		final MutableObject<Boolean> enteredText = new MutableObject<Boolean>();
-		EclipseUtils.runInDisplayThread(new Runnable() {
-			public void run() {
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) {
 				enteredText.value = MessageDialog.openConfirm(EclipseUtils.getWindowShell(), "Script Prompt", message);
 			}
-		}, true);
+		});
 		return enteredText.value;
 	}
 
 	public static String prompt(final String message, final String initialValue) {
 		final MutableObject<String> enteredText = new MutableObject<String>();
-
-		EclipseUtils.runInDisplayThread(new Runnable() {
-
-			public void run() {
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) {
 				final PromptDialog dialog = new PromptDialog(EclipseUtils.getWindowShell(), message);
 
 				// create the window shell so the title can be set
@@ -58,8 +68,7 @@ public class Window {
 					enteredText.value = dialog.enteredText;
 				}
 			}
-		}, true);
-
+		});
 		return enteredText.value;
 	}
 
@@ -98,6 +107,31 @@ public class Window {
 			return container;
 		}
 
+	}
+
+	public void setStatus(final String status) {
+		EclipseUtils.runInDisplayThreadAsync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) {
+				IWorkbenchPage page = EclipseUtils.activePage();
+				IWorkbenchPart part = page.getActivePart();
+				IWorkbenchPartSite site = part.getSite();
+				IActionBars actionBars = null;
+				if (site instanceof IEditorSite) {
+					IEditorSite editorSite = (IEditorSite) site;
+					actionBars = editorSite.getActionBars();
+				} else if (site instanceof IViewSite) {
+					IViewSite viewSite = (IViewSite) site;
+					actionBars = viewSite.getActionBars();
+				}
+				if (actionBars == null)
+					return;
+				IStatusLineManager statusLineManager = actionBars.getStatusLineManager();
+				if (statusLineManager == null)
+					return;
+				statusLineManager.setMessage(status);
+			}
+		});
 	}
 
 }

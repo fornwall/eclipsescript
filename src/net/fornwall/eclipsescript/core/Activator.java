@@ -3,10 +3,12 @@ package net.fornwall.eclipsescript.core;
 import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.ui.ErrorDetailsDialog;
 import net.fornwall.eclipsescript.util.EclipseUtils;
+import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -16,6 +18,7 @@ import org.eclipse.osgi.service.resolver.ExportPackageDescription;
 import org.eclipse.osgi.service.resolver.PlatformAdmin;
 import org.eclipse.osgi.service.resolver.Resolver;
 import org.eclipse.osgi.service.resolver.State;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -40,12 +43,11 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static void logError(final Throwable exception) {
-		Activator.getDefault().getLog().log(
-				new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), exception.getMessage(), exception));
+		ILog log = plugin.getLog();
+		log.log(new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), exception.getMessage(), exception));
 
-		EclipseUtils.runInDisplayThread(new Runnable() {
-
-			public void run() {
+		EclipseUtils.runInDisplayThreadAsync(new DisplayThreadRunnable() {
+			public void runWithDisplay(Display display) {
 				ErrorDetailsDialog.openError(EclipseUtils.getWindowShell(), Messages.internalErrorDialogTitle,
 						Messages.internalErrorDialogText, exception);
 			}
