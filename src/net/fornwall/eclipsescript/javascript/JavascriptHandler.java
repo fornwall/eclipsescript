@@ -15,7 +15,6 @@ import net.fornwall.eclipsescript.scripts.ScriptException;
 import net.fornwall.eclipsescript.scripts.ScriptLanguageSupport;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 
-import org.eclipse.core.resources.IProject;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.ImporterTopLevel;
@@ -69,8 +68,7 @@ public class JavascriptHandler implements ScriptLanguageSupport {
 			Reader reader = null;
 			try {
 				reader = new InputStreamReader(script.getFile().getContents(), script.getFile().getCharset());
-				IProject scriptProject = script.getFile().getProject();
-				jsRuntime.evaluate(reader, scriptProject, script.getFile().getName());
+				jsRuntime.evaluate(reader, script.getFile().getName());
 			} catch (ExitException e) {
 				// do nothing
 			} catch (DieException e) {

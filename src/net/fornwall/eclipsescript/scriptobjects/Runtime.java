@@ -55,7 +55,7 @@ public class Runtime {
 
 			Reader reader = new InputStreamReader(fileToInclude.getContents(), fileToInclude.getCharset());
 			try {
-				scriptRuntime.evaluate(reader, fileToInclude, fileToInclude.getName());
+				scriptRuntime.evaluate(reader, fileToInclude.getName());
 			} finally {
 				reader.close();
 			}

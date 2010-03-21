@@ -8,7 +8,7 @@ import org.eclipse.core.resources.IFile;
 
 public interface IScriptRuntime {
 
-	public void evaluate(Reader reader, Object script, String sourceName) throws IOException;
+	public void evaluate(Reader reader, String sourceName) throws IOException;
 
 	public IFile getStartingScript();
 
