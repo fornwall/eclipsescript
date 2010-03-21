@@ -41,6 +41,7 @@ public class EclipseUtils {
 		final Display display = PlatformUI.getWorkbench().getDisplay();
 
 		Runnable showExceptionWrapper = new Runnable() {
+			@Override
 			public void run() {
 				try {
 					runnable.runWithDisplay(display);

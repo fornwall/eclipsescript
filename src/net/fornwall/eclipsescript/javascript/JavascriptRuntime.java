@@ -22,23 +22,28 @@ class JavascriptRuntime implements IScriptRuntime {
 		this.startingScript = startingScript;
 	}
 
+	@Override
 	public void evaluate(Reader reader, Object script, String sourceName) throws IOException {
 		Scriptable fileScope = context.newObject(topLevelScope);
 		context.evaluateReader(fileScope, reader, sourceName, 1, null);
 	}
 
+	@Override
 	public IFile getStartingScript() {
 		return startingScript;
 	}
 
+	@Override
 	public ScriptClassLoader getScriptClassLoader() {
 		return (ScriptClassLoader) context.getApplicationClassLoader();
 	}
 
+	@Override
 	public void abortRunningScript(String errorMessage) {
 		JavascriptHandler.dieRunningScript(errorMessage);
 	}
 
+	@Override
 	public void exitRunningScript() {
 		JavascriptHandler.exitRunningScript();
 	}

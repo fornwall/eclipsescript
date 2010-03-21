@@ -49,6 +49,7 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 		return summary;
 	}
 
+	@Override
 	public int compareTo(ScriptMetadata o) {
 		return instanceId - o.instanceId;
 	}

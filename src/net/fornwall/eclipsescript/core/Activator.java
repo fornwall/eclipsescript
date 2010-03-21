@@ -47,6 +47,7 @@ public class Activator extends AbstractUIPlugin {
 		log.log(new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), exception.getMessage(), exception));
 
 		EclipseUtils.runInDisplayThreadAsync(new DisplayThreadRunnable() {
+			@Override
 			public void runWithDisplay(Display display) {
 				ErrorDetailsDialog.openError(EclipseUtils.getWindowShell(), Messages.internalErrorDialogTitle,
 						Messages.internalErrorDialogText, exception);

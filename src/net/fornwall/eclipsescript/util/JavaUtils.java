@@ -8,6 +8,7 @@ import java.io.InputStream;
 public class JavaUtils {
 
 	public static abstract class BaseRunnable implements Runnable {
+		@Override
 		public final void run() {
 			try {
 				doRun();

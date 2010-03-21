@@ -46,6 +46,7 @@ public class ScriptFilesChangeListener implements IResourceChangeListener {
 		final IWorkspace workspace = getWorkspace();
 		for (final IProject project : workspace.getRoot().getProjects()) {
 			final IResourceVisitor visitor = new IResourceVisitor() {
+				@Override
 				public boolean visit(final IResource resource) throws CoreException {
 					if (!(resource instanceof IFile))
 						return true;
@@ -69,9 +70,11 @@ public class ScriptFilesChangeListener implements IResourceChangeListener {
 		}
 	}
 
+	@Override
 	public void resourceChanged(final IResourceChangeEvent event) {
 		final IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
 
+			@Override
 			public boolean visit(final IResourceDelta delta) {
 				if (!(delta.getResource() instanceof IFile))
 					return true;
