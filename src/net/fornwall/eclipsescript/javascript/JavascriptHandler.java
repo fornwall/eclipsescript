@@ -4,11 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import net.fornwall.eclipsescript.scriptobjects.Console;
-import net.fornwall.eclipsescript.scriptobjects.Editors;
-import net.fornwall.eclipsescript.scriptobjects.Resources;
-import net.fornwall.eclipsescript.scriptobjects.Runtime;
-import net.fornwall.eclipsescript.scriptobjects.Window;
+import net.fornwall.eclipsescript.scriptobjects.Eclipse;
 import net.fornwall.eclipsescript.scripts.ScriptAbortException;
 import net.fornwall.eclipsescript.scripts.ScriptException;
 import net.fornwall.eclipsescript.scripts.ScriptLanguageSupport;
@@ -18,7 +14,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
@@ -40,26 +35,11 @@ public class JavascriptHandler implements ScriptLanguageSupport {
 		Context context = Context.enter();
 		try {
 			ScriptableObject scope = new ImporterTopLevel(context);
-
 			JavascriptRuntime jsRuntime = new JavascriptRuntime(context, scope, script.getFile());
 
-			Scriptable eclipseObject = context.newObject(scope);
-			ScriptableObject.putConstProperty(scope, "eclipse", eclipseObject);
-
-			Console console = new Console(jsRuntime);
-			ScriptableObject.putProperty(eclipseObject, "console", Context.javaToJS(console, scope));
-
-			Window window = new Window();
-			ScriptableObject.putProperty(eclipseObject, "window", Context.javaToJS(window, scope));
-
-			Resources resources = new Resources(script.getFile().getProject());
-			ScriptableObject.putProperty(eclipseObject, "resources", Context.javaToJS(resources, scope));
-
-			Editors editors = new Editors();
-			ScriptableObject.putProperty(eclipseObject, "editors", Context.javaToJS(editors, scope));
-
-			Runtime runtime = new Runtime(jsRuntime);
-			ScriptableObject.putProperty(eclipseObject, "runtime", Context.javaToJS(runtime, scope));
+			Eclipse eclipseJavaObject = new Eclipse(jsRuntime);
+			Object eclipseJsObject = Context.javaToJS(eclipseJavaObject, scope);
+			ScriptableObject.putConstProperty(scope, Eclipse.VARIABLE_NAME, eclipseJsObject);
 
 			Reader reader = null;
 			try {
