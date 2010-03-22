@@ -33,7 +33,6 @@ public class JavascriptHandler implements ScriptLanguageSupport {
 				CustomContext context = (CustomContext) _context;
 				ScriptableObject scope = new ImporterTopLevel(context);
 				JavascriptRuntime jsRuntime = new JavascriptRuntime(context, scope, script.getFile());
-				context.jsRuntime = jsRuntime;
 
 				Eclipse eclipseJavaObject = new Eclipse(jsRuntime);
 				Object eclipseJsObject = Context.javaToJS(eclipseJavaObject, scope);

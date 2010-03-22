@@ -3,6 +3,7 @@ package net.fornwall.eclipsescript.javascript;
 import java.io.IOException;
 import java.io.Reader;
 
+import net.fornwall.eclipsescript.javascript.CustomContextFactory.CustomContext;
 import net.fornwall.eclipsescript.scripts.IScriptRuntime;
 import net.fornwall.eclipsescript.scripts.ScriptClassLoader;
 
@@ -44,10 +45,12 @@ class JavascriptRuntime implements IScriptRuntime {
 	private final Scriptable topLevelScope;
 	private final IFile startingScript;
 
-	public JavascriptRuntime(Context context, Scriptable topLevelScope, IFile startingScript) {
+	public JavascriptRuntime(CustomContext context, Scriptable topLevelScope, IFile startingScript) {
 		this.context = context;
 		this.topLevelScope = topLevelScope;
 		this.startingScript = startingScript;
+		
+		context.jsRuntime = this;
 	}
 
 	@Override
