@@ -30,52 +30,6 @@ public class EclipseUtils {
 		public void runWithDisplay(Display display) throws Exception;
 	}
 
-	public static void runInDisplayThreadAsync(final DisplayThreadRunnable runnable) throws Exception {
-		runInDisplayThread(runnable, false);
-	}
-
-	public static void runInDisplayThreadSync(final DisplayThreadRunnable runnable) throws Exception {
-		runInDisplayThread(runnable, true);
-	}
-
-	private static void runInDisplayThread(final DisplayThreadRunnable runnable, final boolean sync) throws Exception {
-		final Display display = PlatformUI.getWorkbench().getDisplay();
-		final MutableObject<Exception> exceptionThrownInUIThread = new MutableObject<Exception>();
-
-		Runnable showExceptionWrapper = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					runnable.runWithDisplay(display);
-				} catch (Exception e) {
-					if (sync) {
-						exceptionThrownInUIThread.value = e;
-					} else {
-						Activator.logError(e);
-					}
-				}
-			}
-		};
-
-		if (Thread.currentThread().equals(display.getThread())) {
-			showExceptionWrapper.run();
-		} else {
-			if (sync) {
-				display.syncExec(showExceptionWrapper);
-			} else {
-				display.asyncExec(showExceptionWrapper);
-			}
-		}
-		
-		if (exceptionThrownInUIThread.value != null) {
-			throw exceptionThrownInUIThread.value;
-		}
-	}
-
-	public static Shell getWindowShell() {
-		return activeWindow().getShell();
-	}
-
 	public static IWorkbenchPage activePage() {
 		return activeWindow().getActivePage();
 	}
@@ -143,6 +97,10 @@ public class EclipseUtils {
 		return workbench.getEditorRegistry().findEditor(IEditorRegistry.SYSTEM_EXTERNAL_EDITOR_ID);
 	}
 
+	public static Shell getWindowShell() {
+		return activeWindow().getShell();
+	}
+
 	public static IEditorPart openEditor(final IFile file) {
 		final IEditorDescriptor descriptor = getDefaultEditor(file);
 		try {
@@ -151,5 +109,47 @@ public class EclipseUtils {
 			Activator.logError(e);
 			return null;
 		}
+	}
+
+	private static void runInDisplayThread(final DisplayThreadRunnable runnable, final boolean sync) throws Exception {
+		final Display display = PlatformUI.getWorkbench().getDisplay();
+		final MutableObject<Exception> exceptionThrownInUIThread = new MutableObject<Exception>();
+
+		Runnable showExceptionWrapper = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					runnable.runWithDisplay(display);
+				} catch (Exception e) {
+					if (sync) {
+						exceptionThrownInUIThread.value = e;
+					} else {
+						Activator.logError(e);
+					}
+				}
+			}
+		};
+
+		if (Thread.currentThread().equals(display.getThread())) {
+			showExceptionWrapper.run();
+		} else {
+			if (sync) {
+				display.syncExec(showExceptionWrapper);
+			} else {
+				display.asyncExec(showExceptionWrapper);
+			}
+		}
+
+		if (exceptionThrownInUIThread.value != null) {
+			throw exceptionThrownInUIThread.value;
+		}
+	}
+
+	public static void runInDisplayThreadAsync(final DisplayThreadRunnable runnable) throws Exception {
+		runInDisplayThread(runnable, false);
+	}
+
+	public static void runInDisplayThreadSync(final DisplayThreadRunnable runnable) throws Exception {
+		runInDisplayThread(runnable, true);
 	}
 }

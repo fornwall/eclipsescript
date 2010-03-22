@@ -13,12 +13,34 @@ import org.mozilla.javascript.Scriptable;
 class CustomContextFactory extends ContextFactory {
 
 	static class CustomContext extends Context {
+		long startTime;
+
+		public JavascriptRuntime jsRuntime;
+
 		public CustomContext(ContextFactory factory) {
 			super(factory);
 		}
+	}
 
-		long startTime;
-		public JavascriptRuntime jsRuntime;
+	@Override
+	protected Object doTopCall(Callable callable, Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+		CustomContext mcx = (CustomContext) cx;
+		mcx.startTime = System.currentTimeMillis();
+
+		return super.doTopCall(callable, cx, scope, thisObj, args);
+	}
+
+	@Override
+	public boolean hasFeature(Context cx, int featureIndex) {
+		switch (featureIndex) {
+		case Context.FEATURE_STRICT_EVAL:
+			// error on eval(arg) with non-string arg - sensible
+			return true;
+		case Context.FEATURE_LOCATION_INFORMATION_IN_ERROR:
+			return true;
+		default:
+			return super.hasFeature(cx, featureIndex);
+		}
 	}
 
 	@Override
@@ -39,19 +61,6 @@ class CustomContextFactory extends ContextFactory {
 	}
 
 	@Override
-	public boolean hasFeature(Context cx, int featureIndex) {
-		switch (featureIndex) {
-		case Context.FEATURE_STRICT_EVAL:
-			// error on eval(arg) with non-string arg - sensible
-			return true;
-		case Context.FEATURE_LOCATION_INFORMATION_IN_ERROR:
-			return true;
-		default:
-			return super.hasFeature(cx, featureIndex);
-		}
-	}
-
-	@Override
 	protected void observeInstructionCount(Context cx, int instructionCount) {
 		CustomContext mcx = (CustomContext) cx;
 		final int MAX_SECONDS = 10;
@@ -59,14 +68,6 @@ class CustomContextFactory extends ContextFactory {
 		if (currentTime - mcx.startTime > MAX_SECONDS * 1000) {
 			mcx.jsRuntime.abortRunningScript(NLS.bind(Messages.scriptTimeout, MAX_SECONDS));
 		}
-	}
-
-	@Override
-	protected Object doTopCall(Callable callable, Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		CustomContext mcx = (CustomContext) cx;
-		mcx.startTime = System.currentTimeMillis();
-
-		return super.doTopCall(callable, cx, scope, thisObj, args);
 	}
 
 }

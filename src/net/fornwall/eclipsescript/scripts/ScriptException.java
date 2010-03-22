@@ -4,9 +4,9 @@ public class ScriptException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	private final boolean showStackTrace;
-
 	private final int lineNumber;
+
+	private final boolean showStackTrace;
 
 	public ScriptException(String message, Throwable cause, int lineNumber, boolean showStackTrace) {
 		super(message, cause);

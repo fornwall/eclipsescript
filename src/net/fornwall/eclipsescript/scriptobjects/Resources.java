@@ -45,15 +45,6 @@ public class Resources {
 		return result.toArray(new IFile[result.size()]);
 	}
 
-	public IWorkspace getWorkspace() {
-		return ResourcesPlugin.getWorkspace();
-	}
-
-	// note that exists() should be called to determine existence
-	public IProject getProject(String projectName) {
-		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-	}
-
 	/** Get the currently selected project. */
 	public IProject getCurrentProject() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
@@ -73,9 +64,18 @@ public class Resources {
 		return resource.getProject();
 	}
 
+	// note that exists() should be called to determine existence
+	public IProject getProject(String projectName) {
+		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+	}
+
 	/** Get the project of the currently executing script. */
 	public IProject getScriptProject() {
 		return scriptProject;
+	}
+
+	public IWorkspace getWorkspace() {
+		return ResourcesPlugin.getWorkspace();
 	}
 
 	public String read(Object objectToRead) throws Exception {

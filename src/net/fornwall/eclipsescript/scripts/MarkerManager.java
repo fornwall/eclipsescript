@@ -11,14 +11,6 @@ public class MarkerManager {
 
 	private static final String SCRIPT_PROBLEM_MARKER_TYPE = "net.fornwall.editorjs.scriptproblemmarker"; //$NON-NLS-1$
 
-	public static void clearMarkers(IFile file) {
-		try {
-			file.deleteMarkers(SCRIPT_PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-		} catch (CoreException e) {
-			Activator.logError(e);
-		}
-	}
-
 	public static void addMarker(IFile file, ScriptException error) {
 		try {
 			IMarker m = file.createMarker(SCRIPT_PROBLEM_MARKER_TYPE);
@@ -31,6 +23,14 @@ public class MarkerManager {
 			// TODO: ? "If we indicated additional information in the marker for IMarker.CHAR_START and
 			// IMarker.CHAR_END, the
 			// editor will also draw a red squiggly line under the offending problem"
+		} catch (CoreException e) {
+			Activator.logError(e);
+		}
+	}
+
+	public static void clearMarkers(IFile file) {
+		try {
+			file.deleteMarkers(SCRIPT_PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
 		} catch (CoreException e) {
 			Activator.logError(e);
 		}

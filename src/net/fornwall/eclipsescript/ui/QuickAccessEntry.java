@@ -25,12 +25,9 @@ final class QuickAccessEntry {
 		this.elementMatchRegions = elementMatchRegions;
 	}
 
-	Image getImage(ResourceManager resourceManager) {
-		Image image = findOrCreateImage(element.getImageDescriptor(), resourceManager);
-		if (image == null) {
-			throw new IllegalArgumentException("Null image for element: " + element); //$NON-NLS-1$
-		}
-		return image;
+	public void erase(Event event) {
+		// We are only custom drawing the foreground.
+		event.detail &= ~SWT.FOREGROUND;
 	}
 
 	private Image findOrCreateImage(ImageDescriptor imageDescriptor, ResourceManager resourceManager) {
@@ -44,6 +41,14 @@ final class QuickAccessEntry {
 			} catch (DeviceResourceException e) {
 				Activator.logError(e);
 			}
+		}
+		return image;
+	}
+
+	Image getImage(ResourceManager resourceManager) {
+		Image image = findOrCreateImage(element.getImageDescriptor(), resourceManager);
+		if (image == null) {
+			throw new IllegalArgumentException("Null image for element: " + element); //$NON-NLS-1$
 		}
 		return image;
 	}
@@ -115,10 +120,5 @@ final class QuickAccessEntry {
 					+ (availableBounds.height - requiredBounds.height) / 2);
 			break;
 		}
-	}
-
-	public void erase(Event event) {
-		// We are only custom drawing the foreground.
-		event.detail &= ~SWT.FOREGROUND;
 	}
 }

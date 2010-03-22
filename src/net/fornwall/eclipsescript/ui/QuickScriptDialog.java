@@ -56,6 +56,11 @@ public final class QuickScriptDialog extends PopupDialog {
 
 	private static final int MAX_COUNT_TOTAL = 20;
 
+	@SuppressWarnings("unchecked")
+	private static List<QuickAccessEntry>[] newQuickAccessEntryArray(int length) {
+		return new ArrayList[length];
+	}
+
 	private Map<String, QuickAccessElement> elementMap = new HashMap<String, QuickAccessElement>();
 	Text filterText;
 	Command invokingCommand;
@@ -66,6 +71,7 @@ public final class QuickScriptDialog extends PopupDialog {
 	Table table;
 	TextLayout textLayout;
 	private IWorkbenchWindow window;
+
 	private String currentFilterCommand;
 
 	public QuickScriptDialog(IWorkbenchWindow window, final Command invokingCommand) {
@@ -116,11 +122,6 @@ public final class QuickScriptDialog extends PopupDialog {
 			resourceManager = null;
 		}
 		return super.close();
-	}
-
-	@SuppressWarnings("unchecked")
-	private static List<QuickAccessEntry>[] newQuickAccessEntryArray(int length) {
-		return new ArrayList[length];
 	}
 
 	private List<QuickAccessEntry>[] computeMatchingEntries(String filter, QuickAccessElement perfectMatch,

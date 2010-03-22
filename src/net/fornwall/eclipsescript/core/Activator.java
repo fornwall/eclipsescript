@@ -30,10 +30,30 @@ import org.osgi.framework.ServiceReference;
 public class Activator extends AbstractUIPlugin {
 
 	private static Activator plugin;
-	private BundleContext context;
-	private BundleDescription bundleDescription;
-	private Resolver resolver;
-	final ScriptFilesChangeListener scriptFilesChangeListener = new ScriptFilesChangeListener();
+
+	public static Bundle getBundleExportingClass(String className) {
+		int lastIndexOfDot = className.lastIndexOf('.');
+		if (lastIndexOfDot > 0 && lastIndexOfDot < className.length() - 1) {
+			char firstCharOfClassName = className.charAt(lastIndexOfDot + 1);
+			if (Character.isLowerCase(firstCharOfClassName)) {
+				// probably a package requested by rhino "org.eclipse" part of "org.eclipse.ui.xxx"
+				return null;
+			}
+
+			String packageName = className.substring(0, lastIndexOfDot);
+
+			ExportPackageDescription desc = plugin.resolver.resolveDynamicImport(plugin.bundleDescription, packageName);
+			if (desc != null) {
+				BundleDescription exporter = desc.getExporter();
+				long exporterBundleId = exporter.getBundleId();
+				Bundle exportingBundle = plugin.context.getBundle(exporterBundleId);
+				return exportingBundle;
+			}
+
+		}
+
+		return null;
+	}
 
 	/**
 	 * Returns the shared instance
@@ -42,7 +62,7 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
-	public static void logError(final Throwable exception)  {
+	public static void logError(final Throwable exception) {
 		ILog log = plugin.getLog();
 		log.log(new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), exception.getMessage(), exception));
 
@@ -58,6 +78,14 @@ public class Activator extends AbstractUIPlugin {
 			log.log(new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), e.getMessage(), e));
 		}
 	}
+
+	private BundleContext context;
+
+	private BundleDescription bundleDescription;
+
+	private Resolver resolver;
+
+	final ScriptFilesChangeListener scriptFilesChangeListener = new ScriptFilesChangeListener();
 
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
@@ -98,29 +126,5 @@ public class Activator extends AbstractUIPlugin {
 
 		super.stop(bundleContext);
 		Activator.plugin = null;
-	}
-
-	public static Bundle getBundleExportingClass(String className) {
-		int lastIndexOfDot = className.lastIndexOf('.');
-		if (lastIndexOfDot > 0 && lastIndexOfDot < className.length() - 1) {
-			char firstCharOfClassName = className.charAt(lastIndexOfDot + 1);
-			if (Character.isLowerCase(firstCharOfClassName)) {
-				// probably a package requested by rhino "org.eclipse" part of "org.eclipse.ui.xxx"
-				return null;
-			}
-
-			String packageName = className.substring(0, lastIndexOfDot);
-
-			ExportPackageDescription desc = plugin.resolver.resolveDynamicImport(plugin.bundleDescription, packageName);
-			if (desc != null) {
-				BundleDescription exporter = desc.getExporter();
-				long exporterBundleId = exporter.getBundleId();
-				Bundle exportingBundle = plugin.context.getBundle(exporterBundleId);
-				return exportingBundle;
-			}
-
-		}
-
-		return null;
 	}
 }

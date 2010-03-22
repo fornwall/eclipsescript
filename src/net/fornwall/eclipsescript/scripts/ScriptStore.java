@@ -67,33 +67,6 @@ public class ScriptStore {
 		getScriptStore().clear();
 	}
 
-	private static void showMessageOfferJumpToScript(ScriptMetadata script, ScriptException e) {
-		final String[] choices = new String[] { Messages.scriptErrorWhenRunningScriptOkButton,
-				Messages.scriptErrorWhenRunningScriptJumpToScriptButton };
-
-		int result = ErrorDetailsDialog.openError(EclipseUtils.getWindowShell(),
-				Messages.scriptErrorWhenRunningScriptDialogTitle, e.getMessage(), e.getCause(), choices, e
-						.isShowStackTrace());
-		if (result == 1) {
-			IEditorPart editorPart = EclipseUtils.openEditor(script.getFile());
-			if (editorPart instanceof ITextEditor) {
-				ITextEditor textEditor = (ITextEditor) editorPart;
-				IDocumentProvider provider = textEditor.getDocumentProvider();
-				IDocument document = provider.getDocument(textEditor.getEditorInput());
-				try {
-					int lineNumber = Math.max(e.getLineNumber(), 1);
-					int start = document.getLineOffset(lineNumber - 1);
-					textEditor.selectAndReveal(start, 0);
-					IWorkbenchPage page = textEditor.getSite().getPage();
-					page.activate(textEditor);
-				} catch (BadLocationException e2) {
-					throw new RuntimeException(e2);
-				}
-			}
-		}
-
-	}
-
 	public static void executeScript(ScriptMetadata script) {
 		// add this even if script execution fails
 		RunLastHandler.lastRun = script;
@@ -126,5 +99,32 @@ public class ScriptStore {
 	public static void removeScript(final String name) {
 		final Map<String, ScriptMetadata> store = getScriptStore();
 		store.remove(name);
+	}
+
+	private static void showMessageOfferJumpToScript(ScriptMetadata script, ScriptException e) {
+		final String[] choices = new String[] { Messages.scriptErrorWhenRunningScriptOkButton,
+				Messages.scriptErrorWhenRunningScriptJumpToScriptButton };
+
+		int result = ErrorDetailsDialog.openError(EclipseUtils.getWindowShell(),
+				Messages.scriptErrorWhenRunningScriptDialogTitle, e.getMessage(), e.getCause(), choices, e
+						.isShowStackTrace());
+		if (result == 1) {
+			IEditorPart editorPart = EclipseUtils.openEditor(script.getFile());
+			if (editorPart instanceof ITextEditor) {
+				ITextEditor textEditor = (ITextEditor) editorPart;
+				IDocumentProvider provider = textEditor.getDocumentProvider();
+				IDocument document = provider.getDocument(textEditor.getEditorInput());
+				try {
+					int lineNumber = Math.max(e.getLineNumber(), 1);
+					int start = document.getLineOffset(lineNumber - 1);
+					textEditor.selectAndReveal(start, 0);
+					IWorkbenchPage page = textEditor.getSite().getPage();
+					page.activate(textEditor);
+				} catch (BadLocationException e2) {
+					throw new RuntimeException(e2);
+				}
+			}
+		}
+
 	}
 }

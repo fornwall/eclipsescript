@@ -9,9 +9,9 @@ import java.net.URLConnection;
 
 public class JavaUtils {
 
-	private static final String UTF8_CHARSET_NAME = "utf-8"; //$NON-NLS-1$
-
 	public static abstract class BaseRunnable implements Runnable {
+		public abstract void doRun() throws Exception;
+
 		@Override
 		public final void run() {
 			try {
@@ -20,12 +20,24 @@ public class JavaUtils {
 				throw asRuntime(e);
 			}
 		}
-
-		public abstract void doRun() throws Exception;
 	}
 
 	public static class MutableObject<T> {
 		public T value;
+	}
+
+	private static final String UTF8_CHARSET_NAME = "utf-8"; //$NON-NLS-1$
+
+	public static RuntimeException asRuntime(Exception e) {
+		return (e instanceof RuntimeException) ? ((RuntimeException) e) : new RuntimeException(e);
+	}
+
+	public static void close(Closeable c) {
+		try {
+			c.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static boolean isNotBlank(String s) {
@@ -75,18 +87,6 @@ public class JavaUtils {
 		}
 		InputStream in = uc.getInputStream();
 		return readAllToStringAndClose(in, charSet);
-	}
-
-	public static void close(Closeable c) {
-		try {
-			c.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static RuntimeException asRuntime(Exception e) {
-		return (e instanceof RuntimeException) ? ((RuntimeException) e) : new RuntimeException(e);
 	}
 
 }

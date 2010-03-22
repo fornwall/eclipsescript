@@ -34,53 +34,6 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 public class Window {
 
-	public static void alert(final String message) throws Exception {
-		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
-			@Override
-			public void runWithDisplay(Display display) {
-				MessageDialog.openInformation(EclipseUtils.activeWindow().getShell(), Messages.scriptAlertDialogTitle, message);
-			}
-		});
-	}
-
-	public static String prompt(final String message) throws Exception {
-		return prompt(message, ""); //$NON-NLS-1$
-	}
-
-	public static boolean confirm(final String message) throws Exception {
-		final MutableObject<Boolean> enteredText = new MutableObject<Boolean>();
-		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
-			@Override
-			public void runWithDisplay(Display display) {
-				enteredText.value = MessageDialog.openConfirm(EclipseUtils.getWindowShell(), Messages.scriptConfirmDialogTitle, message);
-			}
-		});
-		return enteredText.value;
-	}
-
-	public static String prompt(final String message, final String initialValue) throws Exception {
-		final MutableObject<String> enteredText = new MutableObject<String>();
-		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
-			@Override
-			public void runWithDisplay(Display display) {
-				final PromptDialog dialog = new PromptDialog(EclipseUtils.getWindowShell(), message);
-
-				// create the window shell so the title can be set
-				dialog.create();
-				dialog.getShell().setText(Messages.scriptPromptDialogTitle);
-				if (initialValue != null) {
-					dialog.promptField.setText(initialValue);
-				}
-				// since the Window has the blockOnOpen property set to true, it
-				// will dipose of the shell upon close
-				if (dialog.open() == org.eclipse.jface.window.Window.OK) {
-					enteredText.value = dialog.enteredText;
-				}
-			}
-		});
-		return enteredText.value;
-	}
-
 	private static class PromptDialog extends Dialog {
 
 		private final String promptText;
@@ -118,6 +71,28 @@ public class Window {
 
 	}
 
+	public static void alert(final String message) throws Exception {
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) {
+				MessageDialog.openInformation(EclipseUtils.activeWindow().getShell(), Messages.scriptAlertDialogTitle,
+						message);
+			}
+		});
+	}
+
+	public static boolean confirm(final String message) throws Exception {
+		final MutableObject<Boolean> enteredText = new MutableObject<Boolean>();
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) {
+				enteredText.value = MessageDialog.openConfirm(EclipseUtils.getWindowShell(),
+						Messages.scriptConfirmDialogTitle, message);
+			}
+		});
+		return enteredText.value;
+	}
+
 	public static IWebBrowser open(String urlString) throws PartInitException, MalformedURLException {
 		if (urlString == null)
 			throw new IllegalArgumentException(Messages.windowOpenArgumentNull);
@@ -127,6 +102,33 @@ public class Window {
 		IWebBrowser browser = browserSupport.createBrowser(IWorkbenchBrowserSupport.AS_EXTERNAL, null, null, null);
 		browser.openURL(url);
 		return browser;
+	}
+
+	public static String prompt(final String message) throws Exception {
+		return prompt(message, ""); //$NON-NLS-1$
+	}
+
+	public static String prompt(final String message, final String initialValue) throws Exception {
+		final MutableObject<String> enteredText = new MutableObject<String>();
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) {
+				final PromptDialog dialog = new PromptDialog(EclipseUtils.getWindowShell(), message);
+
+				// create the window shell so the title can be set
+				dialog.create();
+				dialog.getShell().setText(Messages.scriptPromptDialogTitle);
+				if (initialValue != null) {
+					dialog.promptField.setText(initialValue);
+				}
+				// since the Window has the blockOnOpen property set to true, it
+				// will dipose of the shell upon close
+				if (dialog.open() == org.eclipse.jface.window.Window.OK) {
+					enteredText.value = dialog.enteredText;
+				}
+			}
+		});
+		return enteredText.value;
 	}
 
 	public void setStatus(final String status) throws Exception {

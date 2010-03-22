@@ -29,6 +29,18 @@ public class Runtime {
 		this.scriptRuntime = scriptRuntime;
 	}
 
+	public void die(String message) {
+		scriptRuntime.abortRunningScript(message);
+	}
+
+	public void exit() {
+		scriptRuntime.exitRunningScript();
+	}
+
+	public Shell getShell() {
+		return EclipseUtils.getWindowShell();
+	}
+
 	public void include(Object... includes) throws Exception {
 		for (Object includeObject : includes) {
 			String includeStringPath = (String) includeObject;
@@ -37,7 +49,8 @@ public class Runtime {
 			IContainer startingScriptCounter = startingScript.getParent();
 			IFile fileToInclude = startingScriptCounter.getFile(includePath);
 			if (!fileToInclude.exists())
-				scriptRuntime.abortRunningScript(Messages.fileToIncludeDoesNotExist + fileToInclude.getFullPath().toOSString());
+				scriptRuntime.abortRunningScript(Messages.fileToIncludeDoesNotExist
+						+ fileToInclude.getFullPath().toOSString());
 
 			Reader reader = new InputStreamReader(fileToInclude.getContents(), fileToInclude.getCharset());
 			try {
@@ -46,18 +59,6 @@ public class Runtime {
 				reader.close();
 			}
 		}
-	}
-
-	public void exit() {
-		scriptRuntime.exitRunningScript();
-	}
-
-	public void die(String message) {
-		scriptRuntime.abortRunningScript(message);
-	}
-
-	public Shell getShell() {
-		return EclipseUtils.getWindowShell();
 	}
 
 	public void schedule(final IJobRunnable runnable) {

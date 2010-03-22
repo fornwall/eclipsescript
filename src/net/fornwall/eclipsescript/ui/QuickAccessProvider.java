@@ -10,13 +10,6 @@ public abstract class QuickAccessProvider {
 	private QuickAccessElement[] sortedElements;
 
 	/**
-	 * Returns the image descriptor for this provider.
-	 * 
-	 * @return the image descriptor, or null if not defined
-	 */
-	public abstract ImageDescriptor getImageDescriptor();
-
-	/**
 	 * Returns the elements provided by this provider.
 	 * 
 	 * @return this provider's elements
@@ -35,4 +28,11 @@ public abstract class QuickAccessProvider {
 		}
 		return sortedElements;
 	}
+
+	/**
+	 * Returns the image descriptor for this provider.
+	 * 
+	 * @return the image descriptor, or null if not defined
+	 */
+	public abstract ImageDescriptor getImageDescriptor();
 }

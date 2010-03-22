@@ -5,7 +5,7 @@ import net.fornwall.eclipsescript.scripts.IScriptRuntime;
 public class Eclipse {
 
 	public static final String VARIABLE_NAME = "eclipse"; //$NON-NLS-1$
-	
+
 	private Console console;
 	private Editors editors;
 	private Resources resources;

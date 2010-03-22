@@ -11,35 +11,35 @@ import org.eclipse.ui.part.IPageSite;
 
 public class CloseConsolePageParticipant implements IConsolePageParticipant {
 
-    @Override
+	@Override
 	public void activated() {
-        // do nothing
+		// do nothing
 	}
 
-    @Override
+	@Override
 	public void deactivated() {
-        // do nothing
+		// do nothing
 	}
 
-    @Override
+	@Override
 	public void dispose() {
-        // do nothing
-	}
-
-    /** Method overridden to add close console action to the console toolbar. */
-    @Override
-	public void init(IPageBookViewPage page, IConsole console) {
-		CloseConsoleAction action = new CloseConsoleAction(console);
-		IPageSite site = page.getSite();
-		IActionBars actionBars = site.getActionBars();
-		IToolBarManager manager = actionBars.getToolBarManager();
-		manager.appendToGroup(IConsoleConstants.LAUNCH_GROUP, action);
+		// do nothing
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {
 		return adapter.isInstance(this) ? this : null;
+	}
+
+	/** Method overridden to add close console action to the console toolbar. */
+	@Override
+	public void init(IPageBookViewPage page, IConsole console) {
+		CloseConsoleAction action = new CloseConsoleAction(console);
+		IPageSite site = page.getSite();
+		IActionBars actionBars = site.getActionBars();
+		IToolBarManager manager = actionBars.getToolBarManager();
+		manager.appendToGroup(IConsoleConstants.LAUNCH_GROUP, action);
 	}
 
 }

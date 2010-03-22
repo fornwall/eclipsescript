@@ -25,18 +25,12 @@ public class QuickScriptProvider extends QuickAccessProvider {
 			QuickAccessElement element = new QuickAccessElement(this) {
 
 				@Override
-				public String getLabel() {
-					String label = script.getFile().getName().substring(0,
-							script.getFile().getName().length() - ScriptFilesChangeListener.FILE_SUFFIX.length());
-					if (script.getSummary() != null) {
-						label += " - " + script.getSummary(); //$NON-NLS-1$
+				public void execute(String command) {
+					if (Messages.scriptLaunchDialogEditCommand.equals(command)) {
+						EclipseUtils.openEditor(script.getFile());
+					} else {
+						ScriptStore.executeScript(script);
 					}
-					return label;
-				}
-
-				@Override
-				public ImageDescriptor getImageDescriptor() {
-					return imageDescriptor;
 				}
 
 				@Override
@@ -45,12 +39,18 @@ public class QuickScriptProvider extends QuickAccessProvider {
 				}
 
 				@Override
-				public void execute(String command) {
-					if (Messages.scriptLaunchDialogEditCommand.equals(command)) {
-						EclipseUtils.openEditor(script.getFile());
-					} else {
-						ScriptStore.executeScript(script);
+				public ImageDescriptor getImageDescriptor() {
+					return imageDescriptor;
+				}
+
+				@Override
+				public String getLabel() {
+					String label = script.getFile().getName().substring(0,
+							script.getFile().getName().length() - ScriptFilesChangeListener.FILE_SUFFIX.length());
+					if (script.getSummary() != null) {
+						label += " - " + script.getSummary(); //$NON-NLS-1$
 					}
+					return label;
 				}
 			};
 			elements[i] = element;

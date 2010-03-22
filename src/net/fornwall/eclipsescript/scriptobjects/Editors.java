@@ -24,9 +24,35 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 public class Editors {
 
+	public String getClipboard() throws Exception {
+		final MutableObject<String> result = new MutableObject<String>();
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) {
+				Clipboard clipboard = new Clipboard(display);
+				try {
+					result.value = (String) clipboard.getContents(TextTransfer.getInstance());
+				} finally {
+					clipboard.dispose();
+				}
+			}
+		});
+		return result.value;
+	}
+
 	/** Returns the currently edited document or null if none. */
 	public IDocument getDocument() {
 		return EclipseUtils.getCurrentDocument();
+	}
+
+	/** Returns the currently edited file or null if none. */
+	public IFile getFile() {
+		IEditorInput editorInput = EclipseUtils.getCurrentEditorInput();
+		IFile fileEditorInput = null;
+		if (editorInput != null) {
+			fileEditorInput = (IFile) editorInput.getAdapter(IFile.class);
+		}
+		return fileEditorInput;
 	}
 
 	/** Returns the current text selection or null if none. */
@@ -41,16 +67,6 @@ public class Editors {
 		if (!(selection instanceof ITextSelection))
 			return null;
 		return (ITextSelection) selection;
-	}
-
-	/** Returns the currently edited file or null if none. */
-	public IFile getFile() {
-		IEditorInput editorInput = EclipseUtils.getCurrentEditorInput();
-		IFile fileEditorInput = null;
-		if (editorInput != null) {
-			fileEditorInput = (IFile) editorInput.getAdapter(IFile.class);
-		}
-		return fileEditorInput;
 	}
 
 	public void insert(final String textToInsert) throws Exception {
@@ -104,22 +120,6 @@ public class Editors {
 				}
 			}
 		});
-	}
-
-	public String getClipboard() throws Exception {
-		final MutableObject<String> result = new MutableObject<String>();
-		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
-			@Override
-			public void runWithDisplay(Display display) {
-				Clipboard clipboard = new Clipboard(display);
-				try {
-					result.value = (String) clipboard.getContents(TextTransfer.getInstance());
-				} finally {
-					clipboard.dispose();
-				}
-			}
-		});
-		return result.value;
 	}
 
 }

@@ -15,15 +15,6 @@ import org.mozilla.javascript.Scriptable;
 class JavascriptRuntime implements IScriptRuntime {
 
 	/**
-	 * Throw to indicate normal exit of script. Needs to extend error to prevent script from being able to catch
-	 * exception.
-	 */
-	@SuppressWarnings("serial")
-	static class ExitException extends Error {
-		// just a marker class
-	}
-
-	/**
 	 * Throw to indicate abnormal exception of script. Needs to extend error to prevent script from being able to catch
 	 * exception.
 	 */
@@ -41,6 +32,15 @@ class JavascriptRuntime implements IScriptRuntime {
 		}
 	}
 
+	/**
+	 * Throw to indicate normal exit of script. Needs to extend error to prevent script from being able to catch
+	 * exception.
+	 */
+	@SuppressWarnings("serial")
+	static class ExitException extends Error {
+		// just a marker class
+	}
+
 	private final Context context;
 	private final Scriptable topLevelScope;
 	private final IFile startingScript;
@@ -49,8 +49,13 @@ class JavascriptRuntime implements IScriptRuntime {
 		this.context = context;
 		this.topLevelScope = topLevelScope;
 		this.startingScript = startingScript;
-		
+
 		context.jsRuntime = this;
+	}
+
+	@Override
+	public void abortRunningScript(String errorMessage) {
+		throw new DieException(errorMessage);
 	}
 
 	@Override
@@ -60,8 +65,8 @@ class JavascriptRuntime implements IScriptRuntime {
 	}
 
 	@Override
-	public IFile getStartingScript() {
-		return startingScript;
+	public void exitRunningScript() {
+		throw new ExitException();
 	}
 
 	@Override
@@ -70,13 +75,8 @@ class JavascriptRuntime implements IScriptRuntime {
 	}
 
 	@Override
-	public void abortRunningScript(String errorMessage) {
-		throw new DieException(errorMessage);
-	}
-
-	@Override
-	public void exitRunningScript() {
-		throw new ExitException();
+	public IFile getStartingScript() {
+		return startingScript;
 	}
 
 }

@@ -47,6 +47,59 @@ import org.osgi.framework.Constants;
  */
 public class ErrorDetailsDialog extends IconAndMessageDialog {
 
+	public static int openError(Shell parent, String dialogTitle, String message, Throwable exception) {
+		return openError(parent, dialogTitle, message, exception, new String[] { IDialogConstants.OK_LABEL }, true);
+	}
+
+	/**
+	 * Opens an error dialog to display the given error. Use this method if the error object being displayed does not
+	 * contain child items, or if you wish to display all such items without filtering.
+	 * 
+	 * @param parent
+	 *            the parent shell of the dialog, or <code>null</code> if none
+	 * @param dialogTitle
+	 *            the title to use for this dialog, or <code>null</code> to indicate that the default title should be
+	 *            used
+	 * @param message
+	 *            the message to show in this dialog, or <code>null</code> to indicate that the error's message should
+	 *            be shown as the primary message
+	 * @param choices
+	 * @param status
+	 *            the error to show to the user
+	 * @return the code of the button that was pressed that resulted in this dialog closing. This will be
+	 *         <code>Dialog.OK</code> if the OK button was pressed, or <code>Dialog.CANCEL</code> if this dialog's close
+	 *         window decoration or the ESC key was used.
+	 */
+	public static int openError(Shell parent, String dialogTitle, String message, Throwable exception2,
+			String[] choices, boolean showDetails) {
+		ErrorDetailsDialog dialog = new ErrorDetailsDialog(parent, dialogTitle, message, exception2, choices,
+				showDetails);
+		return dialog.open();
+	}
+
+	/**
+	 * Returns whether the given status object should be displayed.
+	 * 
+	 * @param status
+	 *            a status object
+	 * @param mask
+	 *            a mask as per <code>IStatus.matches</code>
+	 * @return <code>true</code> if the given status should be displayed, and <code>false</code> otherwise
+	 * @see org.eclipse.core.runtime.IStatus#matches(int)
+	 */
+	protected static boolean shouldDisplay(IStatus status, int mask) {
+		IStatus[] children = status.getChildren();
+		if (children == null || children.length == 0) {
+			return status.matches(mask);
+		}
+		for (int i = 0; i < children.length; i++) {
+			if (children[i].matches(mask)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * The Details button.
 	 */
@@ -70,6 +123,8 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 	private Clipboard clipboard;
 
 	private boolean showDetails;
+
+	private String[] choices;
 
 	/**
 	 * Creates an error dialog. Note that the dialog will have no visual representation (no widgets) until it is told to
@@ -120,12 +175,38 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 	}
 
 	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.window.Window#close()
+	 */
+	@Override
+	public boolean close() {
+		if (clipboard != null) {
+			clipboard.dispose();
+		}
+		return super.close();
+	}
+
+	/*
 	 * (non-Javadoc) Method declared in Window.
 	 */
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setText(title);
+	}
+
+	/**
+	 * Copy the contents of the statuses to the clipboard.
+	 */
+	void copyToClipboard() {
+		if (clipboard != null) {
+			clipboard.dispose();
+		}
+		StringBuffer statusBuffer = new StringBuffer();
+		populateCopyBuffer(statusBuffer, 0);
+		clipboard = new Clipboard(text.getDisplay());
+		clipboard.setContents(new Object[] { statusBuffer.toString() }, new Transfer[] { TextTransfer.getInstance() });
 	}
 
 	/*
@@ -162,6 +243,21 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 		}
 	}
 
+	/*
+	 * @see IconAndMessageDialog#createDialogAndButtonArea(Composite)
+	 */
+	@Override
+	protected void createDialogAndButtonArea(Composite parent) {
+		super.createDialogAndButtonArea(parent);
+		if (this.dialogArea instanceof Composite) {
+			// Create a label if there are no children to force a smaller layout
+			Composite dialogComposite = (Composite) dialogArea;
+			if (dialogComposite.getChildren().length == 0) {
+				new Label(dialogComposite, SWT.NULL);
+			}
+		}
+	}
+
 	/**
 	 * This implementation of the <code>Dialog</code> framework method creates and lays out a composite. Subclasses that
 	 * require a different dialog area may either override this method, or call the <code>super</code> implementation
@@ -195,32 +291,6 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 		return composite;
 	}
 
-	/*
-	 * @see IconAndMessageDialog#createDialogAndButtonArea(Composite)
-	 */
-	@Override
-	protected void createDialogAndButtonArea(Composite parent) {
-		super.createDialogAndButtonArea(parent);
-		if (this.dialogArea instanceof Composite) {
-			// Create a label if there are no children to force a smaller layout
-			Composite dialogComposite = (Composite) dialogArea;
-			if (dialogComposite.getChildren().length == 0) {
-				new Label(dialogComposite, SWT.NULL);
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.dialogs.IconAndMessageDialog#getImage()
-	 */
-	@Override
-	protected Image getImage() {
-		// If it was not a warning or an error then return the error image
-		return getErrorImage();
-	}
-
 	/**
 	 * Create this dialog's drop-down list component.
 	 * 
@@ -251,21 +321,42 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 		Menu copyMenu = new Menu(text);
 		MenuItem copyItem = new MenuItem(copyMenu, SWT.NONE);
 		copyItem.addSelectionListener(new SelectionListener() {
-			/** @see SelectionListener.widgetSelected (SelectionEvent) */
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				copyToClipboard();
-			}
-
 			/** @see SelectionListener.widgetDefaultSelected(SelectionEvent) */
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
+				copyToClipboard();
+			}
+
+			/** @see SelectionListener.widgetSelected (SelectionEvent) */
+			@Override
+			public void widgetSelected(SelectionEvent e) {
 				copyToClipboard();
 			}
 		});
 		copyItem.setText(JFaceResources.getString("copy")); //$NON-NLS-1$
 		text.setMenu(copyMenu);
 		return text;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.dialogs.IconAndMessageDialog#getImage()
+	 */
+	@Override
+	protected Image getImage() {
+		// If it was not a warning or an error then return the error image
+		return getErrorImage();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.dialogs.Dialog#isResizable()
+	 */
+	@Override
+	protected boolean isResizable() {
+		return true;
 	}
 
 	/**
@@ -276,79 +367,6 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 	@Override
 	public int open() {
 		return super.open();
-	}
-
-	private String[] choices;
-
-	/**
-	 * Opens an error dialog to display the given error. Use this method if the error object being displayed does not
-	 * contain child items, or if you wish to display all such items without filtering.
-	 * 
-	 * @param parent
-	 *            the parent shell of the dialog, or <code>null</code> if none
-	 * @param dialogTitle
-	 *            the title to use for this dialog, or <code>null</code> to indicate that the default title should be
-	 *            used
-	 * @param message
-	 *            the message to show in this dialog, or <code>null</code> to indicate that the error's message should
-	 *            be shown as the primary message
-	 * @param choices
-	 * @param status
-	 *            the error to show to the user
-	 * @return the code of the button that was pressed that resulted in this dialog closing. This will be
-	 *         <code>Dialog.OK</code> if the OK button was pressed, or <code>Dialog.CANCEL</code> if this dialog's close
-	 *         window decoration or the ESC key was used.
-	 */
-	public static int openError(Shell parent, String dialogTitle, String message, Throwable exception2,
-			String[] choices, boolean showDetails) {
-		ErrorDetailsDialog dialog = new ErrorDetailsDialog(parent, dialogTitle, message, exception2, choices,
-				showDetails);
-		return dialog.open();
-	}
-
-	public static int openError(Shell parent, String dialogTitle, String message, Throwable exception) {
-		return openError(parent, dialogTitle, message, exception, new String[] { IDialogConstants.OK_LABEL }, true);
-	}
-
-	/**
-	 * Returns whether the given status object should be displayed.
-	 * 
-	 * @param status
-	 *            a status object
-	 * @param mask
-	 *            a mask as per <code>IStatus.matches</code>
-	 * @return <code>true</code> if the given status should be displayed, and <code>false</code> otherwise
-	 * @see org.eclipse.core.runtime.IStatus#matches(int)
-	 */
-	protected static boolean shouldDisplay(IStatus status, int mask) {
-		IStatus[] children = status.getChildren();
-		if (children == null || children.length == 0) {
-			return status.matches(mask);
-		}
-		for (int i = 0; i < children.length; i++) {
-			if (children[i].matches(mask)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Toggles the unfolding of the details area. This is triggered by the user pressing the details button.
-	 */
-	private void toggleDetailsArea() {
-		Point windowSize = getShell().getSize();
-		Point oldSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		if (text != null && !text.isDisposed()) {
-			text.dispose();
-			detailsButton.setText(IDialogConstants.SHOW_DETAILS_LABEL);
-		} else {
-			text = createDropDownList((Composite) getContents());
-			detailsButton.setText(IDialogConstants.HIDE_DETAILS_LABEL);
-			getContents().getShell().layout();
-		}
-		Point newSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		getShell().setSize(new Point(windowSize.x, windowSize.y + (newSize.y - oldSize.y)));
 	}
 
 	/**
@@ -363,29 +381,15 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 	}
 
 	/**
-	 * Copy the contents of the statuses to the clipboard.
-	 */
-	void copyToClipboard() {
-		if (clipboard != null) {
-			clipboard.dispose();
-		}
-		StringBuffer statusBuffer = new StringBuffer();
-		populateCopyBuffer(statusBuffer, 0);
-		clipboard = new Clipboard(text.getDisplay());
-		clipboard.setContents(new Object[] { statusBuffer.toString() }, new Transfer[] { TextTransfer.getInstance() });
-	}
-
-	/*
-	 * (non-Javadoc)
+	 * Return whether the Details button should be included. This method is invoked once when the dialog is built. By
+	 * default, the Details button is only included if the status used when creating the dialog was a multi-status or if
+	 * the status contains an exception. Subclasses may override.
 	 * 
-	 * @see org.eclipse.jface.window.Window#close()
+	 * @return whether the Details button should be included
+	 * @since 3.1
 	 */
-	@Override
-	public boolean close() {
-		if (clipboard != null) {
-			clipboard.dispose();
-		}
-		return super.close();
+	protected boolean shouldShowDetailsButton() {
+		return true;
 	}
 
 	/**
@@ -406,25 +410,21 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 	}
 
 	/**
-	 * Return whether the Details button should be included. This method is invoked once when the dialog is built. By
-	 * default, the Details button is only included if the status used when creating the dialog was a multi-status or if
-	 * the status contains an exception. Subclasses may override.
-	 * 
-	 * @return whether the Details button should be included
-	 * @since 3.1
+	 * Toggles the unfolding of the details area. This is triggered by the user pressing the details button.
 	 */
-	protected boolean shouldShowDetailsButton() {
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.dialogs.Dialog#isResizable()
-	 */
-	@Override
-	protected boolean isResizable() {
-		return true;
+	private void toggleDetailsArea() {
+		Point windowSize = getShell().getSize();
+		Point oldSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		if (text != null && !text.isDisposed()) {
+			text.dispose();
+			detailsButton.setText(IDialogConstants.SHOW_DETAILS_LABEL);
+		} else {
+			text = createDropDownList((Composite) getContents());
+			detailsButton.setText(IDialogConstants.HIDE_DETAILS_LABEL);
+			getContents().getShell().layout();
+		}
+		Point newSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		getShell().setSize(new Point(windowSize.x, windowSize.y + (newSize.y - oldSize.y)));
 	}
 
 }

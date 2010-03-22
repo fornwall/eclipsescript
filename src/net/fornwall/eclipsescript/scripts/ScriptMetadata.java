@@ -10,12 +10,12 @@ import org.eclipse.core.resources.IFile;
 
 public class ScriptMetadata implements Comparable<ScriptMetadata> {
 
+	private static final AtomicInteger counter = new AtomicInteger();
 	private IFile file;
 	private String fullPath;
 	private int instanceId;
-	private String summary;
 
-	private static final AtomicInteger counter = new AtomicInteger();
+	private String summary;
 
 	public ScriptMetadata(IFile file) {
 		this.instanceId = counter.getAndIncrement();
@@ -26,7 +26,8 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(file.getContents(), file.getCharset()));
 			String firstLine = reader.readLine();
 			reader.close();
-			if (firstLine == null) return;
+			if (firstLine == null)
+				return;
 			firstLine = firstLine.trim();
 
 			if (firstLine.startsWith("//") || firstLine.startsWith("/*")) { //$NON-NLS-1$ //$NON-NLS-2$
@@ -35,6 +36,11 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 		} catch (Exception e) {
 			Activator.logError(e);
 		}
+	}
+
+	@Override
+	public int compareTo(ScriptMetadata o) {
+		return instanceId - o.instanceId;
 	}
 
 	public IFile getFile() {
@@ -47,11 +53,6 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 
 	public String getSummary() {
 		return summary;
-	}
-
-	@Override
-	public int compareTo(ScriptMetadata o) {
-		return instanceId - o.instanceId;
 	}
 
 }

@@ -15,10 +15,6 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 public class Console {
 
-	public Console(IScriptRuntime runtime) {
-		this.name = NLS.bind(Messages.scriptConsoleName, runtime.getStartingScript().getName());
-	}
-
 	// just a marker superclass for enablement in console closer, see plugin.xml
 	public static class ConsoleClass extends MessageConsole {
 		public ConsoleClass(String name, ImageDescriptor imageDescriptor) {
@@ -27,28 +23,12 @@ public class Console {
 	}
 
 	private MessageConsoleStream out;
+
 	private MessageConsole console;
 	private String name;
 
-	private void init() {
-		if (console == null) {
-			console = new ConsoleClass(name, null);
-			out = console.newMessageStream();
-			ConsolePlugin consolePlugin = ConsolePlugin.getDefault();
-			IConsoleManager consoleManager = consolePlugin.getConsoleManager();
-			consoleManager.addConsoles(new IConsole[] { console });
-			consoleManager.showConsoleView(console);
-		}
-	}
-
-	public void println(final String msg) {
-		init();
-		out.println(msg);
-	}
-
-	public void print(final String msg) {
-		init();
-		out.print(msg);
+	public Console(IScriptRuntime runtime) {
+		this.name = NLS.bind(Messages.scriptConsoleName, runtime.getStartingScript().getName());
 	}
 
 	public void clear() {
@@ -62,5 +42,26 @@ public class Console {
 			// not so interesting
 		}
 		out = console.newMessageStream();
+	}
+
+	private void init() {
+		if (console == null) {
+			console = new ConsoleClass(name, null);
+			out = console.newMessageStream();
+			ConsolePlugin consolePlugin = ConsolePlugin.getDefault();
+			IConsoleManager consoleManager = consolePlugin.getConsoleManager();
+			consoleManager.addConsoles(new IConsole[] { console });
+			consoleManager.showConsoleView(console);
+		}
+	}
+
+	public void print(final String msg) {
+		init();
+		out.print(msg);
+	}
+
+	public void println(final String msg) {
+		init();
+		out.println(msg);
 	}
 }

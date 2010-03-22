@@ -1,6 +1,5 @@
 package net.fornwall.eclipsescript.scripts;
 
-
 public interface ScriptLanguageSupport {
 
 	/**
