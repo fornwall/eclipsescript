@@ -17,17 +17,37 @@ public class Messages extends NLS {
 	public static String quickAccessPressKeyToShowAllMatches;
 	public static String quickAccessStartTypingToFindMatches;
 	public static String runScriptBeforeRunningLast;
+	public static String cannotRunCurrentScriptText;
+
+	public static String cannotRunCurrentScriptTitle;
+
 	public static String clearMarkersJobName;
+	public static String noDocumentSelected;
+
+	public static String noSelectionSelected;
+
+	public static String noTextEditorSelected;
+
+	public static String scriptAlertDialogTitle;
+
 	public static String scriptBackgroundJobName;
+	public static String scriptConfirmDialogTitle;
+
 	public static String scriptConsoleName;
 	public static String scriptErrorWhenRunningScriptDialogText;
 	public static String scriptErrorWhenRunningScriptDialogTitle;
 	public static String scriptErrorWhenRunningScriptJumpToScriptButton;
 	public static String scriptErrorWhenRunningScriptOkButton;
+
+	public static String scriptPromptDialogTitle;
 	public static String scriptShortcutConflictsWithExisting;
 	public static String scriptShortcutConflictsWithExistingScript;
 	public static String scriptTimeout;
 	public static String rescanScriptsJobName;
+
+	public static String Resources_cannotReadFromObject;
+
+	public static String windowOpenArgumentNull;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.util.JavaUtils;
 
 import org.eclipse.core.resources.IContainer;
@@ -91,7 +92,7 @@ public class Resources {
 				return JavaUtils.readURL(url);
 			}
 		}
-		throw new IllegalArgumentException("Cannot read from object: " + objectToRead);
+		throw new IllegalArgumentException(Messages.Resources_cannotReadFromObject + objectToRead);
 	}
 
 	private void walk(final IResource resource, final Pattern pattern, final Collection<IFile> result)

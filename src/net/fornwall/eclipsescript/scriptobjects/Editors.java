@@ -1,7 +1,7 @@
 package net.fornwall.eclipsescript.scriptobjects;
 
+import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.util.EclipseUtils;
-import net.fornwall.eclipsescript.util.JavaUtils;
 import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 import net.fornwall.eclipsescript.util.JavaUtils.MutableObject;
 
@@ -60,10 +60,10 @@ public class Editors {
 
 				ITextEditor editor = EclipseUtils.getCurrentTextEditor();
 				if (editor == null)
-					throw new IllegalArgumentException("No text editor selected!");
+					throw new IllegalArgumentException(Messages.noTextEditorSelected);
 				IDocument document = EclipseUtils.getCurrentDocument();
 				if (document == null)
-					throw new IllegalArgumentException("No document selected!");
+					throw new IllegalArgumentException(Messages.noDocumentSelected);
 
 				StyledText styledText = (StyledText) editor.getAdapter(Control.class);
 				int offset = styledText.getCaretOffset();
@@ -78,14 +78,14 @@ public class Editors {
 			public void runWithDisplay(Display display) throws Exception {
 				TextSelection selection = EclipseUtils.getCurrentEditorSelection();
 				if (selection == null)
-					throw new IllegalArgumentException("No selection selected!");
+					throw new IllegalArgumentException(Messages.noSelectionSelected);
 				ITextEditor editor = EclipseUtils.getCurrentTextEditor();
 				if (editor == null)
-					throw new IllegalArgumentException("No text editor selected!");
+					throw new IllegalArgumentException(Messages.noTextEditorSelected);
 				IDocumentProvider documentProvider = editor.getDocumentProvider();
 				IDocument document = documentProvider.getDocument(editor.getEditorInput());
 				if (document == null)
-					throw new IllegalArgumentException("No document selected!");
+					throw new IllegalArgumentException(Messages.noDocumentSelected);
 				document.replace(selection.getOffset(), selection.getLength(), newText);
 				editor.selectAndReveal(selection.getOffset(), newText.length());
 			}

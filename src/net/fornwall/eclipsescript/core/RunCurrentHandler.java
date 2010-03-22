@@ -1,5 +1,6 @@
 package net.fornwall.eclipsescript.core;
 
+import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 import net.fornwall.eclipsescript.scripts.ScriptStore;
 import net.fornwall.eclipsescript.ui.ErrorHandlingHandler;
@@ -26,8 +27,8 @@ public class RunCurrentHandler extends ErrorHandlingHandler {
 				return;
 			}
 		}
-		MessageDialog.openInformation(EclipseUtils.getWindowShell(), "Cannot run",
-				"Cannot run the currently edited script");
+		MessageDialog.openInformation(EclipseUtils.getWindowShell(), Messages.cannotRunCurrentScriptTitle,
+				Messages.cannotRunCurrentScriptText);
 	}
 
 }

@@ -3,6 +3,7 @@ package net.fornwall.eclipsescript.scriptobjects;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.util.EclipseUtils;
 import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 import net.fornwall.eclipsescript.util.JavaUtils.MutableObject;
@@ -37,13 +38,13 @@ public class Window {
 		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
 			public void runWithDisplay(Display display) {
-				MessageDialog.openInformation(EclipseUtils.activeWindow().getShell(), "Script Alert", message);
+				MessageDialog.openInformation(EclipseUtils.activeWindow().getShell(), Messages.scriptAlertDialogTitle, message);
 			}
 		});
 	}
 
 	public static String prompt(final String message) throws Exception {
-		return prompt(message, "");
+		return prompt(message, ""); //$NON-NLS-1$
 	}
 
 	public static boolean confirm(final String message) throws Exception {
@@ -51,7 +52,7 @@ public class Window {
 		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
 			public void runWithDisplay(Display display) {
-				enteredText.value = MessageDialog.openConfirm(EclipseUtils.getWindowShell(), "Script Prompt", message);
+				enteredText.value = MessageDialog.openConfirm(EclipseUtils.getWindowShell(), Messages.scriptConfirmDialogTitle, message);
 			}
 		});
 		return enteredText.value;
@@ -66,7 +67,7 @@ public class Window {
 
 				// create the window shell so the title can be set
 				dialog.create();
-				dialog.getShell().setText("Prompt");
+				dialog.getShell().setText(Messages.scriptPromptDialogTitle);
 				if (initialValue != null) {
 					dialog.promptField.setText(initialValue);
 				}
@@ -106,11 +107,11 @@ public class Window {
 
 			final Label nameLabel = new Label(container, SWT.NONE);
 			nameLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
-			nameLabel.setText(promptText + ":");
+			nameLabel.setText(promptText + ":"); //$NON-NLS-1$
 
 			promptField = new Text(container, SWT.BORDER);
 			promptField.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
-			promptField.setText("");
+			promptField.setText(""); //$NON-NLS-1$
 
 			return container;
 		}
@@ -119,7 +120,7 @@ public class Window {
 
 	public static IWebBrowser open(String urlString) throws PartInitException, MalformedURLException {
 		if (urlString == null)
-			throw new IllegalArgumentException("The urlString argument to open(urlString) was null");
+			throw new IllegalArgumentException(Messages.windowOpenArgumentNull);
 		URL url = new URL(urlString);
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchBrowserSupport browserSupport = workbench.getBrowserSupport();
