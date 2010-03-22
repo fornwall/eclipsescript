@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.CoreException;
  */
 public class ScriptFilesChangeListener implements IResourceChangeListener {
 
-	public static String FILE_SUFFIX = ".eclipse.js";
+	public static String FILE_SUFFIX = ".eclipse.js"; //$NON-NLS-1$
 
 	public static boolean isEclipseScript(IFile file) {
 		return file.getFullPath().toString().endsWith(FILE_SUFFIX);
