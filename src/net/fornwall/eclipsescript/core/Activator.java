@@ -42,17 +42,21 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
-	public static void logError(final Throwable exception) {
+	public static void logError(final Throwable exception)  {
 		ILog log = plugin.getLog();
 		log.log(new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), exception.getMessage(), exception));
 
-		EclipseUtils.runInDisplayThreadAsync(new DisplayThreadRunnable() {
-			@Override
-			public void runWithDisplay(Display display) {
-				ErrorDetailsDialog.openError(EclipseUtils.getWindowShell(), Messages.internalErrorDialogTitle,
-						Messages.internalErrorDialogText, exception);
-			}
-		});
+		try {
+			EclipseUtils.runInDisplayThreadAsync(new DisplayThreadRunnable() {
+				@Override
+				public void runWithDisplay(Display display) {
+					ErrorDetailsDialog.openError(EclipseUtils.getWindowShell(), Messages.internalErrorDialogTitle,
+							Messages.internalErrorDialogText, exception);
+				}
+			});
+		} catch (Exception e) {
+			log.log(new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), e.getMessage(), e));
+		}
 	}
 
 	@Override

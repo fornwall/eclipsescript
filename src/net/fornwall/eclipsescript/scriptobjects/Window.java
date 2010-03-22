@@ -33,7 +33,7 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 public class Window {
 
-	public static void alert(final String message) {
+	public static void alert(final String message) throws Exception {
 		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
 			public void runWithDisplay(Display display) {
@@ -42,11 +42,11 @@ public class Window {
 		});
 	}
 
-	public static String prompt(final String message) {
+	public static String prompt(final String message) throws Exception {
 		return prompt(message, "");
 	}
 
-	public static boolean confirm(final String message) {
+	public static boolean confirm(final String message) throws Exception {
 		final MutableObject<Boolean> enteredText = new MutableObject<Boolean>();
 		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
@@ -57,7 +57,7 @@ public class Window {
 		return enteredText.value;
 	}
 
-	public static String prompt(final String message, final String initialValue) {
+	public static String prompt(final String message, final String initialValue) throws Exception {
 		final MutableObject<String> enteredText = new MutableObject<String>();
 		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
@@ -128,7 +128,7 @@ public class Window {
 		return browser;
 	}
 
-	public void setStatus(final String status) {
+	public void setStatus(final String status) throws Exception {
 		EclipseUtils.runInDisplayThreadAsync(new DisplayThreadRunnable() {
 			@Override
 			public void runWithDisplay(Display display) {

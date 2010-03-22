@@ -1,6 +1,7 @@
 package net.fornwall.eclipsescript.util;
 
 import net.fornwall.eclipsescript.core.Activator;
+import net.fornwall.eclipsescript.util.JavaUtils.MutableObject;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
@@ -26,19 +27,20 @@ public class EclipseUtils {
 
 	/** A runnable to run in the display thread. */
 	public static interface DisplayThreadRunnable {
-		public void runWithDisplay(Display display);
+		public void runWithDisplay(Display display) throws Exception;
 	}
 
-	public static void runInDisplayThreadAsync(final DisplayThreadRunnable runnable) {
+	public static void runInDisplayThreadAsync(final DisplayThreadRunnable runnable) throws Exception {
 		runInDisplayThread(runnable, false);
 	}
 
-	public static void runInDisplayThreadSync(final DisplayThreadRunnable runnable) {
+	public static void runInDisplayThreadSync(final DisplayThreadRunnable runnable) throws Exception {
 		runInDisplayThread(runnable, true);
 	}
 
-	private static void runInDisplayThread(final DisplayThreadRunnable runnable, boolean sync) {
+	private static void runInDisplayThread(final DisplayThreadRunnable runnable, final boolean sync) throws Exception {
 		final Display display = PlatformUI.getWorkbench().getDisplay();
+		final MutableObject<Exception> exceptionThrownInUIThread = new MutableObject<Exception>();
 
 		Runnable showExceptionWrapper = new Runnable() {
 			@Override
@@ -46,7 +48,11 @@ public class EclipseUtils {
 				try {
 					runnable.runWithDisplay(display);
 				} catch (Exception e) {
-					Activator.logError(e);
+					if (sync) {
+						exceptionThrownInUIThread.value = e;
+					} else {
+						Activator.logError(e);
+					}
 				}
 			}
 		};
@@ -59,6 +65,10 @@ public class EclipseUtils {
 			} else {
 				display.asyncExec(showExceptionWrapper);
 			}
+		}
+		
+		if (exceptionThrownInUIThread.value != null) {
+			throw exceptionThrownInUIThread.value;
 		}
 	}
 

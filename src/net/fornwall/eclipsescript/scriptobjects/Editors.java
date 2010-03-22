@@ -19,18 +19,17 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 public class Editors {
 
+	/** Returns the currently edited document or null if none. */
 	public IDocument getDocument() {
 		return EclipseUtils.getCurrentDocument();
 	}
 
-	/**
-	 * Return the current text selection or null if none.
-	 */
+	/** Returns the current text selection or null if none. */
 	public ITextSelection getSelection() {
 		ITextEditor editor = EclipseUtils.getCurrentTextEditor();
 		if (editor == null)
@@ -44,34 +43,21 @@ public class Editors {
 		return (ITextSelection) selection;
 	}
 
+	/** Returns the currently edited file or null if none. */
 	public IFile getFile() {
 		IEditorInput editorInput = EclipseUtils.getCurrentEditorInput();
-		if (editorInput instanceof FileEditorInput) {
-			return ((FileEditorInput) editorInput).getFile();
+		IFile fileEditorInput = null;
+		if (editorInput != null) {
+			fileEditorInput = (IFile) editorInput.getAdapter(IFile.class);
 		}
-		return null;
+		return fileEditorInput;
 	}
 
-	public void insert(String text) throws BadLocationException {
-		ITextEditor editor = EclipseUtils.getCurrentTextEditor();
-		if (editor == null)
-			throw new IllegalArgumentException("No text editor selected!");
-		IDocument document = EclipseUtils.getCurrentDocument();
-		if (document == null)
-			throw new IllegalArgumentException("No document selected!");
-
-		StyledText styledText = (StyledText) editor.getAdapter(Control.class);
-		int offset = styledText.getCaretOffset();
-		document.replace(offset, 0, text);
-	}
-
-	public void replaceSelection(final String newText) {
+	public void insert(final String textToInsert) throws Exception {
 		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
-			public void runWithDisplay(Display display) {
-				TextSelection selection = EclipseUtils.getCurrentEditorSelection();
-				if (selection == null)
-					throw new IllegalArgumentException("No selection selected!");
+			public void runWithDisplay(Display display) throws BadLocationException {
+
 				ITextEditor editor = EclipseUtils.getCurrentTextEditor();
 				if (editor == null)
 					throw new IllegalArgumentException("No text editor selected!");
@@ -79,17 +65,34 @@ public class Editors {
 				if (document == null)
 					throw new IllegalArgumentException("No document selected!");
 
-				try {
-					document.replace(selection.getOffset(), selection.getLength(), newText);
-					editor.selectAndReveal(selection.getOffset(), newText.length());
-				} catch (BadLocationException e) {
-					throw JavaUtils.asRuntime(e);
-				}
+				StyledText styledText = (StyledText) editor.getAdapter(Control.class);
+				int offset = styledText.getCaretOffset();
+				document.replace(offset, 0, textToInsert);
 			}
 		});
 	}
 
-	public void setClipboard(final String text) {
+	public void replaceSelection(final String newText) throws Exception {
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) throws Exception {
+				TextSelection selection = EclipseUtils.getCurrentEditorSelection();
+				if (selection == null)
+					throw new IllegalArgumentException("No selection selected!");
+				ITextEditor editor = EclipseUtils.getCurrentTextEditor();
+				if (editor == null)
+					throw new IllegalArgumentException("No text editor selected!");
+				IDocumentProvider documentProvider = editor.getDocumentProvider();
+				IDocument document = documentProvider.getDocument(editor.getEditorInput());
+				if (document == null)
+					throw new IllegalArgumentException("No document selected!");
+				document.replace(selection.getOffset(), selection.getLength(), newText);
+				editor.selectAndReveal(selection.getOffset(), newText.length());
+			}
+		});
+	}
+
+	public void setClipboard(final String text) throws Exception {
 		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
 			public void runWithDisplay(Display display) {
@@ -100,7 +103,7 @@ public class Editors {
 		});
 	}
 
-	public String getClipboard() {
+	public String getClipboard() throws Exception {
 		final MutableObject<String> result = new MutableObject<String>();
 		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 			@Override
