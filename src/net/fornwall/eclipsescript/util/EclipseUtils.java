@@ -124,7 +124,7 @@ public class EclipseUtils {
 		IEditorDescriptor descriptor = workbench.getEditorRegistry().getDefaultEditor(file.getName());
 		if (descriptor != null)
 			return descriptor;
-		descriptor = workbench.getEditorRegistry().getDefaultEditor("foo.txt");
+		descriptor = workbench.getEditorRegistry().getDefaultEditor("simple_text_file.txt"); //$NON-NLS-1$
 		if (descriptor != null)
 			return descriptor;
 		descriptor = workbench.getEditorRegistry().findEditor(IEditorRegistry.SYSTEM_INPLACE_EDITOR_ID);
