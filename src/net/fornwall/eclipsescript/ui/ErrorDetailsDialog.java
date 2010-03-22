@@ -252,11 +252,13 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 		MenuItem copyItem = new MenuItem(copyMenu, SWT.NONE);
 		copyItem.addSelectionListener(new SelectionListener() {
 			/** @see SelectionListener.widgetSelected (SelectionEvent) */
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				copyToClipboard();
 			}
 
 			/** @see SelectionListener.widgetDefaultSelected(SelectionEvent) */
+			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				copyToClipboard();
 			}

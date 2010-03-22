@@ -36,7 +36,7 @@ public class CloseConsolePageParticipant implements IConsolePageParticipant {
 		manager.appendToGroup(IConsoleConstants.LAUNCH_GROUP, action);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {
 		return adapter.isInstance(this) ? this : null;

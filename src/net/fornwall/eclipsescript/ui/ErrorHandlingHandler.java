@@ -10,6 +10,7 @@ public abstract class ErrorHandlingHandler extends AbstractHandler {
 
 	protected abstract void doExecute(ExecutionEvent event) throws Exception;
 
+	@Override
 	public final Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
 			doExecute(event);

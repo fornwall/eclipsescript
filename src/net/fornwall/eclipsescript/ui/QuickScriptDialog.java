@@ -77,6 +77,7 @@ public final class QuickScriptDialog extends PopupDialog {
 
 		this.window = window;
 		BusyIndicator.showWhile(window.getShell() == null ? null : window.getShell().getDisplay(), new Runnable() {
+			@Override
 			public void run() {
 				QuickScriptDialog.this.providers = new QuickAccessProvider[] { new QuickScriptProvider() };
 				QuickScriptDialog.this.invokingCommand = invokingCommand;
@@ -94,6 +95,7 @@ public final class QuickScriptDialog extends PopupDialog {
 		// Ugly hack to avoid bug 184045. If this gets fixed, replace the
 		// following code with a call to refresh("").
 		getShell().getDisplay().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				final Shell shell = getShell();
 				if (shell != null && !shell.isDisposed()) {
@@ -249,10 +251,12 @@ public final class QuickScriptDialog extends PopupDialog {
 		});
 
 		table.addSelectionListener(new SelectionListener() {
+			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				handleSelection();
 			}
 
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// do nothing
 			}
@@ -262,6 +266,7 @@ public final class QuickScriptDialog extends PopupDialog {
 		// table.getFont()).setStyle(SWT.ITALIC));
 		final TextStyle boldStyle = new TextStyle(boldFont, null, null);
 		Listener listener = new Listener() {
+			@Override
 			public void handleEvent(Event event) {
 				QuickAccessEntry entry = (QuickAccessEntry) event.item.getData();
 				if (entry != null) {
@@ -293,6 +298,7 @@ public final class QuickScriptDialog extends PopupDialog {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(filterText);
 
 		filterText.addKeyListener(new KeyListener() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == 0x0D) {
 					handleSelection();
@@ -313,11 +319,13 @@ public final class QuickScriptDialog extends PopupDialog {
 					close();
 			}
 
+			@Override
 			public void keyReleased(KeyEvent e) {
 				// do nothing
 			}
 		});
 		filterText.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				String text = ((Text) e.widget).getText().toLowerCase();
 				refresh(text);
