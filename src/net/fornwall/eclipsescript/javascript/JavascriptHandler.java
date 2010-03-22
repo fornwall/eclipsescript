@@ -120,9 +120,4 @@ public class JavascriptHandler implements ScriptLanguageSupport {
 		throw new DieException(message);
 	}
 
-	@Override
-	public String scriptFileExtension() {
-		return "eclipse.js";
-	}
-
 }

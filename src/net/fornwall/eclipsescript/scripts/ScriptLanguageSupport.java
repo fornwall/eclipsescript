@@ -8,9 +8,4 @@ public interface ScriptLanguageSupport {
 	 */
 	public void executeScript(ScriptMetadata script);
 
-	/**
-	 * Return the file extension that this is a script handler for.
-	 */
-	public String scriptFileExtension();
-
 }
