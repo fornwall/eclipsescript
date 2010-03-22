@@ -1,5 +1,8 @@
 package net.fornwall.eclipsescript.scriptobjects;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import net.fornwall.eclipsescript.util.EclipseUtils;
 import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 import net.fornwall.eclipsescript.util.JavaUtils.MutableObject;
@@ -19,9 +22,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 public class Window {
 
@@ -107,6 +115,17 @@ public class Window {
 			return container;
 		}
 
+	}
+
+	public static IWebBrowser open(String urlString) throws PartInitException, MalformedURLException {
+		if (urlString == null)
+			throw new IllegalArgumentException("The urlString argument to open(urlString) was null");
+		URL url = new URL(urlString);
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		IWorkbenchBrowserSupport browserSupport = workbench.getBrowserSupport();
+		IWebBrowser browser = browserSupport.createBrowser(IWorkbenchBrowserSupport.AS_EXTERNAL, null, null, null);
+		browser.openURL(url);
+		return browser;
 	}
 
 	public void setStatus(final String status) {

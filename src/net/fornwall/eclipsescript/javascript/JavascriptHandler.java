@@ -8,7 +8,6 @@ import net.fornwall.eclipsescript.scriptobjects.Console;
 import net.fornwall.eclipsescript.scriptobjects.Editors;
 import net.fornwall.eclipsescript.scriptobjects.Resources;
 import net.fornwall.eclipsescript.scriptobjects.Runtime;
-import net.fornwall.eclipsescript.scriptobjects.Utils;
 import net.fornwall.eclipsescript.scriptobjects.Window;
 import net.fornwall.eclipsescript.scripts.ScriptAbortException;
 import net.fornwall.eclipsescript.scripts.ScriptException;
@@ -58,9 +57,6 @@ public class JavascriptHandler implements ScriptLanguageSupport {
 
 			Editors editors = new Editors();
 			ScriptableObject.putProperty(eclipseObject, "editors", Context.javaToJS(editors, scope));
-
-			Utils utils = new Utils();
-			ScriptableObject.putProperty(eclipseObject, "utils", Context.javaToJS(utils, scope));
 
 			Runtime runtime = new Runtime(jsRuntime);
 			ScriptableObject.putProperty(eclipseObject, "runtime", Context.javaToJS(runtime, scope));
