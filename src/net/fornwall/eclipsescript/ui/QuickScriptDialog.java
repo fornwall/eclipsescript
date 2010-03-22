@@ -1,13 +1,13 @@
 package net.fornwall.eclipsescript.ui;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.fornwall.eclipsescript.core.Activator;
+import net.fornwall.eclipsescript.messages.Messages;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.jface.bindings.TriggerSequence;
@@ -54,7 +54,6 @@ import org.eclipse.ui.keys.IBindingService;
  */
 public final class QuickScriptDialog extends PopupDialog {
 
-	private static final int INITIAL_COUNT_PER_PROVIDER = 5;
 	private static final int MAX_COUNT_TOTAL = 20;
 
 	private Map<String, QuickAccessElement> elementMap = new HashMap<String, QuickAccessElement>();
@@ -71,10 +70,10 @@ public final class QuickScriptDialog extends PopupDialog {
 
 	public QuickScriptDialog(IWorkbenchWindow window, final Command invokingCommand) {
 		// ProgressManagerUtil.getDefaultParent() as first arg?
-		super(/* parent */window.getShell(), /* shellStyle */SWT.RESIZE, /* takeFocusOnOpen: */true, /* persistSize */
-		true, /* persistLocation */false,
-		/* showDialogMenu: */false, /* showPersistActions: */false, /* titleText: */"My Title", /* infoText */
-		null);
+		super(/* parent: */window.getShell(), /* shellStyle: */SWT.RESIZE, /* takeFocusOnOpen: */true, /* persistSize: */
+		true, /* persistLocation: */false,
+		/* showDialogMenu: */false, /* showPersistActions: */false, /* titleText: */"", //$NON-NLS-1$
+				/* infoText: */null);
 
 		this.window = window;
 		BusyIndicator.showWhile(window.getShell() == null ? null : window.getShell().getDisplay(), new Runnable() {
@@ -122,13 +121,16 @@ public final class QuickScriptDialog extends PopupDialog {
 		return new ArrayList[length];
 	}
 
-	private List<QuickAccessEntry>[] computeMatchingEntries(String filter, QuickAccessElement perfectMatch, int maxCount) {
-		if (filter.isEmpty()) return newQuickAccessEntryArray(0);
+	private List<QuickAccessEntry>[] computeMatchingEntries(String filter, QuickAccessElement perfectMatch,
+			int maxCountParameter) {
+		if (filter.isEmpty())
+			return newQuickAccessEntryArray(0);
+
+		int maxCount = maxCountParameter;
 
 		// collect matches in an array of lists
 		List<QuickAccessEntry>[] entries = newQuickAccessEntryArray(providers.length);
 		int[] indexPerProvider = new int[providers.length];
-		int countPerProvider = Math.min(maxCount / 4, INITIAL_COUNT_PER_PROVIDER);
 		int countTotal = 0;
 		boolean perfectMatchAdded = true;
 		if (perfectMatch != null) {
@@ -174,12 +176,10 @@ public final class QuickScriptDialog extends PopupDialog {
 					done = false;
 				}
 			}
-			// from now on, add one element per provider
-			countPerProvider = 1;
 		} while (!done);
 		if (!perfectMatchAdded) {
 			if (perfectMatch == null)
-				throw new NullPointerException("perfectMatch is null");
+				throw new NullPointerException("perfectMatch is null"); //$NON-NLS-1$
 			QuickAccessEntry entry = perfectMatch.match(filter);
 			if (entry != null) {
 				if (entries[0] == null) {
@@ -385,10 +385,11 @@ public final class QuickScriptDialog extends PopupDialog {
 		}
 	}
 
-	void refresh(String filter) {
-		if (filter.toLowerCase().startsWith("edit ")) {
-			currentFilterCommand = "edit";
-			filter = filter.substring("edit ".length()).trim();
+	void refresh(String filterParam) {
+		String filter = filterParam;
+		if (filter.toLowerCase().startsWith(Messages.scriptLaunchDialogEditCommand + " ")) { //$NON-NLS-1$
+			currentFilterCommand = Messages.scriptLaunchDialogEditCommand;
+			filter = filter.substring(Messages.scriptLaunchDialogEditCommand.length() + 1).trim();
 		} else {
 			currentFilterCommand = null;
 		}

@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.fornwall.eclipsescript.core.Activator;
 import net.fornwall.eclipsescript.core.ScriptFilesChangeListener;
+import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 import net.fornwall.eclipsescript.scripts.ScriptStore;
 import net.fornwall.eclipsescript.util.EclipseUtils;
@@ -13,7 +14,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 public class QuickScriptProvider extends QuickAccessProvider {
 
 	static final ImageDescriptor imageDescriptor = ImageDescriptor.createFromURL(Activator.getDefault().getBundle()
-			.getEntry("icons/run_script.gif"));
+			.getEntry("icons/run_script.gif")); //$NON-NLS-1$
 
 	@Override
 	public QuickAccessElement[] getElements() {
@@ -28,7 +29,7 @@ public class QuickScriptProvider extends QuickAccessProvider {
 					String label = script.getFile().getName().substring(0,
 							script.getFile().getName().length() - ScriptFilesChangeListener.FILE_SUFFIX.length());
 					if (script.getSummary() != null) {
-						label += " - " + script.getSummary();
+						label += " - " + script.getSummary(); //$NON-NLS-1$
 					}
 					return label;
 				}
@@ -45,7 +46,7 @@ public class QuickScriptProvider extends QuickAccessProvider {
 
 				@Override
 				public void execute(String command) {
-					if ("edit".equals(command)) {
+					if (Messages.scriptLaunchDialogEditCommand.equals(command)) {
 						EclipseUtils.openEditor(script.getFile());
 					} else {
 						ScriptStore.executeScript(script);
