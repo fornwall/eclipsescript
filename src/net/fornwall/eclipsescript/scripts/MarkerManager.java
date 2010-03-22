@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 
 public class MarkerManager {
 
-	private static final String SCRIPT_PROBLEM_MARKER_TYPE = "net.fornwall.editorjs.scriptproblemmarker";
+	private static final String SCRIPT_PROBLEM_MARKER_TYPE = "net.fornwall.editorjs.scriptproblemmarker"; //$NON-NLS-1$
 
 	public static void clearMarkers(IFile file) {
 		try {

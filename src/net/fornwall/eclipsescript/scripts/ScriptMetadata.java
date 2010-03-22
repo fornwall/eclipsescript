@@ -29,7 +29,7 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 			if (firstLine == null) return;
 			firstLine = firstLine.trim();
 
-			if (firstLine.startsWith("//") || firstLine.startsWith("/*")) {
+			if (firstLine.startsWith("//") || firstLine.startsWith("/*")) { //$NON-NLS-1$ //$NON-NLS-2$
 				this.summary = firstLine.substring(2).trim();
 			}
 		} catch (Exception e) {
