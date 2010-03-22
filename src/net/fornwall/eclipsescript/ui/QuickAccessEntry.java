@@ -86,20 +86,20 @@ final class QuickAccessEntry {
 		textLayout.setFont(table.getFont());
 		switch (event.index) {
 		case 1:
-//			if (true) { // firstInCategory || providerMatchRegions.length > 0) {
-//				textLayout.setText(provider.getName());
-//				for (int i = 0; i < providerMatchRegions.length; i++) {
-//					int[] matchRegion = providerMatchRegions[i];
-//					textLayout.setStyle(boldStyle, matchRegion[0], matchRegion[1]);
-//				}
-//				if (providerMatchRegions.length > 0 && !firstInCategory) {
-//					event.gc.setForeground(grayColor);
-//				}
-//				Rectangle availableBounds = ((TableItem) event.item).getTextBounds(event.index);
-//				Rectangle requiredBounds = textLayout.getBounds();
-//				textLayout.draw(event.gc, availableBounds.x + 1, availableBounds.y
-//						+ (availableBounds.height - requiredBounds.height) / 2);
-//			}
+			// if (true) { // firstInCategory || providerMatchRegions.length > 0) {
+			// textLayout.setText(provider.getName());
+			// for (int i = 0; i < providerMatchRegions.length; i++) {
+			// int[] matchRegion = providerMatchRegions[i];
+			// textLayout.setStyle(boldStyle, matchRegion[0], matchRegion[1]);
+			// }
+			// if (providerMatchRegions.length > 0 && !firstInCategory) {
+			// event.gc.setForeground(grayColor);
+			// }
+			// Rectangle availableBounds = ((TableItem) event.item).getTextBounds(event.index);
+			// Rectangle requiredBounds = textLayout.getBounds();
+			// textLayout.draw(event.gc, availableBounds.x + 1, availableBounds.y
+			// + (availableBounds.height - requiredBounds.height) / 2);
+			// }
 			break;
 		case 0:
 			Image image = getImage(resourceManager);
@@ -114,12 +114,6 @@ final class QuickAccessEntry {
 			textLayout.draw(event.gc, availableBounds.x + 1 + image.getBounds().width, availableBounds.y
 					+ (availableBounds.height - requiredBounds.height) / 2);
 			break;
-		}
-		if (lastInCategory) {
-			event.gc.setForeground(table.getDisplay().getSystemColor(SWT.COLOR_GRAY));
-			Rectangle bounds = ((TableItem) event.item).getBounds(event.index);
-			event.gc.drawLine(Math.max(0, bounds.x - 1), bounds.y + bounds.height - 1, bounds.x + bounds.width,
-					bounds.y + bounds.height - 1);
 		}
 	}
 

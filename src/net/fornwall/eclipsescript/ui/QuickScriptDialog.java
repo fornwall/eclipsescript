@@ -7,12 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import net.fornwall.eclipsescript.core.Activator;
-import net.fornwall.eclipsescript.messages.Messages;
 
 import org.eclipse.core.commands.Command;
 import org.eclipse.jface.bindings.TriggerSequence;
-import org.eclipse.jface.bindings.keys.KeySequence;
-import org.eclipse.jface.bindings.keys.SWTKeySupport;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -22,11 +19,8 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -55,8 +49,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.keys.IBindingService;
 
 /**
- * @since 3.3
- * 
+ * Derived from org.eclipse.ui.internal.QuickAccessDialog.
  */
 public final class QuickScriptDialog extends PopupDialog {
 
@@ -67,11 +60,9 @@ public final class QuickScriptDialog extends PopupDialog {
 	Text filterText;
 	Command invokingCommand;
 	private TriggerSequence[] invokingCommandKeySequences;
-	private KeyAdapter keyAdapter;
 	QuickAccessProvider[] providers;
 	boolean resized = false;
 	LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
-	boolean showAllMatches = false;
 	Table table;
 	TextLayout textLayout;
 	private IWorkbenchWindow window;
@@ -80,9 +71,9 @@ public final class QuickScriptDialog extends PopupDialog {
 	public QuickScriptDialog(IWorkbenchWindow window, final Command invokingCommand) {
 		// ProgressManagerUtil.getDefaultParent() as first arg?
 		super(/* parent */window.getShell(), /* shellStyle */SWT.RESIZE, /* takeFocusOnOpen: */true, /* persistSize */
-				true, /* persistLocation */false,
-				/* showDialogMenu: */false, /* showPersistActions: */false, /* titleText: */"My Title", /* infoText */
-				Messages.quickAccessStartTypingToFindMatches);
+		true, /* persistLocation */false,
+		/* showDialogMenu: */false, /* showPersistActions: */false, /* titleText: */"My Title", /* infoText */
+		null);
 
 		this.window = window;
 		BusyIndicator.showWhile(window.getShell() == null ? null : window.getShell().getDisplay(), new Runnable() {
@@ -147,49 +138,42 @@ public final class QuickScriptDialog extends PopupDialog {
 			// will be set to false if we find a provider with remaining
 			// elements
 			done = true;
-			for (int i = 0; i < providers.length && (showAllMatches || countTotal < maxCount); i++) {
+			for (int i = 0; i < providers.length; i++) {
 				if (entries[i] == null) {
 					entries[i] = new ArrayList<QuickAccessEntry>();
 					indexPerProvider[i] = 0;
 				}
 				int count = 0;
 				QuickAccessProvider provider = providers[i];
-				if (filter.length() > 0 || showAllMatches) {
-					QuickAccessElement[] elements = provider.getElementsSorted();
-					int j = indexPerProvider[i];
-					while (j < elements.length
-							&& (showAllMatches || (count < countPerProvider && countTotal < maxCount))) {
-						QuickAccessElement element = elements[j];
-						QuickAccessEntry entry;
-						if (filter.length() == 0) {
-							if (i == 0 || showAllMatches) {
-								entry = new QuickAccessEntry(element, new int[0][0]);
-							} else {
-								entry = null;
-							}
-						} else {
-							entry = element.match(filter);
-						}
-						if (entry != null) {
-							entries[i].add(entry);
-							count++;
-							countTotal++;
-							if (i == 0 && entry.element == perfectMatch) {
-								perfectMatchAdded = true;
-								maxCount = MAX_COUNT_TOTAL;
-							}
-						}
-						j++;
+				QuickAccessElement[] elements = provider.getElementsSorted();
+				int j = indexPerProvider[i];
+				while (j < elements.length) {
+					QuickAccessElement element = elements[j];
+					QuickAccessEntry entry;
+					if (filter.length() == 0) {
+						entry = new QuickAccessEntry(element, new int[0][0]);
+					} else {
+						entry = element.match(filter);
 					}
-					indexPerProvider[i] = j;
-					if (j < elements.length) {
-						done = false;
+					if (entry != null) {
+						entries[i].add(entry);
+						count++;
+						countTotal++;
+						if (i == 0 && entry.element == perfectMatch) {
+							perfectMatchAdded = true;
+							maxCount = MAX_COUNT_TOTAL;
+						}
 					}
+					j++;
+				}
+				indexPerProvider[i] = j;
+				if (j < elements.length) {
+					done = false;
 				}
 			}
 			// from now on, add one element per provider
 			countPerProvider = 1;
-		} while ((showAllMatches || countTotal < maxCount) && !done);
+		} while (!done);
 		if (!perfectMatchAdded) {
 			if (perfectMatch == null)
 				throw new NullPointerException("perfectMatch is null");
@@ -205,9 +189,6 @@ public final class QuickScriptDialog extends PopupDialog {
 		return entries;
 	}
 
-	/**
-	 * 
-	 */
 	private int computeNumberOfItems() {
 		Rectangle rect = table.getClientArea();
 		int itemHeight = table.getItemHeight();
@@ -236,27 +217,9 @@ public final class QuickScriptDialog extends PopupDialog {
 
 		// tableColumnLayout.setColumnData(new TableColumn(table, SWT.NONE), new ColumnWeightData(0, maxProviderWidth));
 		tableColumnLayout.setColumnData(new TableColumn(table, SWT.NONE), new ColumnWeightData(100, 100));
-		table.getShell().addControlListener(new ControlAdapter() {
-			@Override
-			public void controlResized(ControlEvent e) {
-				if (!showAllMatches) {
-					if (!resized) {
-						resized = true;
-						e.display.timerExec(100, new Runnable() {
-							public void run() {
-								if (getShell() != null && !getShell().isDisposed()) {
-									refresh(filterText.getText().toLowerCase());
-								}
-								resized = false;
-							}
-						});
-					}
-				}
-			}
-		});
 
-		table.addKeyListener(getKeyAdapter());
-		table.addKeyListener(new KeyListener() {
+		table.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.ARROW_UP && table.getSelectionIndex() == 0) {
 					filterText.setFocus();
@@ -264,21 +227,15 @@ public final class QuickScriptDialog extends PopupDialog {
 					close();
 				}
 			}
-
-			public void keyReleased(KeyEvent e) {
-				// do nothing
-			}
 		});
+
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-
 				if (table.getSelectionCount() < 1)
 					return;
-
 				if (e.button != 1)
 					return;
-
 				if (table.equals(e.getSource())) {
 					Object o = table.getItem(new Point(e.x, e.y));
 					TableItem selection = table.getSelection()[0];
@@ -332,7 +289,6 @@ public final class QuickScriptDialog extends PopupDialog {
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(filterText);
 
-		filterText.addKeyListener(getKeyAdapter());
 		filterText.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == 0x0D) {
@@ -404,30 +360,6 @@ public final class QuickScriptDialog extends PopupDialog {
 		return invokingCommandKeySequences;
 	}
 
-	private KeyAdapter getKeyAdapter() {
-		if (keyAdapter == null) {
-			keyAdapter = new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
-					int accelerator = SWTKeySupport.convertEventToUnmodifiedAccelerator(e);
-					KeySequence keySequence = KeySequence.getInstance(SWTKeySupport
-							.convertAcceleratorToKeyStroke(accelerator));
-					TriggerSequence[] sequences = getInvokingCommandKeySequences();
-					if (sequences == null)
-						return;
-					for (int i = 0; i < sequences.length; i++) {
-						if (sequences[i].equals(keySequence)) {
-							e.doit = false;
-							toggleShowAllMatches();
-							return;
-						}
-					}
-				}
-			};
-		}
-		return keyAdapter;
-	}
-
 	protected void handleElementSelected(Object selectedElement) {
 		IWorkbenchPage activePage = window.getActivePage();
 		if (activePage != null) {
@@ -482,17 +414,6 @@ public final class QuickScriptDialog extends PopupDialog {
 			// item.setForeground(1, grayColor);
 			// }
 		}
-
-		if (filter.length() == 0) {
-			setInfoText(Messages.quickAccessStartTypingToFindMatches);
-		} else {
-			TriggerSequence[] sequences = getInvokingCommandKeySequences();
-			if (showAllMatches || sequences == null || sequences.length == 0) {
-				setInfoText(""); //$NON-NLS-1$
-			} else {
-				setInfoText(NLS.bind(Messages.quickAccessPressKeyToShowAllMatches, sequences[0].format()));
-			}
-		}
 	}
 
 	private int refreshTable(QuickAccessElement perfectMatch, List<QuickAccessEntry>[] entries) {
@@ -539,11 +460,6 @@ public final class QuickScriptDialog extends PopupDialog {
 			selectionIndex = 0;
 		}
 		return selectionIndex;
-	}
-
-	void toggleShowAllMatches() {
-		showAllMatches = !showAllMatches;
-		refresh(filterText.getText().toLowerCase());
 	}
 
 }

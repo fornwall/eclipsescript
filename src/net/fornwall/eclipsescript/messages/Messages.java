@@ -14,8 +14,6 @@ public class Messages extends NLS {
 	public static String internalErrorDialogText;
 	public static String internalErrorDialogTitle;
 	public static String internalErrorWhenRunningScriptDialogTitle;
-	public static String quickAccessPressKeyToShowAllMatches;
-	public static String quickAccessStartTypingToFindMatches;
 	public static String runScriptBeforeRunningLast;
 	public static String cannotRunCurrentScriptText;
 
