@@ -117,7 +117,9 @@ public abstract class QuickAccessElement {
 		 *            for how many characters should indices be returned
 		 * @return an array of length start
 		 */
-		public static int[][] getCamelCaseIndices(String s, int start, int length) {
+		public static int[][] getCamelCaseIndices(String s, int startParameter, int lengthParameter) {
+			int start = startParameter;
+			int length = lengthParameter;
 			List<int[]> result = new ArrayList<int[]>();
 			int index = 0;
 			while (start > 0) {
@@ -141,7 +143,8 @@ public abstract class QuickAccessElement {
 		 *            the index
 		 * @return the next index, or -1 if not found
 		 */
-		public static int getNextCamelIndex(String s, int index) {
+		public static int getNextCamelIndex(String s, int indexParameter) {
+			int index = indexParameter;
 			char c;
 			while (index < s.length() && !(isSeparatorForCamelCase(c = s.charAt(index))) && Character.isLowerCase(c)) {
 				index++;

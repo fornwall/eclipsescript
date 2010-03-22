@@ -28,7 +28,7 @@ final class QuickAccessEntry {
 	Image getImage(ResourceManager resourceManager) {
 		Image image = findOrCreateImage(element.getImageDescriptor(), resourceManager);
 		if (image == null) {
-			throw new IllegalArgumentException("Null image for element: " + element);
+			throw new IllegalArgumentException("Null image for element: " + element); //$NON-NLS-1$
 		}
 		return image;
 	}
