@@ -22,6 +22,8 @@ public class Messages extends NLS {
 	public static String cannotRunCurrentScriptTitle;
 
 	public static String clearMarkersJobName;
+
+	public static String fileToIncludeDoesNotExist;
 	public static String noDocumentSelected;
 
 	public static String noSelectionSelected;
