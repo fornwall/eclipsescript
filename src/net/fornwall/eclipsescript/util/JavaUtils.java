@@ -4,8 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class JavaUtils {
+
+	private static final String UTF8_CHARSET_NAME = "utf-8"; //$NON-NLS-1$
 
 	public static abstract class BaseRunnable implements Runnable {
 		@Override
@@ -43,13 +47,34 @@ public class JavaUtils {
 	}
 
 	public static String readAllToStringAndClose(InputStream in) {
+		return readAllToStringAndClose(in, UTF8_CHARSET_NAME);
+	}
+
+	public static String readAllToStringAndClose(InputStream in, String charSetName) {
 		try {
-			return new String(readAll(in), "utf-8");
+			String charSetNameToUse = charSetName;
+			if (charSetName == null || charSetName.isEmpty())
+				charSetNameToUse = UTF8_CHARSET_NAME;
+			return new String(readAll(in), charSetNameToUse);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
 			close(in);
 		}
+	}
+
+	public static String readURL(URL url) throws Exception {
+		URLConnection uc = url.openConnection();
+		String contentType = uc.getContentType();
+		int charSetNameIndex = contentType.indexOf("charset="); //$NON-NLS-1$
+		String charSet;
+		if (charSetNameIndex == -1) {
+			charSet = UTF8_CHARSET_NAME;
+		} else {
+			charSet = contentType.substring(charSetNameIndex + 8);
+		}
+		InputStream in = uc.getInputStream();
+		return readAllToStringAndClose(in, charSet);
 	}
 
 	public static void close(Closeable c) {

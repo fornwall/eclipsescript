@@ -2,6 +2,7 @@ package net.fornwall.eclipsescript.scriptobjects;
 
 import static java.util.regex.Pattern.compile;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -76,8 +77,21 @@ public class Resources {
 		return scriptProject;
 	}
 
-	public String readFile(IFile file) throws CoreException {
-		return JavaUtils.readAllToStringAndClose(file.getContents());
+	public String read(Object objectToRead) throws Exception {
+		if (objectToRead instanceof IFile) {
+			IFile file = (IFile) objectToRead;
+			return JavaUtils.readAllToStringAndClose(file.getContents(), file.getCharset());
+		} else if (objectToRead instanceof URL) {
+			URL url = (URL) objectToRead;
+			return JavaUtils.readURL(url);
+		} else if (objectToRead instanceof String) {
+			String string = (String) objectToRead;
+			if (string.contains("://")) { //$NON-NLS-1$
+				URL url = new URL(string);
+				return JavaUtils.readURL(url);
+			}
+		}
+		throw new IllegalArgumentException("Cannot read from object: " + objectToRead);
 	}
 
 	private void walk(final IResource resource, final Pattern pattern, final Collection<IFile> result)
