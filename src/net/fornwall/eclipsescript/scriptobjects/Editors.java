@@ -97,8 +97,11 @@ public class Editors {
 			@Override
 			public void runWithDisplay(Display display) {
 				Clipboard clipboard = new Clipboard(display);
-				clipboard.setContents(new Object[] { text }, new Transfer[] { TextTransfer.getInstance() });
-				clipboard.dispose();
+				try {
+					clipboard.setContents(new Object[] { text }, new Transfer[] { TextTransfer.getInstance() });
+				} finally {
+					clipboard.dispose();
+				}
 			}
 		});
 	}
@@ -109,8 +112,11 @@ public class Editors {
 			@Override
 			public void runWithDisplay(Display display) {
 				Clipboard clipboard = new Clipboard(display);
-				result.value = (String) clipboard.getContents(TextTransfer.getInstance());
-				clipboard.dispose();
+				try {
+					result.value = (String) clipboard.getContents(TextTransfer.getInstance());
+				} finally {
+					clipboard.dispose();
+				}
 			}
 		});
 		return result.value;
