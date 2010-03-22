@@ -12,25 +12,18 @@ import org.mozilla.javascript.Scriptable;
 
 class CustomContextFactory extends ContextFactory {
 
-	private static class MyContext extends Context {
-		public MyContext(ContextFactory factory) {
+	static class CustomContext extends Context {
+		public CustomContext(ContextFactory factory) {
 			super(factory);
 		}
 
 		long startTime;
-	}
-
-	static {
-		ContextFactory.initGlobal(new CustomContextFactory());
-	}
-
-	public static void init() {
-		// do nothing (except static block on first call)
+		public JavascriptRuntime jsRuntime;
 	}
 
 	@Override
 	protected Context makeContext() {
-		MyContext cx = new MyContext(this);
+		CustomContext cx = new CustomContext(this);
 		// prevent generating of java class files loaded into the JVM, use
 		// interpreted mode
 		cx.setOptimizationLevel(-1);
@@ -60,17 +53,17 @@ class CustomContextFactory extends ContextFactory {
 
 	@Override
 	protected void observeInstructionCount(Context cx, int instructionCount) {
-		MyContext mcx = (MyContext) cx;
+		CustomContext mcx = (CustomContext) cx;
 		final int MAX_SECONDS = 10;
 		long currentTime = System.currentTimeMillis();
 		if (currentTime - mcx.startTime > MAX_SECONDS * 1000) {
-			JavascriptHandler.dieRunningScript(NLS.bind(Messages.scriptTimeout, MAX_SECONDS));
+			mcx.jsRuntime.abortRunningScript(NLS.bind(Messages.scriptTimeout, MAX_SECONDS));
 		}
 	}
 
 	@Override
 	protected Object doTopCall(Callable callable, Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		MyContext mcx = (MyContext) cx;
+		CustomContext mcx = (CustomContext) cx;
 		mcx.startTime = System.currentTimeMillis();
 
 		return super.doTopCall(callable, cx, scope, thisObj, args);

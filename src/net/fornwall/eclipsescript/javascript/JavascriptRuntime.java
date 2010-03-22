@@ -8,9 +8,37 @@ import net.fornwall.eclipsescript.scripts.ScriptClassLoader;
 
 import org.eclipse.core.resources.IFile;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Scriptable;
 
 class JavascriptRuntime implements IScriptRuntime {
+
+	/**
+	 * Throw to indicate normal exit of script. Needs to extend error to prevent script from being able to catch
+	 * exception.
+	 */
+	@SuppressWarnings("serial")
+	static class ExitException extends Error {
+		// just a marker class
+	}
+
+	/**
+	 * Throw to indicate abnormal exception of script. Needs to extend error to prevent script from being able to catch
+	 * exception.
+	 */
+	@SuppressWarnings("serial")
+	static class DieException extends Error {
+		public EvaluatorException evalException;
+
+		public DieException(String dieMessage) {
+			super(dieMessage);
+			try {
+				Context.reportError(dieMessage);
+			} catch (EvaluatorException e) {
+				evalException = e;
+			}
+		}
+	}
 
 	private final Context context;
 	private final Scriptable topLevelScope;
@@ -40,12 +68,12 @@ class JavascriptRuntime implements IScriptRuntime {
 
 	@Override
 	public void abortRunningScript(String errorMessage) {
-		JavascriptHandler.dieRunningScript(errorMessage);
+		throw new DieException(errorMessage);
 	}
 
 	@Override
 	public void exitRunningScript() {
-		JavascriptHandler.exitRunningScript();
+		throw new ExitException();
 	}
 
 }
