@@ -1,6 +1,7 @@
 package net.fornwall.eclipsescript.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -122,6 +123,8 @@ public final class QuickScriptDialog extends PopupDialog {
 	}
 
 	private List<QuickAccessEntry>[] computeMatchingEntries(String filter, QuickAccessElement perfectMatch, int maxCount) {
+		if (filter.isEmpty()) return newQuickAccessEntryArray(0);
+
 		// collect matches in an array of lists
 		List<QuickAccessEntry>[] entries = newQuickAccessEntryArray(providers.length);
 		int[] indexPerProvider = new int[providers.length];
@@ -417,7 +420,7 @@ public final class QuickScriptDialog extends PopupDialog {
 	}
 
 	private int refreshTable(QuickAccessElement perfectMatch, List<QuickAccessEntry>[] entries) {
-		if (table.getItemCount() > entries.length && table.getItemCount() - entries.length > 20) {
+		if (table.getItemCount() > entries.length) {
 			table.removeAll();
 		}
 		TableItem[] items = table.getItems();
