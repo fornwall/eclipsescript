@@ -11,10 +11,10 @@ import org.eclipse.core.resources.IFile;
 public class ScriptMetadata implements Comparable<ScriptMetadata> {
 
 	private static final AtomicInteger counter = new AtomicInteger();
-	private IFile file;
-	private String fullPath;
-	private int instanceId;
 
+	private final IFile file;
+	private final String fullPath;
+	private final int instanceId;
 	private String summary;
 
 	public ScriptMetadata(IFile file) {
