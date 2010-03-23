@@ -8,8 +8,6 @@ import java.util.List;
 import net.fornwall.eclipsescript.core.Activator;
 import net.fornwall.eclipsescript.messages.Messages;
 
-import org.eclipse.core.commands.Command;
-import org.eclipse.jface.bindings.TriggerSequence;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -20,7 +18,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -38,14 +35,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.keys.IBindingService;
 
 /**
  * Derived from org.eclipse.ui.internal.QuickAccessDialog.
@@ -54,51 +48,17 @@ public final class QuickScriptDialog extends PopupDialog {
 
 	private String currentFilterCommand;
 	Text filterText;
-	Command invokingCommand;
-	private TriggerSequence[] invokingCommandKeySequences;
-	QuickAccessProvider provider;
+	final QuickAccessProvider provider = new QuickScriptProvider();
 	LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
 	Table table;
 	TextLayout textLayout;
 
-	private final IWorkbenchWindow window;
-
-	public QuickScriptDialog(IWorkbenchWindow window, final Command invokingCommand) {
+	public QuickScriptDialog(IWorkbenchWindow window) {
 		// ProgressManagerUtil.getDefaultParent() as first arg?
 		super(/* parent: */window.getShell(), /* shellStyle: */SWT.RESIZE, /* takeFocusOnOpen: */true, /* persistSize: */
 		true, /* persistLocation: */false,
 		/* showDialogMenu: */false, /* showPersistActions: */false, /* titleText: */"", //$NON-NLS-1$
 				/* infoText: */null);
-
-		this.window = window;
-		BusyIndicator.showWhile(window.getShell() == null ? null : window.getShell().getDisplay(), new Runnable() {
-			@Override
-			public void run() {
-				QuickScriptDialog.this.provider = new QuickScriptProvider();
-				QuickScriptDialog.this.invokingCommand = invokingCommand;
-				if (QuickScriptDialog.this.invokingCommand != null
-						&& !QuickScriptDialog.this.invokingCommand.isDefined()) {
-					QuickScriptDialog.this.invokingCommand = null;
-				} else {
-					// pre-fetch key sequence - do not change because scope will change later
-					getInvokingCommandKeySequences();
-				}
-				// create early
-				create();
-			}
-		});
-		// Ugly hack to avoid bug 184045. If this gets fixed, replace the
-		// following code with a call to refresh("").
-		getShell().getDisplay().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				final Shell shell = getShell();
-				if (shell != null && !shell.isDisposed()) {
-					Point size = shell.getSize();
-					shell.setSize(size.x, size.y + 1);
-				}
-			}
-		});
 	}
 
 	@Override
@@ -285,24 +245,10 @@ public final class QuickScriptDialog extends PopupDialog {
 		return filterText;
 	}
 
-	final protected TriggerSequence[] getInvokingCommandKeySequences() {
-		if (invokingCommandKeySequences == null) {
-			if (invokingCommand != null) {
-				IBindingService bindingService = (IBindingService) window.getWorkbench().getAdapter(
-						IBindingService.class);
-				invokingCommandKeySequences = bindingService.getActiveBindingsFor(invokingCommand.getId());
-			}
-		}
-		return invokingCommandKeySequences;
-	}
-
 	protected void handleElementSelected(Object selectedElement) {
-		IWorkbenchPage activePage = window.getActivePage();
-		if (activePage != null) {
-			if (selectedElement instanceof QuickAccessElement) {
-				QuickAccessElement element = (QuickAccessElement) selectedElement;
-				element.execute(currentFilterCommand);
-			}
+		if (selectedElement instanceof QuickAccessElement) {
+			QuickAccessElement element = (QuickAccessElement) selectedElement;
+			element.execute(currentFilterCommand);
 		}
 	}
 

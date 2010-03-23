@@ -11,7 +11,7 @@ public class OpenScriptDialogHandler extends ErrorHandlingHandler {
 
 	@Override
 	public void doExecute(ExecutionEvent event) throws ExecutionException {
-		QuickScriptDialog d = new QuickScriptDialog(EclipseUtils.activeWindow(), event.getCommand());
+		QuickScriptDialog d = new QuickScriptDialog(EclipseUtils.activeWindow());
 		d.open();
 	}
 
