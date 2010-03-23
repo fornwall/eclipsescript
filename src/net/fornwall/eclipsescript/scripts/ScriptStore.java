@@ -76,7 +76,7 @@ public class ScriptStore {
 				// not called from resource change listener, so no need to call in separate job
 				MarkerManager.clearMarkers(script.getFile());
 
-				ScriptLanguageSupport languageSupport = ScriptLanguageHandler.getScriptSupport(script.getFile());
+				IScriptLanguageSupport languageSupport = ScriptLanguageHandler.getScriptSupport(script.getFile());
 				languageSupport.executeScript(script);
 			} catch (ScriptException error) {
 				MarkerManager.addMarker(script.getFile(), error);

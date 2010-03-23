@@ -1,6 +1,6 @@
 package net.fornwall.eclipsescript.scripts;
 
-public interface ScriptLanguageSupport {
+public interface IScriptLanguageSupport {
 
 	/**
 	 * Execute all scripts in the same contexts.

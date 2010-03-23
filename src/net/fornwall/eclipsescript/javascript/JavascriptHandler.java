@@ -10,7 +10,7 @@ import net.fornwall.eclipsescript.javascript.JavascriptRuntime.ExitError;
 import net.fornwall.eclipsescript.scriptobjects.Eclipse;
 import net.fornwall.eclipsescript.scripts.ScriptAbortException;
 import net.fornwall.eclipsescript.scripts.ScriptException;
-import net.fornwall.eclipsescript.scripts.ScriptLanguageSupport;
+import net.fornwall.eclipsescript.scripts.IScriptLanguageSupport;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 
 import org.mozilla.javascript.Context;
@@ -20,7 +20,7 @@ import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
-public class JavascriptHandler implements ScriptLanguageSupport {
+public class JavascriptHandler implements IScriptLanguageSupport {
 
 	private final CustomContextFactory contextFactory = new CustomContextFactory();
 
