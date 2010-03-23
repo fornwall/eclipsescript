@@ -47,6 +47,11 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 		return instanceId - o.instanceId;
 	}
 
+	@Override
+	public boolean equals(Object other) {
+		return (other instanceof ScriptMetadata) && ((ScriptMetadata) other).instanceId == instanceId;
+	}
+
 	public IFile getFile() {
 		return file;
 	}
@@ -57,6 +62,11 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 
 	public String getSummary() {
 		return summary;
+	}
+
+	@Override
+	public int hashCode() {
+		return instanceId;
 	}
 
 }
