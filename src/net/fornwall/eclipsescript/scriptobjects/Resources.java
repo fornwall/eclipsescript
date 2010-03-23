@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.fornwall.eclipsescript.messages.Messages;
+import net.fornwall.eclipsescript.scripts.IScriptRuntime;
 import net.fornwall.eclipsescript.util.JavaUtils;
 
 import org.eclipse.core.resources.IContainer;
@@ -19,6 +20,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -28,10 +30,10 @@ import org.eclipse.ui.PlatformUI;
 
 public class Resources {
 
-	private final IProject scriptProject;
+	private final IScriptRuntime scriptRuntime;
 
-	public Resources(IProject scriptProject) {
-		this.scriptProject = scriptProject;
+	public Resources(IScriptRuntime scriptRuntime) {
+		this.scriptRuntime = scriptRuntime;
 	}
 
 	public IFile[] filesMatching(final String patternString, IResource startingPoint) {
@@ -71,7 +73,7 @@ public class Resources {
 
 	/** Get the project of the currently executing script. */
 	public IProject getScriptProject() {
-		return scriptProject;
+		return scriptRuntime.getStartingScript().getProject();
 	}
 
 	public IWorkspace getWorkspace() {
@@ -81,7 +83,7 @@ public class Resources {
 	public String read(Object objectToRead) throws Exception {
 		if (objectToRead instanceof IFile) {
 			IFile file = (IFile) objectToRead;
-			return JavaUtils.readAllToStringAndClose(file.getContents(), file.getCharset());
+			return JavaUtils.readAllToStringAndClose(file.getContents(true), file.getCharset());
 		} else if (objectToRead instanceof URL) {
 			URL url = (URL) objectToRead;
 			return JavaUtils.readURL(url);
@@ -90,6 +92,13 @@ public class Resources {
 			if (string.contains("://")) { //$NON-NLS-1$
 				URL url = new URL(string);
 				return JavaUtils.readURL(url);
+			} else if (string.startsWith("/")) { //$NON-NLS-1$
+				Path includePath = new Path(string);
+				IFile fileToRead = scriptRuntime.getStartingScript().getProject().getFile(includePath);
+				if (!fileToRead.exists())
+					scriptRuntime.abortRunningScript("File to read does not exist"
+							+ fileToRead.getFullPath().toOSString());
+				return JavaUtils.readAllToStringAndClose(fileToRead.getContents(true), fileToRead.getCharset());
 			}
 		}
 		throw new IllegalArgumentException(Messages.Resources_cannotReadFromObject + objectToRead);

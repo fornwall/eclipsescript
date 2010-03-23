@@ -6,16 +6,16 @@ public class Eclipse {
 
 	public static final String VARIABLE_NAME = "eclipse"; //$NON-NLS-1$
 
-	private Console console;
-	private Editors editors;
-	private Resources resources;
-	private Runtime runtime;
-	private Window window;
+	private final Console console;
+	private final Editors editors;
+	private final Resources resources;
+	private final Runtime runtime;
+	private final Window window;
 
 	public Eclipse(IScriptRuntime scriptRuntime) {
 		this.console = new Console(scriptRuntime);
 		this.editors = new Editors();
-		this.resources = new Resources(scriptRuntime.getStartingScript().getProject());
+		this.resources = new Resources(scriptRuntime);
 		this.runtime = new Runtime(scriptRuntime);
 		this.window = new Window();
 	}
