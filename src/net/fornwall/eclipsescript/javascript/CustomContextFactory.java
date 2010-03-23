@@ -1,5 +1,8 @@
 package net.fornwall.eclipsescript.javascript;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
 import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.scripts.ScriptClassLoader;
 
@@ -13,9 +16,9 @@ import org.mozilla.javascript.Scriptable;
 class CustomContextFactory extends ContextFactory {
 
 	static class CustomContext extends Context {
-		long startTime;
-
 		public JavascriptRuntime jsRuntime;
+
+		long startTime;
 
 		public CustomContext(ContextFactory factory) {
 			super(factory);
@@ -45,7 +48,7 @@ class CustomContextFactory extends ContextFactory {
 
 	@Override
 	protected Context makeContext() {
-		CustomContext cx = new CustomContext(this);
+		final CustomContext cx = new CustomContext(this);
 		// prevent generating of java class files loaded into the JVM, use
 		// interpreted mode
 		cx.setOptimizationLevel(-1);
@@ -54,7 +57,13 @@ class CustomContextFactory extends ContextFactory {
 			// only observe instructions in UI thread to avoid locking UI
 			cx.setInstructionObserverThreshold(5000);
 		}
-		cx.setApplicationClassLoader(new ScriptClassLoader(cx.getApplicationClassLoader()));
+		ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+			public ClassLoader run() {
+				return new ScriptClassLoader(cx.getApplicationClassLoader());
+			}
+		});
+
+		cx.setApplicationClassLoader(classLoader);
 		cx.setLanguageVersion(Context.VERSION_1_7);
 		cx.getWrapFactory().setJavaPrimitiveWrap(false);
 		return cx;
