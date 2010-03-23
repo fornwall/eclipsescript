@@ -3,7 +3,6 @@ package net.fornwall.eclipsescript.ui;
 import java.util.List;
 
 import net.fornwall.eclipsescript.core.Activator;
-import net.fornwall.eclipsescript.core.ScriptFilesChangeListener;
 import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 import net.fornwall.eclipsescript.scripts.ScriptStore;
@@ -45,8 +44,7 @@ public class QuickScriptProvider extends QuickAccessProvider {
 
 				@Override
 				public String getLabel() {
-					String label = script.getFile().getName().substring(0,
-							script.getFile().getName().length() - ScriptFilesChangeListener.FILE_SUFFIX.length());
+					String label = script.getName();
 					if (script.getSummary() != null) {
 						label += " - " + script.getSummary(); //$NON-NLS-1$
 					}

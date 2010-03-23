@@ -60,6 +60,12 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 		return fullPath;
 	}
 
+	public String getName() {
+		String fileName = file.getName();
+		int index = fileName.lastIndexOf(".eclipse."); //$NON-NLS-1$
+		return fileName.substring(0, index);
+	}
+
 	public String getSummary() {
 		return summary;
 	}

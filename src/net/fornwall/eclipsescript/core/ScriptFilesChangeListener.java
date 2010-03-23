@@ -8,6 +8,7 @@ import static org.eclipse.core.resources.IResourceDelta.MOVED_TO;
 import static org.eclipse.core.resources.IResourceDelta.REMOVED;
 import static org.eclipse.core.resources.IResourceDelta.REPLACED;
 import static org.eclipse.core.resources.ResourcesPlugin.getWorkspace;
+import net.fornwall.eclipsescript.scripts.ScriptLanguageHandler;
 import net.fornwall.eclipsescript.scripts.ScriptStore;
 
 import org.eclipse.core.resources.IFile;
@@ -31,12 +32,6 @@ import org.eclipse.core.runtime.CoreException;
  */
 public class ScriptFilesChangeListener implements IResourceChangeListener {
 
-	public static String FILE_SUFFIX = ".eclipse.js"; //$NON-NLS-1$
-
-	public static boolean isEclipseScript(IFile file) {
-		return file.getFullPath().toString().endsWith(FILE_SUFFIX);
-	}
-
 	void processNewOrChangedScript(final IFile file) {
 		ScriptStore.addScript(file);
 	}
@@ -53,7 +48,7 @@ public class ScriptFilesChangeListener implements IResourceChangeListener {
 					if (resource.isDerived())
 						return false;
 					final IFile file = (IFile) resource;
-					if (isEclipseScript(file))
+					if (ScriptLanguageHandler.isEclipseScriptFile(file))
 						processNewOrChangedScript(file);
 					return true;
 				}
@@ -83,7 +78,7 @@ public class ScriptFilesChangeListener implements IResourceChangeListener {
 					return false;
 
 				final String fullPath = delta.getFullPath().toString();
-				if (isEclipseScript(file)) {
+				if (ScriptLanguageHandler.isEclipseScriptFile(file)) {
 					switch (delta.getKind()) {
 					case ADDED:
 						processNewOrChangedScript(file);

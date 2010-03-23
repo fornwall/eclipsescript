@@ -1,6 +1,7 @@
 package net.fornwall.eclipsescript.core;
 
 import net.fornwall.eclipsescript.messages.Messages;
+import net.fornwall.eclipsescript.scripts.ScriptLanguageHandler;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 import net.fornwall.eclipsescript.scripts.ScriptStore;
 import net.fornwall.eclipsescript.ui.ErrorHandlingHandler;
@@ -20,7 +21,7 @@ public class RunCurrentHandler extends ErrorHandlingHandler {
 		if (editorInput instanceof FileEditorInput) {
 			FileEditorInput fileInput = (FileEditorInput) editorInput;
 			IFile editedFile = fileInput.getFile();
-			boolean isScriptFile = ScriptFilesChangeListener.isEclipseScript(editedFile);
+			boolean isScriptFile = ScriptLanguageHandler.isEclipseScriptFile(editedFile);
 			if (isScriptFile) {
 				ScriptMetadata m = new ScriptMetadata(fileInput.getFile());
 				ScriptStore.executeScript(m);
