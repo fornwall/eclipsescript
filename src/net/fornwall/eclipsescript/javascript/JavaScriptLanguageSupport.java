@@ -8,9 +8,9 @@ import net.fornwall.eclipsescript.javascript.CustomContextFactory.CustomContext;
 import net.fornwall.eclipsescript.javascript.JavascriptRuntime.DieError;
 import net.fornwall.eclipsescript.javascript.JavascriptRuntime.ExitError;
 import net.fornwall.eclipsescript.scriptobjects.Eclipse;
+import net.fornwall.eclipsescript.scripts.IScriptLanguageSupport;
 import net.fornwall.eclipsescript.scripts.ScriptAbortException;
 import net.fornwall.eclipsescript.scripts.ScriptException;
-import net.fornwall.eclipsescript.scripts.IScriptLanguageSupport;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 
 import org.mozilla.javascript.Context;
@@ -30,6 +30,8 @@ public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 
 			@Override
 			public Object run(Context _context) {
+				if (!(_context instanceof CustomContext))
+					throw new IllegalArgumentException("Wrong context class: " + _context.getClass()); //$NON-NLS-1$
 				CustomContext context = (CustomContext) _context;
 				ScriptableObject scope = new ImporterTopLevel(context);
 				JavascriptRuntime jsRuntime = new JavascriptRuntime(context, scope, script.getFile());
@@ -64,5 +66,4 @@ public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 			}
 		});
 	}
-
 }
