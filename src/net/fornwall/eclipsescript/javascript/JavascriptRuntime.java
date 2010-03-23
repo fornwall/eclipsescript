@@ -19,10 +19,10 @@ class JavascriptRuntime implements IScriptRuntime {
 	 * exception.
 	 */
 	@SuppressWarnings("serial")
-	static class DieException extends Error {
+	static class DieError extends Error {
 		public EvaluatorException evalException;
 
-		public DieException(String dieMessage) {
+		public DieError(String dieMessage) {
 			super(dieMessage);
 			try {
 				Context.reportError(dieMessage);
@@ -37,7 +37,7 @@ class JavascriptRuntime implements IScriptRuntime {
 	 * exception.
 	 */
 	@SuppressWarnings("serial")
-	static class ExitException extends Error {
+	static class ExitError extends Error {
 		// just a marker class
 	}
 
@@ -55,7 +55,7 @@ class JavascriptRuntime implements IScriptRuntime {
 
 	@Override
 	public void abortRunningScript(String errorMessage) {
-		throw new DieException(errorMessage);
+		throw new DieError(errorMessage);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ class JavascriptRuntime implements IScriptRuntime {
 
 	@Override
 	public void exitRunningScript() {
-		throw new ExitException();
+		throw new ExitError();
 	}
 
 	@Override

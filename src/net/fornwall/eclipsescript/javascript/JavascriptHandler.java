@@ -5,8 +5,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import net.fornwall.eclipsescript.javascript.CustomContextFactory.CustomContext;
-import net.fornwall.eclipsescript.javascript.JavascriptRuntime.DieException;
-import net.fornwall.eclipsescript.javascript.JavascriptRuntime.ExitException;
+import net.fornwall.eclipsescript.javascript.JavascriptRuntime.DieError;
+import net.fornwall.eclipsescript.javascript.JavascriptRuntime.ExitError;
 import net.fornwall.eclipsescript.scriptobjects.Eclipse;
 import net.fornwall.eclipsescript.scripts.ScriptAbortException;
 import net.fornwall.eclipsescript.scripts.ScriptException;
@@ -42,9 +42,9 @@ public class JavascriptHandler implements ScriptLanguageSupport {
 				try {
 					reader = new InputStreamReader(script.getFile().getContents(), script.getFile().getCharset());
 					jsRuntime.evaluate(reader, script.getFile().getName());
-				} catch (ExitException e) {
+				} catch (ExitError e) {
 					// do nothing
-				} catch (DieException e) {
+				} catch (DieError e) {
 					throw new ScriptAbortException(e.getMessage(), e.evalException, e.evalException.lineNumber());
 				} catch (RhinoException e) {
 					boolean showStackTrace = (e instanceof WrappedException);
