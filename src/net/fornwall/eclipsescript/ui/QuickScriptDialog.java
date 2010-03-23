@@ -20,7 +20,6 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -182,7 +181,7 @@ public final class QuickScriptDialog extends PopupDialog {
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(filterText);
 
-		filterText.addKeyListener(new KeyListener() {
+		filterText.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == 0x0D) {
@@ -202,11 +201,6 @@ public final class QuickScriptDialog extends PopupDialog {
 					}
 				} else if (e.character == 0x1B) // ESC
 					close();
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				// do nothing
 			}
 		});
 		filterText.addModifyListener(new ModifyListener() {
