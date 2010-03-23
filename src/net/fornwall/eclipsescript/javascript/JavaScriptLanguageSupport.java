@@ -20,7 +20,7 @@ import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
-public class JavascriptHandler implements IScriptLanguageSupport {
+public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 
 	private final CustomContextFactory contextFactory = new CustomContextFactory();
 
