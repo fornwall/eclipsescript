@@ -96,7 +96,7 @@ public class Resources {
 				Path includePath = new Path(string);
 				IFile fileToRead = scriptRuntime.getStartingScript().getProject().getFile(includePath);
 				if (!fileToRead.exists())
-					scriptRuntime.abortRunningScript("File to read does not exist"
+					scriptRuntime.abortRunningScript(Messages.fileToReadDoesNotExist
 							+ fileToRead.getFullPath().toOSString());
 				return JavaUtils.readAllToStringAndClose(fileToRead.getContents(true), fileToRead.getCharset());
 			}

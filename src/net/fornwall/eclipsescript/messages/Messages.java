@@ -14,6 +14,7 @@ public class Messages extends NLS {
 	public static String cannotRunCurrentScriptTitle;
 	public static String clearMarkersJobName;
 	public static String fileToIncludeDoesNotExist;
+	public static String fileToReadDoesNotExist;
 	public static String internalErrorDialogDetails;
 	public static String internalErrorDialogText;
 	public static String internalErrorDialogTitle;
