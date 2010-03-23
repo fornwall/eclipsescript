@@ -17,7 +17,6 @@ public class Messages extends NLS {
 	public static String internalErrorDialogDetails;
 	public static String internalErrorDialogText;
 	public static String internalErrorDialogTitle;
-	public static String internalErrorWhenRunningScriptDialogTitle;
 	public static String noDocumentSelected;
 	public static String noSelectionSelected;
 	public static String noTextEditorSelected;
