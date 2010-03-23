@@ -61,7 +61,10 @@ public class Runtime {
 		}
 	}
 
-	public void schedule(final IJobRunnable runnable) {
+	public void schedule(final Object objectToSchedule) {
+		final IJobRunnable runnable = scriptRuntime.adaptTo(objectToSchedule, IJobRunnable.class);
+		if (runnable == null)
+			throw new IllegalArgumentException(Messages.notPossibleToScheduleObject + objectToSchedule);
 		String jobName = NLS.bind(Messages.scriptBackgroundJobName, scriptRuntime.getStartingScript().getName());
 		Job job = new Job(jobName) {
 			@Override
@@ -73,5 +76,4 @@ public class Runtime {
 		job.setUser(true);
 		job.schedule();
 	}
-
 }
