@@ -26,7 +26,7 @@ public class CloseConsolePageParticipant implements IConsolePageParticipant {
 		// do nothing
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object getAdapter(Class adapter) {
 		return adapter.isInstance(this) ? this : null;
