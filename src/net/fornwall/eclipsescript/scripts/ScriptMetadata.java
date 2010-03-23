@@ -23,9 +23,13 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 		this.fullPath = file.getFullPath().toString();
 
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(file.getContents(), file.getCharset()));
-			String firstLine = reader.readLine();
-			reader.close();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(file.getContents(true), file.getCharset()));
+			String firstLine = null;
+			try {
+				firstLine = reader.readLine();
+			} finally {
+				reader.close();
+			}
 			if (firstLine == null)
 				return;
 			firstLine = firstLine.trim();
