@@ -61,18 +61,17 @@ public final class QuickScriptDialog extends PopupDialog {
 		return new ArrayList[length];
 	}
 
-	private Map<String, QuickAccessElement> elementMap = new HashMap<String, QuickAccessElement>();
+	private String currentFilterCommand;
+	private final Map<String, QuickAccessElement> elementMap = new HashMap<String, QuickAccessElement>();
 	Text filterText;
 	Command invokingCommand;
 	private TriggerSequence[] invokingCommandKeySequences;
 	QuickAccessProvider[] providers;
-	boolean resized = false;
 	LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
 	Table table;
 	TextLayout textLayout;
-	private IWorkbenchWindow window;
 
-	private String currentFilterCommand;
+	private final IWorkbenchWindow window;
 
 	public QuickScriptDialog(IWorkbenchWindow window, final Command invokingCommand) {
 		// ProgressManagerUtil.getDefaultParent() as first arg?
@@ -438,14 +437,8 @@ public final class QuickScriptDialog extends PopupDialog {
 		int index = 0;
 		for (int i = 0; i < providers.length; i++) {
 			if (entries[i] != null) {
-				boolean firstEntry = true;
 				for (Iterator<QuickAccessEntry> it = entries[i].iterator(); it.hasNext();) {
 					QuickAccessEntry entry = it.next();
-					entry.firstInCategory = firstEntry;
-					firstEntry = false;
-					if (!it.hasNext()) {
-						entry.lastInCategory = true;
-					}
 					TableItem item;
 					if (index < items.length) {
 						item = items[index];

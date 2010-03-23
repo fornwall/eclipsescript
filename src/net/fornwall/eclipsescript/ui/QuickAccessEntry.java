@@ -15,10 +15,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 final class QuickAccessEntry {
-	boolean firstInCategory;
-	boolean lastInCategory;
 	QuickAccessElement element;
-	private int[][] elementMatchRegions;
+	private final int[][] elementMatchRegions;
 
 	QuickAccessEntry(QuickAccessElement element, int[][] elementMatchRegions) {
 		this.element = element;
