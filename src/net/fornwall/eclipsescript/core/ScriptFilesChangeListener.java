@@ -38,25 +38,24 @@ public class ScriptFilesChangeListener implements IResourceChangeListener {
 
 	public void rescanAllFiles() {
 		ScriptStore.clearScripts();
+
 		final IWorkspace workspace = getWorkspace();
 		for (final IProject project : workspace.getRoot().getProjects()) {
-			final IResourceVisitor visitor = new IResourceVisitor() {
-				@Override
-				public boolean visit(final IResource resource) throws CoreException {
-					if (!(resource instanceof IFile))
-						return true;
-					if (resource.isDerived())
-						return false;
-					final IFile file = (IFile) resource;
-					if (ScriptLanguageHandler.isEclipseScriptFile(file))
-						processNewOrChangedScript(file);
-					return true;
-				}
-
-			};
 			if (project.isOpen()) {
 				try {
-					project.accept(visitor);
+					project.accept(new IResourceVisitor() {
+						@Override
+						public boolean visit(final IResource resource) throws CoreException {
+							if (!(resource instanceof IFile))
+								return true;
+							if (resource.isDerived())
+								return false;
+							final IFile file = (IFile) resource;
+							if (ScriptLanguageHandler.isEclipseScriptFile(file))
+								processNewOrChangedScript(file);
+							return true;
+						}
+					});
 				} catch (final CoreException x) {
 					// ignore folders we cannot access
 					Activator.logError(x);
