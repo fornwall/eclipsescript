@@ -14,29 +14,37 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 
 	private final IFile file;
 	private final int instanceId;
-	private String summary;
+	private final String label;
 
 	public ScriptMetadata(IFile file) {
 		this.instanceId = counter.getAndIncrement();
 		this.file = file;
 
+		String fileName = file.getName();
+		int index = fileName.lastIndexOf(".eclipse."); //$NON-NLS-1$
+		String scriptName = fileName.substring(0, index);
+
+		String firstLine = null;
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(file.getContents(true), file.getCharset()));
-			String firstLine = null;
 			try {
 				firstLine = reader.readLine();
 			} finally {
 				reader.close();
 			}
-			if (firstLine == null)
-				return;
-			firstLine = firstLine.trim();
-
-			if (firstLine.startsWith("//") || firstLine.startsWith("/*")) { //$NON-NLS-1$ //$NON-NLS-2$
-				this.summary = firstLine.substring(2).trim();
-			}
 		} catch (Exception e) {
 			Activator.logError(e);
+		}
+
+		if (firstLine == null) {
+			label = scriptName;
+		} else {
+			firstLine = firstLine.trim();
+			if (firstLine.startsWith("//") || firstLine.startsWith("/*")) { //$NON-NLS-1$ //$NON-NLS-2$
+				this.label = scriptName + " - " + firstLine.substring(2).trim(); //$NON-NLS-1$
+			} else {
+				this.label = scriptName;
+			}
 		}
 	}
 
@@ -58,14 +66,8 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 		return file.getFullPath().toString();
 	}
 
-	public String getName() {
-		String fileName = file.getName();
-		int index = fileName.lastIndexOf(".eclipse."); //$NON-NLS-1$
-		return fileName.substring(0, index);
-	}
-
-	public String getSummary() {
-		return summary;
+	public String getLabel() {
+		return label;
 	}
 
 	@Override

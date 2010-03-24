@@ -33,11 +33,7 @@ public class QuickScriptProvider extends QuickAccessProvider {
 
 				@Override
 				public String getLabel() {
-					String label = script.getName();
-					if (script.getSummary() != null) {
-						label += " - " + script.getSummary(); //$NON-NLS-1$
-					}
-					return label;
+					return script.getLabel();
 				}
 			};
 		}
