@@ -100,9 +100,6 @@ public abstract class QuickAccessElement {
 	/** Executes the associated action for this element. */
 	public abstract void execute();
 
-	/** The id for this element. The id has to be unique within the QuickAccessProvider that provided this element. */
-	public abstract String getId();
-
 	/** The image descriptor for this element, or null if no image is available */
 	public abstract ImageDescriptor getImageDescriptor();
 

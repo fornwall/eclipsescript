@@ -27,11 +27,6 @@ public class QuickScriptProvider extends QuickAccessProvider {
 				}
 
 				@Override
-				public String getId() {
-					return script.getFullPath();
-				}
-
-				@Override
 				public ImageDescriptor getImageDescriptor() {
 					return imageDescriptor;
 				}
