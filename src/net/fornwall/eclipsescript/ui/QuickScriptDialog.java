@@ -72,19 +72,6 @@ public final class QuickScriptDialog extends PopupDialog {
 		return super.close();
 	}
 
-	private List<QuickAccessEntry> computeMatchingEntries(String filter) {
-		if (filter.isEmpty())
-			return Collections.emptyList();
-		List<QuickAccessEntry> entries = new ArrayList<QuickAccessEntry>();
-		QuickAccessElement[] elements = provider.getElementsSorted();
-		for (QuickAccessElement element : elements) {
-			QuickAccessEntry entry = element.match(filter);
-			if (entry != null)
-				entries.add(entry);
-		}
-		return entries;
-	}
-
 	/**
 	 * @see org.eclipse.jface.dialogs.PopupDialog#createDialogArea(org.eclipse.swt.widgets.Composite)
 	 */
@@ -239,13 +226,6 @@ public final class QuickScriptDialog extends PopupDialog {
 		return filterText;
 	}
 
-	protected void handleElementSelected(Object selectedElement) {
-		if (selectedElement instanceof QuickAccessElement) {
-			QuickAccessElement element = (QuickAccessElement) selectedElement;
-			element.execute(currentFilterCommand);
-		}
-	}
-
 	void handleSelection() {
 		QuickAccessElement selectedElement = null;
 		if (table.getSelectionCount() == 1) {
@@ -254,7 +234,7 @@ public final class QuickScriptDialog extends PopupDialog {
 		}
 		close();
 		if (selectedElement != null) {
-			handleElementSelected(selectedElement);
+			selectedElement.execute(currentFilterCommand);
 		}
 	}
 
@@ -267,11 +247,19 @@ public final class QuickScriptDialog extends PopupDialog {
 			currentFilterCommand = null;
 		}
 
-		List<QuickAccessEntry> entries = computeMatchingEntries(filter);
-		refreshTable(entries);
-	}
+		List<QuickAccessEntry> entries;
+		if (filter.isEmpty()) {
+			entries = Collections.emptyList();
+		} else {
+			entries = new ArrayList<QuickAccessEntry>();
+			QuickAccessElement[] elements = provider.getElementsSorted();
+			for (QuickAccessElement element : elements) {
+				QuickAccessEntry entry = element.match(filter);
+				if (entry != null)
+					entries.add(entry);
+			}
+		}
 
-	private void refreshTable(List<QuickAccessEntry> entries) {
 		TableItem[] items = table.getItems();
 		int index = 0;
 		for (Iterator<QuickAccessEntry> it = entries.iterator(); it.hasNext();) {
