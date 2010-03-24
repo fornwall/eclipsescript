@@ -1,9 +1,11 @@
 package net.fornwall.eclipsescript.util;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -72,6 +74,23 @@ public class JavaUtils {
 			throw new RuntimeException(e);
 		} finally {
 			close(in);
+		}
+	}
+
+	public static String readAllToStringAndClose(Reader in) {
+		BufferedReader reader = (in instanceof BufferedReader) ? (BufferedReader) in : new BufferedReader(in);
+		StringBuilder result = new StringBuilder();
+		try {
+			char[] buffer = new char[1024];
+			int n;
+			while ((n = in.read(buffer)) != -1) {
+				result.append(buffer, 0, n);
+			}
+			return result.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			close(reader);
 		}
 	}
 

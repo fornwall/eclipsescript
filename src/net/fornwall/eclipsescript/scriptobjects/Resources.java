@@ -2,6 +2,8 @@ package net.fornwall.eclipsescript.scriptobjects;
 
 import static java.util.regex.Pattern.compile;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,6 +102,12 @@ public class Resources {
 							+ fileToRead.getFullPath().toOSString());
 				return JavaUtils.readAllToStringAndClose(fileToRead.getContents(true), fileToRead.getCharset());
 			}
+		} else if (objectToRead instanceof Reader) {
+			Reader in = (Reader) objectToRead;
+			return JavaUtils.readAllToStringAndClose(in);
+		} else if (objectToRead instanceof InputStream) {
+			InputStream in = (InputStream) objectToRead;
+			return JavaUtils.readAllToStringAndClose(in);
 		}
 		throw new IllegalArgumentException(Messages.Resources_cannotReadFromObject + objectToRead);
 	}
