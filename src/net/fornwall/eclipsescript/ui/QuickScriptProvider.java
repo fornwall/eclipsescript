@@ -3,10 +3,8 @@ package net.fornwall.eclipsescript.ui;
 import java.util.List;
 
 import net.fornwall.eclipsescript.core.Activator;
-import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 import net.fornwall.eclipsescript.scripts.ScriptStore;
-import net.fornwall.eclipsescript.util.EclipseUtils;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -21,15 +19,11 @@ public class QuickScriptProvider extends QuickAccessProvider {
 		QuickAccessElement[] elements = new QuickAccessElement[allScripts.size()];
 		for (int i = 0; i < elements.length; i++) {
 			final ScriptMetadata script = allScripts.get(i);
-			QuickAccessElement element = new QuickAccessElement(this) {
+			elements[i] = new QuickAccessElement() {
 
 				@Override
-				public void execute(String command) {
-					if (Messages.scriptLaunchDialogEditCommand.equals(command)) {
-						EclipseUtils.openEditor(script.getFile());
-					} else {
-						ScriptStore.executeScript(script);
-					}
+				public void execute() {
+					ScriptStore.executeScript(script);
 				}
 
 				@Override
@@ -51,7 +45,6 @@ public class QuickScriptProvider extends QuickAccessProvider {
 					return label;
 				}
 			};
-			elements[i] = element;
 		}
 		return elements;
 	}

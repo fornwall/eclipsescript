@@ -33,7 +33,6 @@ public class Messages extends NLS {
 	public static String scriptErrorWhenRunningScriptDialogTitle;
 	public static String scriptErrorWhenRunningScriptJumpToScriptButton;
 	public static String scriptErrorWhenRunningScriptOkButton;
-	public static String scriptLaunchDialogEditCommand;
 	public static String scriptPromptDialogTitle;
 	public static String scriptTimeout;
 	public static String windowOpenArgumentNull;

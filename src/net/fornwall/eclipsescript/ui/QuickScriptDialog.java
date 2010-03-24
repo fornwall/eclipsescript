@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.fornwall.eclipsescript.core.Activator;
-import net.fornwall.eclipsescript.messages.Messages;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
@@ -24,8 +23,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
@@ -45,7 +44,6 @@ import org.eclipse.ui.IWorkbenchWindow;
  */
 public final class QuickScriptDialog extends PopupDialog {
 
-	private String currentFilterCommand;
 	Text filterText;
 	final QuickAccessProvider provider = new QuickScriptProvider();
 	LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
@@ -53,7 +51,6 @@ public final class QuickScriptDialog extends PopupDialog {
 	TextLayout textLayout;
 
 	public QuickScriptDialog(IWorkbenchWindow window) {
-		// ProgressManagerUtil.getDefaultParent() as first arg?
 		super(/* parent: */window.getShell(), /* shellStyle: */SWT.RESIZE, /* takeFocusOnOpen: */true, /* persistSize: */
 		true, /* persistLocation: */false,
 		/* showDialogMenu: */false, /* showPersistActions: */false, /* titleText: */"", //$NON-NLS-1$
@@ -121,15 +118,10 @@ public final class QuickScriptDialog extends PopupDialog {
 			}
 		});
 
-		table.addSelectionListener(new SelectionListener() {
+		table.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				handleSelection();
-			}
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// do nothing
 			}
 		});
 
@@ -234,19 +226,11 @@ public final class QuickScriptDialog extends PopupDialog {
 		}
 		close();
 		if (selectedElement != null) {
-			selectedElement.execute(currentFilterCommand);
+			selectedElement.execute();
 		}
 	}
 
-	void refresh(String filterParam) {
-		String filter = filterParam;
-		if (filter.toLowerCase().startsWith(Messages.scriptLaunchDialogEditCommand + " ")) { //$NON-NLS-1$
-			currentFilterCommand = Messages.scriptLaunchDialogEditCommand;
-			filter = filter.substring(Messages.scriptLaunchDialogEditCommand.length() + 1).trim();
-		} else {
-			currentFilterCommand = null;
-		}
-
+	void refresh(String filter) {
 		List<QuickAccessEntry> entries;
 		if (filter.isEmpty()) {
 			entries = Collections.emptyList();
@@ -272,7 +256,6 @@ public final class QuickScriptDialog extends PopupDialog {
 				item = new TableItem(table, SWT.NONE);
 			}
 			item.setData(entry);
-			// item.setText(0, entry.provider.getName());
 			item.setText(0, entry.element.getLabel());
 			if (SWT.getPlatform().equals("wpf")) { //$NON-NLS-1$
 				item.setImage(0, entry.getImage(resourceManager));

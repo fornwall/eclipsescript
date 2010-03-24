@@ -7,9 +7,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 public abstract class QuickAccessElement {
 
-	/**
-	 * Copied from internal class org.eclipse.ui.internal.quickaccess.CamelUtil.
-	 */
+	/** Copied from internal class org.eclipse.ui.internal.quickaccess.CamelUtil. */
 	private static class CamelUtil {
 
 		/**
@@ -99,63 +97,23 @@ public abstract class QuickAccessElement {
 
 	}
 
-	private QuickAccessProvider provider;
+	/** Executes the associated action for this element. */
+	public abstract void execute();
 
-	/**
-	 * @param provider
-	 */
-	public QuickAccessElement(QuickAccessProvider provider) {
-		super();
-		this.provider = provider;
-	}
-
-	/**
-	 * Executes the associated action for this element.
-	 */
-	public abstract void execute(String command);
-
-	/**
-	 * Returns the id for this element. The id has to be unique within the QuickAccessProvider that provided this
-	 * element.
-	 * 
-	 * @return the id
-	 */
+	/** The id for this element. The id has to be unique within the QuickAccessProvider that provided this element. */
 	public abstract String getId();
 
-	/**
-	 * Returns the image descriptor for this element.
-	 * 
-	 * @return an image descriptor, or null if no image is available
-	 */
+	/** The image descriptor for this element, or null if no image is available */
 	public abstract ImageDescriptor getImageDescriptor();
 
-	/**
-	 * Returns the label to be displayed to the user.
-	 * 
-	 * @return the label
-	 */
+	/** The label to be displayed to the user. */
 	public abstract String getLabel();
 
-	/**
-	 * @return Returns the provider.
-	 */
-	public QuickAccessProvider getProvider() {
-		return provider;
-	}
-
-	/**
-	 * Return the label to be used for sorting and matching elements.
-	 * 
-	 * @return the sort label
-	 */
+	/** The label to be used for sorting and matching elements. */
 	public String getSortLabel() {
 		return getLabel();
 	}
 
-	/**
-	 * @param filter
-	 * @return
-	 */
 	public QuickAccessEntry match(String filter) {
 		String sortLabel = getLabel();
 		int index = sortLabel.toLowerCase().indexOf(filter);
