@@ -56,17 +56,6 @@ final class QuickAccessEntry {
 		textLayout.setFont(table.getFont());
 		event.width = 0;
 		switch (event.index) {
-		case 1:
-			// if (firstInCategory || providerMatchRegions.length > 0) {
-			// textLayout.setText(provider.getName());
-			// for (int i = 0; i < providerMatchRegions.length; i++) {
-			// int[] matchRegion = providerMatchRegions[i];
-			// textLayout.setStyle(boldStyle, matchRegion[0], matchRegion[1]);
-			// }
-			// } else {
-			textLayout.setText(""); //$NON-NLS-1$
-			// }
-			break;
 		case 0:
 			Image image = getImage(resourceManager);
 			Rectangle imageRect = image.getBounds();
@@ -78,6 +67,8 @@ final class QuickAccessEntry {
 				textLayout.setStyle(boldStyle, matchRegion[0], matchRegion[1]);
 			}
 			break;
+		default:
+			throw new IllegalArgumentException("Invalid event.index: " + event.index); //$NON-NLS-1$
 		}
 		Rectangle rect = textLayout.getBounds();
 		event.width += rect.width + 4;
@@ -88,22 +79,6 @@ final class QuickAccessEntry {
 		final Table table = ((TableItem) event.item).getParent();
 		textLayout.setFont(table.getFont());
 		switch (event.index) {
-		case 1:
-			// if (true) { // firstInCategory || providerMatchRegions.length > 0) {
-			// textLayout.setText(provider.getName());
-			// for (int i = 0; i < providerMatchRegions.length; i++) {
-			// int[] matchRegion = providerMatchRegions[i];
-			// textLayout.setStyle(boldStyle, matchRegion[0], matchRegion[1]);
-			// }
-			// if (providerMatchRegions.length > 0 && !firstInCategory) {
-			// event.gc.setForeground(grayColor);
-			// }
-			// Rectangle availableBounds = ((TableItem) event.item).getTextBounds(event.index);
-			// Rectangle requiredBounds = textLayout.getBounds();
-			// textLayout.draw(event.gc, availableBounds.x + 1, availableBounds.y
-			// + (availableBounds.height - requiredBounds.height) / 2);
-			// }
-			break;
 		case 0:
 			Image image = getImage(resourceManager);
 			event.gc.drawImage(image, event.x + 1, event.y + 1);
@@ -117,6 +92,8 @@ final class QuickAccessEntry {
 			textLayout.draw(event.gc, availableBounds.x + 1 + image.getBounds().width, availableBounds.y
 					+ (availableBounds.height - requiredBounds.height) / 2);
 			break;
+		default:
+			throw new IllegalArgumentException("Invalid event.index: " + event.index); //$NON-NLS-1$
 		}
 	}
 }
