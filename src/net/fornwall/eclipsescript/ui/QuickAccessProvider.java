@@ -3,8 +3,6 @@ package net.fornwall.eclipsescript.ui;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-
 public abstract class QuickAccessProvider {
 
 	private QuickAccessElement[] sortedElements;
@@ -29,10 +27,4 @@ public abstract class QuickAccessProvider {
 		return sortedElements;
 	}
 
-	/**
-	 * Returns the image descriptor for this provider.
-	 * 
-	 * @return the image descriptor, or null if not defined
-	 */
-	public abstract ImageDescriptor getImageDescriptor();
 }

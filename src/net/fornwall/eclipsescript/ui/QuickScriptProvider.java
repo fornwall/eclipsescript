@@ -49,9 +49,4 @@ public class QuickScriptProvider extends QuickAccessProvider {
 		return elements;
 	}
 
-	@Override
-	public ImageDescriptor getImageDescriptor() {
-		return null;
-	}
-
 }
