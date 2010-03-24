@@ -13,14 +13,12 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 	private static final AtomicInteger counter = new AtomicInteger();
 
 	private final IFile file;
-	private final String fullPath;
 	private final int instanceId;
 	private String summary;
 
 	public ScriptMetadata(IFile file) {
 		this.instanceId = counter.getAndIncrement();
 		this.file = file;
-		this.fullPath = file.getFullPath().toString();
 
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(file.getContents(true), file.getCharset()));
@@ -57,7 +55,7 @@ public class ScriptMetadata implements Comparable<ScriptMetadata> {
 	}
 
 	public String getFullPath() {
-		return fullPath;
+		return file.getFullPath().toString();
 	}
 
 	public String getName() {
