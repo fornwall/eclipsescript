@@ -58,6 +58,7 @@ class CustomContextFactory extends ContextFactory {
 			cx.setInstructionObserverThreshold(5000);
 		}
 		ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+			@Override
 			public ClassLoader run() {
 				return new ScriptClassLoader(cx.getApplicationClassLoader());
 			}
