@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.texteditor.IDocumentProvider;
@@ -105,9 +106,11 @@ public class ScriptStore {
 		final String[] choices = new String[] { Messages.scriptErrorWhenRunningScriptOkButton,
 				Messages.scriptErrorWhenRunningScriptJumpToScriptButton };
 
-		int result = ErrorDetailsDialog.openError(EclipseUtils.getWindowShell(),
-				Messages.scriptErrorWhenRunningScriptDialogTitle, e.getMessage(), e.getCause(), choices, e
-						.isShowStackTrace());
+		String dialogTitle = Messages.scriptErrorWhenRunningScriptDialogTitle;
+		String dialogText = NLS.bind(Messages.scriptErrorWhenRunningScriptDialogText, script.getFile().getName(), e
+				.getCause().getMessage());
+		int result = ErrorDetailsDialog.openError(EclipseUtils.getWindowShell(), dialogTitle, dialogText, e.getCause(),
+				choices, e.isShowStackTrace());
 		if (result == 1) {
 			IEditorPart editorPart = EclipseUtils.openEditor(script.getFile());
 			if (editorPart instanceof ITextEditor) {
