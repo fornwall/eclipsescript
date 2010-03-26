@@ -1,6 +1,5 @@
 package net.fornwall.eclipsescript.javascript;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
@@ -9,9 +8,9 @@ import net.fornwall.eclipsescript.javascript.JavascriptRuntime.DieError;
 import net.fornwall.eclipsescript.javascript.JavascriptRuntime.ExitError;
 import net.fornwall.eclipsescript.scriptobjects.Eclipse;
 import net.fornwall.eclipsescript.scripts.IScriptLanguageSupport;
-import net.fornwall.eclipsescript.scripts.ScriptAbortException;
 import net.fornwall.eclipsescript.scripts.ScriptException;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
+import net.fornwall.eclipsescript.util.JavaUtils;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
@@ -27,7 +26,6 @@ public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 	@Override
 	public void executeScript(final ScriptMetadata script) {
 		contextFactory.call(new ContextAction() {
-
 			@Override
 			public Object run(Context _context) {
 				if (!(_context instanceof CustomContext))
@@ -45,22 +43,17 @@ public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 					reader = new InputStreamReader(script.getFile().getContents(), script.getFile().getCharset());
 					jsRuntime.evaluate(reader, script.getFile().getName());
 				} catch (ExitError e) {
-					// do nothing
+					// do nothing, just exit quietly due to eclipse.runtime.exit() call
 				} catch (DieError e) {
-					throw new ScriptAbortException(e.getMessage(), e.evalException, e.evalException.lineNumber());
+					throw new ScriptException(e.getMessage(), e.evalException, e.evalException.lineNumber(), false);
 				} catch (RhinoException e) {
 					boolean showStackTrace = (e instanceof WrappedException);
 					Throwable cause = showStackTrace ? ((WrappedException) e).getCause() : e;
 					throw new ScriptException(e.getMessage(), cause, e.lineNumber(), showStackTrace);
 				} catch (Exception e) {
-					throw (e instanceof RuntimeException) ? ((RuntimeException) e) : new RuntimeException(e);
+					throw JavaUtils.asRuntime(e);
 				} finally {
-					try {
-						if (reader != null)
-							reader.close();
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
+					JavaUtils.close(reader);
 				}
 				return null;
 			}
