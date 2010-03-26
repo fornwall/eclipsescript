@@ -6,7 +6,6 @@ import java.io.StringWriter;
 import net.fornwall.eclipsescript.core.Activator;
 import net.fornwall.eclipsescript.messages.Messages;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IconAndMessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
@@ -77,54 +76,12 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 		return dialog.open();
 	}
 
-	/**
-	 * Returns whether the given status object should be displayed.
-	 * 
-	 * @param status
-	 *            a status object
-	 * @param mask
-	 *            a mask as per <code>IStatus.matches</code>
-	 * @return <code>true</code> if the given status should be displayed, and <code>false</code> otherwise
-	 * @see org.eclipse.core.runtime.IStatus#matches(int)
-	 */
-	protected static boolean shouldDisplay(IStatus status, int mask) {
-		IStatus[] children = status.getChildren();
-		if (children == null || children.length == 0) {
-			return status.matches(mask);
-		}
-		for (int i = 0; i < children.length; i++) {
-			if (children[i].matches(mask)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * The Details button.
-	 */
+	private final String[] choices;
 	private Button detailsButton;
-
-	/**
-	 * The title of the dialog.
-	 */
-	private String title;
-
-	/**
-	 * The SWT list control that displays the error details.
-	 */
-	private Text text;
-
-	private Throwable exception;
-
-	/**
-	 * The current clipboard. To be disposed when closing the dialog.
-	 */
-	private Clipboard clipboard;
-
-	private boolean showDetails;
-
-	private String[] choices;
+	private final String dialogTitle;
+	private Text errorDetailsText;
+	private final Throwable exception;
+	private final boolean showDetails;
 
 	/**
 	 * Creates an error dialog. Note that the dialog will have no visual representation (no widgets) until it is told to
@@ -149,7 +106,7 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 	ErrorDetailsDialog(Shell parentShell, String dialogTitle, String message, Throwable exception, String[] choices,
 			boolean showDetails) {
 		super(parentShell);
-		this.title = dialogTitle == null ? JFaceResources.getString("Problem_Occurred") : //$NON-NLS-1$
+		this.dialogTitle = dialogTitle == null ? JFaceResources.getString("Problem_Occurred") : //$NON-NLS-1$
 				dialogTitle;
 		this.message = message;
 		this.exception = exception;
@@ -174,46 +131,23 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.window.Window#close()
-	 */
-	@Override
-	public boolean close() {
-		if (clipboard != null) {
-			clipboard.dispose();
-		}
-		return super.close();
-	}
-
-	/*
-	 * (non-Javadoc) Method declared in Window.
-	 */
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText(title);
+		shell.setText(dialogTitle);
 	}
 
-	/**
-	 * Copy the contents of the statuses to the clipboard.
-	 */
+	/** Copy the contents of the statuses to the clipboard. */
 	void copyToClipboard() {
-		if (clipboard != null) {
+		String textToCopy = errorDetailsText.getText();
+		Clipboard clipboard = new Clipboard(errorDetailsText.getDisplay());
+		try {
+			clipboard.setContents(new Object[] { textToCopy }, new Transfer[] { TextTransfer.getInstance() });
+		} finally {
 			clipboard.dispose();
 		}
-		StringBuffer statusBuffer = new StringBuffer();
-		populateCopyBuffer(statusBuffer, 0);
-		clipboard = new Clipboard(text.getDisplay());
-		clipboard.setContents(new Object[] { statusBuffer.toString() }, new Transfer[] { TextTransfer.getInstance() });
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
-	 */
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		// create OK and Details buttons
@@ -225,27 +159,11 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 				defaultButton = false;
 		}
 		if (showDetails) {
-			createDetailsButton(parent);
-		}
-	}
-
-	/**
-	 * Create the details button if it should be included.
-	 * 
-	 * @param parent
-	 *            the parent composite
-	 * @since 3.2
-	 */
-	protected void createDetailsButton(Composite parent) {
-		if (shouldShowDetailsButton()) {
 			detailsButton = createButton(parent, IDialogConstants.DETAILS_ID, IDialogConstants.SHOW_DETAILS_LABEL,
 					false);
 		}
 	}
 
-	/*
-	 * @see IconAndMessageDialog#createDialogAndButtonArea(Composite)
-	 */
 	@Override
 	protected void createDialogAndButtonArea(Composite parent) {
 		super.createDialogAndButtonArea(parent);
@@ -300,7 +218,7 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 	 */
 	protected Text createDropDownList(Composite parent) {
 		// create the list
-		text = new Text(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY | SWT.WRAP);
+		errorDetailsText = new Text(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY | SWT.WRAP);
 
 		StringWriter writer = new StringWriter();
 		exception.printStackTrace(new PrintWriter(writer));
@@ -310,15 +228,15 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 				Activator.getDefault().getBundle().getHeaders().get(Constants.BUNDLE_NAME),
 				Activator.getDefault().getBundle().getSymbolicName(),
 				Activator.getDefault().getBundle().getHeaders().get(Constants.BUNDLE_VERSION), stackTraceText });
-		text.setText(detailsText);
+		errorDetailsText.setText(detailsText);
 
 		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL
 				| GridData.VERTICAL_ALIGN_FILL | GridData.GRAB_VERTICAL);
 		data.heightHint = 300;
 		data.horizontalSpan = 2;
-		text.setLayoutData(data);
-		text.setFont(parent.getFont());
-		Menu copyMenu = new Menu(text);
+		errorDetailsText.setLayoutData(data);
+		errorDetailsText.setFont(parent.getFont());
+		Menu copyMenu = new Menu(errorDetailsText);
 		MenuItem copyItem = new MenuItem(copyMenu, SWT.NONE);
 		copyItem.addSelectionListener(new SelectionListener() {
 			/** @see SelectionListener.widgetDefaultSelected(SelectionEvent) */
@@ -334,79 +252,19 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 			}
 		});
 		copyItem.setText(JFaceResources.getString("copy")); //$NON-NLS-1$
-		text.setMenu(copyMenu);
-		return text;
+		errorDetailsText.setMenu(copyMenu);
+		return errorDetailsText;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.dialogs.IconAndMessageDialog#getImage()
-	 */
 	@Override
 	protected Image getImage() {
 		// If it was not a warning or an error then return the error image
 		return getErrorImage();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.dialogs.Dialog#isResizable()
-	 */
 	@Override
 	protected boolean isResizable() {
 		return true;
-	}
-
-	/**
-	 * Extends <code>Window.open()</code>. Opens an error dialog to display the error. If you specified a mask to filter
-	 * the displaying of these children, the error dialog will only be displayed if there is at least one child status
-	 * matching the mask.
-	 */
-	@Override
-	public int open() {
-		return super.open();
-	}
-
-	/**
-	 * Put the details of the status of the error onto the stream.
-	 * 
-	 * @param buildingStatus
-	 * @param buffer
-	 * @param nesting
-	 */
-	private void populateCopyBuffer(StringBuffer buffer, int nesting) {
-		buffer.append(text.getText());
-	}
-
-	/**
-	 * Return whether the Details button should be included. This method is invoked once when the dialog is built. By
-	 * default, the Details button is only included if the status used when creating the dialog was a multi-status or if
-	 * the status contains an exception. Subclasses may override.
-	 * 
-	 * @return whether the Details button should be included
-	 * @since 3.1
-	 */
-	protected boolean shouldShowDetailsButton() {
-		return true;
-	}
-
-	/**
-	 * Show the details portion of the dialog if it is not already visible. This method will only work when it is
-	 * invoked after the control of the dialog has been set. In other words, after the <code>createContents</code>
-	 * method has been invoked and has returned the control for the content area of the dialog. Invoking the method
-	 * before the content area has been set or after the dialog has been disposed will have no effect.
-	 * 
-	 * @since 3.1
-	 */
-	protected final void showDetailsArea() {
-		if (text == null || text.isDisposed()) {
-			Control control = getContents();
-			if (control != null && !control.isDisposed()) {
-				toggleDetailsArea();
-			}
-		}
 	}
 
 	/**
@@ -415,11 +273,11 @@ public class ErrorDetailsDialog extends IconAndMessageDialog {
 	private void toggleDetailsArea() {
 		Point windowSize = getShell().getSize();
 		Point oldSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		if (text != null && !text.isDisposed()) {
-			text.dispose();
+		if (errorDetailsText != null && !errorDetailsText.isDisposed()) {
+			errorDetailsText.dispose();
 			detailsButton.setText(IDialogConstants.SHOW_DETAILS_LABEL);
 		} else {
-			text = createDropDownList((Composite) getContents());
+			errorDetailsText = createDropDownList((Composite) getContents());
 			detailsButton.setText(IDialogConstants.HIDE_DETAILS_LABEL);
 			getContents().getShell().layout();
 		}
