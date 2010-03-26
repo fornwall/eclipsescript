@@ -3,10 +3,8 @@ package net.fornwall.eclipsescript.scripts;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.fornwall.eclipsescript.core.Activator;
 import net.fornwall.eclipsescript.core.RunLastHandler;
@@ -57,15 +55,11 @@ public class ScriptStore {
 	}
 
 	private static void addScriptInternal(final ScriptMetadata script) {
-		final Map<String, ScriptMetadata> store = getScriptStore();
-		store.put(script.getFullPath(), script);
+		scriptStore.put(script.getFullPath(), script);
 	}
 
 	public static void clearScripts() {
-		final Set<String> keys = new LinkedHashSet<String>(getScriptStore().keySet());
-		for (final String key : keys)
-			removeScript(key);
-		getScriptStore().clear();
+		scriptStore.clear();
 	}
 
 	public static void executeScript(ScriptMetadata script) {
@@ -93,13 +87,8 @@ public class ScriptStore {
 		return new ArrayList<ScriptMetadata>(scriptStore.values());
 	}
 
-	public static Map<String, ScriptMetadata> getScriptStore() {
-		return scriptStore;
-	}
-
 	public static void removeScript(final String name) {
-		final Map<String, ScriptMetadata> store = getScriptStore();
-		store.remove(name);
+		scriptStore.remove(name);
 	}
 
 	private static void showMessageOfferJumpToScript(ScriptMetadata script, ScriptException e) {
