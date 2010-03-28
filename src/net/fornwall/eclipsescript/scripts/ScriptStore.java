@@ -5,12 +5,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import net.fornwall.eclipsescript.core.Activator;
 import net.fornwall.eclipsescript.core.RunLastHandler;
 import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.ui.ErrorDetailsDialog;
 import net.fornwall.eclipsescript.util.EclipseUtils;
+import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,6 +22,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.texteditor.IDocumentProvider;
@@ -62,24 +65,39 @@ public class ScriptStore {
 		scriptStore.clear();
 	}
 
-	public static void executeScript(ScriptMetadata script) {
-		// add this even if script execution fails
-		RunLastHandler.lastRun = script;
-
+	public static <T> T executeRunnableWhichMayThrowScriptException(final ScriptMetadata script, Callable<T> r) {
 		try {
 			try {
-				// not called from resource change listener, so no need to call in separate job
-				MarkerManager.clearMarkers(script.getFile());
-
-				IScriptLanguageSupport languageSupport = ScriptLanguageHandler.getScriptSupport(script.getFile());
-				languageSupport.executeScript(script);
-			} catch (ScriptException error) {
+				return r.call();
+			} catch (final ScriptException error) {
 				MarkerManager.addMarker(script.getFile(), error);
-				showMessageOfferJumpToScript(script, error);
+				EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+					@Override
+					public void runWithDisplay(Display display) throws Exception {
+						showMessageOfferJumpToScript(script, error);
+					}
+				});
 			}
 		} catch (Exception e) {
 			Activator.logError(e);
 		}
+		return null;
+	}
+
+	public static void executeScript(final ScriptMetadata script) {
+		// add this even if script execution fails
+		RunLastHandler.lastRun = script;
+		// not called from resource change listener, so no need to call in separate job
+		MarkerManager.clearMarkers(script.getFile());
+		final IScriptLanguageSupport languageSupport = ScriptLanguageHandler.getScriptSupport(script.getFile());
+
+		executeRunnableWhichMayThrowScriptException(script, new Callable<Void>() {
+			@Override
+			public Void call() throws Exception {
+				languageSupport.executeScript(script);
+				return null;
+			}
+		});
 
 	}
 
@@ -91,7 +109,7 @@ public class ScriptStore {
 		scriptStore.remove(name);
 	}
 
-	private static void showMessageOfferJumpToScript(ScriptMetadata script, ScriptException e) {
+	static void showMessageOfferJumpToScript(ScriptMetadata script, ScriptException e) {
 		final String[] choices = new String[] { Messages.scriptErrorWhenRunningScriptOkButton,
 				Messages.scriptErrorWhenRunningScriptJumpToScriptButton };
 

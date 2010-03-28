@@ -4,20 +4,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import net.fornwall.eclipsescript.javascript.CustomContextFactory.CustomContext;
-import net.fornwall.eclipsescript.javascript.JavascriptRuntime.DieError;
-import net.fornwall.eclipsescript.javascript.JavascriptRuntime.ExitError;
 import net.fornwall.eclipsescript.scriptobjects.Eclipse;
 import net.fornwall.eclipsescript.scripts.IScriptLanguageSupport;
-import net.fornwall.eclipsescript.scripts.ScriptException;
 import net.fornwall.eclipsescript.scripts.ScriptMetadata;
 import net.fornwall.eclipsescript.util.JavaUtils;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.WrappedException;
 
 public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 
@@ -32,7 +27,7 @@ public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 					throw new IllegalArgumentException("Wrong context class: " + _context.getClass()); //$NON-NLS-1$
 				CustomContext context = (CustomContext) _context;
 				ScriptableObject scope = new ImporterTopLevel(context);
-				JavascriptRuntime jsRuntime = new JavascriptRuntime(context, scope, script.getFile());
+				JavascriptRuntime jsRuntime = new JavascriptRuntime(context, scope, script);
 
 				Eclipse eclipseJavaObject = new Eclipse(jsRuntime);
 				Object eclipseJsObject = Context.javaToJS(eclipseJavaObject, scope);
@@ -42,16 +37,8 @@ public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 				try {
 					reader = new InputStreamReader(script.getFile().getContents(), script.getFile().getCharset());
 					jsRuntime.evaluate(reader, script.getFile().getName());
-				} catch (ExitError e) {
-					// do nothing, just exit quietly due to eclipse.runtime.exit() call
-				} catch (DieError e) {
-					throw new ScriptException(e.getMessage(), e.evalException, e.evalException.lineNumber(), false);
-				} catch (RhinoException e) {
-					boolean showStackTrace = (e instanceof WrappedException);
-					Throwable cause = showStackTrace ? ((WrappedException) e).getCause() : e;
-					throw new ScriptException(e.getMessage(), cause, e.lineNumber(), showStackTrace);
-				} catch (Exception e) {
-					throw JavaUtils.asRuntime(e);
+				} catch (Throwable e) {
+					jsRuntime.handleExceptionFromScriptRuntime(e);
 				} finally {
 					JavaUtils.close(reader);
 				}
