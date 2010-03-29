@@ -5,6 +5,7 @@ import static java.util.regex.Pattern.compile;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -86,6 +87,9 @@ public class Resources {
 		if (objectToRead instanceof IFile) {
 			IFile file = (IFile) objectToRead;
 			return JavaUtils.readAllToStringAndClose(file.getContents(true), file.getCharset());
+		} else if (objectToRead instanceof URLConnection) {
+			URLConnection uc = (URLConnection) objectToRead;
+			return JavaUtils.readURLConnection(uc);
 		} else if (objectToRead instanceof URL) {
 			URL url = (URL) objectToRead;
 			return JavaUtils.readURL(url);

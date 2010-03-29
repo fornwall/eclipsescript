@@ -96,6 +96,10 @@ public class JavaUtils {
 
 	public static String readURL(URL url) throws Exception {
 		URLConnection uc = url.openConnection();
+		return readURLConnection(uc);
+	}
+
+	public static String readURLConnection(URLConnection uc) throws Exception {
 		String contentType = uc.getContentType();
 		int charSetNameIndex = contentType.indexOf("charset="); //$NON-NLS-1$
 		String charSet;
