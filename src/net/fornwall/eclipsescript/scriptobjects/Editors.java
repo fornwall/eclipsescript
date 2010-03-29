@@ -2,6 +2,7 @@ package net.fornwall.eclipsescript.scriptobjects;
 
 import net.fornwall.eclipsescript.messages.Messages;
 import net.fornwall.eclipsescript.util.EclipseUtils;
+import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadCallable;
 import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 import net.fornwall.eclipsescript.util.JavaUtils.MutableObject;
 
@@ -41,32 +42,49 @@ public class Editors {
 	}
 
 	/** Returns the currently edited document or null if none. */
-	public IDocument getDocument() {
-		return EclipseUtils.getCurrentDocument();
+	public IDocument getDocument() throws Exception {
+		return EclipseUtils.runInDisplayThreadSync(new DisplayThreadCallable<IDocument>() {
+			@Override
+			public IDocument callWithDisplay(Display display) throws Exception {
+				return EclipseUtils.getCurrentDocument();
+			}
+		});
 	}
 
 	/** Returns the currently edited file or null if none. */
-	public IFile getFile() {
-		IEditorInput editorInput = EclipseUtils.getCurrentEditorInput();
-		IFile fileEditorInput = null;
-		if (editorInput != null) {
-			fileEditorInput = (IFile) editorInput.getAdapter(IFile.class);
-		}
-		return fileEditorInput;
+	public IFile getFile() throws Exception {
+		return EclipseUtils.runInDisplayThreadSync(new DisplayThreadCallable<IFile>() {
+			@Override
+			public IFile callWithDisplay(Display display) throws Exception {
+				IEditorInput editorInput = EclipseUtils.getCurrentEditorInput();
+				IFile fileEditorInput = null;
+				if (editorInput != null) {
+					fileEditorInput = (IFile) editorInput.getAdapter(IFile.class);
+				}
+				return fileEditorInput;
+			}
+		});
 	}
 
-	/** Returns the current text selection or null if none. */
-	public ITextSelection getSelection() {
-		ITextEditor editor = EclipseUtils.getCurrentTextEditor();
-		if (editor == null)
-			return null;
-		ISelectionProvider provider = editor.getSelectionProvider();
-		if (provider == null)
-			return null;
-		ISelection selection = provider.getSelection();
-		if (!(selection instanceof ITextSelection))
-			return null;
-		return (ITextSelection) selection;
+	/**
+	 * Returns the current text selection or null if none.
+	 */
+	public ITextSelection getSelection() throws Exception {
+		return EclipseUtils.runInDisplayThreadSync(new DisplayThreadCallable<ITextSelection>() {
+			@Override
+			public ITextSelection callWithDisplay(Display display) throws Exception {
+				ITextEditor editor = EclipseUtils.getCurrentTextEditor();
+				if (editor == null)
+					return null;
+				ISelectionProvider provider = editor.getSelectionProvider();
+				if (provider == null)
+					return null;
+				ISelection selection = provider.getSelection();
+				if (!(selection instanceof ITextSelection))
+					return null;
+				return (ITextSelection) selection;
+			}
+		});
 	}
 
 	public void insert(final String textToInsert) throws Exception {

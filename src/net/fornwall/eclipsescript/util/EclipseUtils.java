@@ -25,6 +25,10 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 public class EclipseUtils {
 
+	public static interface DisplayThreadCallable<T> {
+		public T callWithDisplay(Display display) throws Exception;
+	}
+
 	/** A runnable to run in the display thread. */
 	public static interface DisplayThreadRunnable {
 		public void runWithDisplay(Display display) throws Exception;
@@ -111,45 +115,67 @@ public class EclipseUtils {
 		}
 	}
 
-	private static void runInDisplayThread(final DisplayThreadRunnable runnable, final boolean sync) throws Exception {
+	private static <T> T runInDisplayThread(final DisplayThreadCallable<T> runnable, final boolean sync)
+			throws Exception {
 		final Display display = PlatformUI.getWorkbench().getDisplay();
-		final MutableObject<Exception> exceptionThrownInUIThread = new MutableObject<Exception>();
-
-		Runnable showExceptionWrapper = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					runnable.runWithDisplay(display);
-				} catch (Exception e) {
-					if (sync) {
-						exceptionThrownInUIThread.value = e;
-					} else {
-						Activator.logError(e);
-					}
-				}
-			}
-		};
 
 		if (Thread.currentThread().equals(display.getThread())) {
-			showExceptionWrapper.run();
+			return runnable.callWithDisplay(display);
 		} else {
+			final MutableObject<Exception> exceptionThrownInUIThread = new MutableObject<Exception>();
+			final MutableObject<T> result = new MutableObject<T>();
+
+			Runnable showExceptionWrapper = new Runnable() {
+				@Override
+				public void run() {
+					try {
+						result.value = runnable.callWithDisplay(display);
+					} catch (Exception e) {
+						if (sync) {
+							exceptionThrownInUIThread.value = e;
+						} else {
+							Activator.logError(e);
+						}
+					}
+				}
+			};
+
 			if (sync) {
 				display.syncExec(showExceptionWrapper);
 			} else {
 				display.asyncExec(showExceptionWrapper);
 			}
-		}
+			if (exceptionThrownInUIThread.value != null) {
+				throw exceptionThrownInUIThread.value;
+			}
 
-		if (exceptionThrownInUIThread.value != null) {
-			throw exceptionThrownInUIThread.value;
+			return result.value;
 		}
 	}
 
 	public static void runInDisplayThreadAsync(final DisplayThreadRunnable runnable) throws Exception {
-		runInDisplayThread(runnable, false);
+		runInDisplayThread(new DisplayThreadCallable<Void>() {
+
+			@Override
+			public Void callWithDisplay(Display display) throws Exception {
+				runnable.runWithDisplay(display);
+				return null;
+			}
+		}, false);
+	}
+
+	public static <T> T runInDisplayThreadSync(final DisplayThreadCallable<T> runnable) throws Exception {
+		return runInDisplayThread(runnable, true);
 	}
 
 	public static void runInDisplayThreadSync(final DisplayThreadRunnable runnable) throws Exception {
-		runInDisplayThread(runnable, true);
+		runInDisplayThread(new DisplayThreadCallable<Void>() {
+
+			@Override
+			public Void callWithDisplay(Display display) throws Exception {
+				runnable.runWithDisplay(display);
+				return null;
+			}
+		}, false);
 	}
 }
