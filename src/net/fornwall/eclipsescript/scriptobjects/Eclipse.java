@@ -11,6 +11,7 @@ public class Eclipse {
 	private final Resources resources;
 	private final Runtime runtime;
 	private final Window window;
+	private final Xml xml;
 
 	public Eclipse(IScriptRuntime scriptRuntime) {
 		this.console = new Console(scriptRuntime);
@@ -18,6 +19,7 @@ public class Eclipse {
 		this.resources = new Resources(scriptRuntime);
 		this.runtime = new Runtime(scriptRuntime);
 		this.window = new Window();
+		this.xml = new Xml(resources);
 	}
 
 	public Console getConsole() {
@@ -40,4 +42,7 @@ public class Eclipse {
 		return window;
 	}
 
+	public Xml getXml() {
+		return xml;
+	}
 }
