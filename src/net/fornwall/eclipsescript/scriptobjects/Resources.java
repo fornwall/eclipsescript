@@ -98,9 +98,11 @@ public class Resources {
 			if (string.contains("://")) { //$NON-NLS-1$
 				URL url = new URL(string);
 				return JavaUtils.readURL(url);
-			} else if (string.startsWith("/")) { //$NON-NLS-1$
+			} else {
 				Path includePath = new Path(string);
-				IFile fileToRead = scriptRuntime.getStartingScript().getProject().getFile(includePath);
+				IContainer parent = string.startsWith("/") ? scriptRuntime.getStartingScript().getProject() //$NON-NLS-1$
+						: scriptRuntime.getStartingScript().getParent();
+				IFile fileToRead = parent.getFile(includePath);
 				if (!fileToRead.exists())
 					scriptRuntime.abortRunningScript(Messages.fileToReadDoesNotExist
 							+ fileToRead.getFullPath().toOSString());
