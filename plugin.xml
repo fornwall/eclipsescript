@@ -38,11 +38,11 @@
 
 	<extension point="org.eclipse.ui.bindings">
 		<key
-   			sequence="Alt+R"
+   			sequence="Ctrl+R"
    		    commandId="net.fornwall.eclipsescript.runlast"
    		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    		<key
-   			sequence="Ctrl+R"
+   			sequence="Alt+R"
    		    commandId="net.fornwall.eclipsescript.runcurrent"
    		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    		<key
