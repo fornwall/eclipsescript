@@ -30,7 +30,7 @@ public class JavaUtils {
 
 	private static final String UTF8_CHARSET_NAME = "utf-8"; //$NON-NLS-1$
 
-	public static RuntimeException asRuntime(Exception e) {
+	public static RuntimeException asRuntime(Throwable e) {
 		return (e instanceof RuntimeException) ? ((RuntimeException) e) : new RuntimeException(e);
 	}
 

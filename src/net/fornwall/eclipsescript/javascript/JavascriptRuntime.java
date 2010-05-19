@@ -152,7 +152,7 @@ class JavascriptRuntime implements IScriptRuntime {
 			if (err instanceof Error) {
 				throw (Error) err;
 			}
-			throw JavaUtils.asRuntime((Exception) err);
+			throw JavaUtils.asRuntime(err);
 		}
 	}
 }
