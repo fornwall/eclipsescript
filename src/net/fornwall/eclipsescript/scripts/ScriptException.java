@@ -6,12 +6,13 @@ public class ScriptException extends RuntimeException {
 
 	private final int lineNumber;
 
-	private final boolean showStackTrace;
-
+	/**
+	 * @param showStackTrace
+	 *            not used at the moment, it could perhaps always be useful with stack trace?
+	 */
 	public ScriptException(String message, Throwable cause, int lineNumber, boolean showStackTrace) {
 		super(message, cause);
 		this.lineNumber = lineNumber;
-		this.showStackTrace = showStackTrace;
 	}
 
 	public int getLineNumber() {
@@ -19,6 +20,6 @@ public class ScriptException extends RuntimeException {
 	}
 
 	public boolean isShowStackTrace() {
-		return showStackTrace;
+		return true;
 	}
 }
