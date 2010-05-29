@@ -35,7 +35,7 @@ public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 
 				Reader reader = null;
 				try {
-					reader = new InputStreamReader(script.getFile().getContents(), script.getFile().getCharset());
+					reader = new InputStreamReader(script.getFile().getContents(true), script.getFile().getCharset());
 					jsRuntime.evaluate(reader, script.getFile().getName());
 				} catch (Throwable e) {
 					jsRuntime.handleExceptionFromScriptRuntime(e);
