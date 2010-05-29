@@ -35,6 +35,8 @@ public class JavaUtils {
 	}
 
 	public static void close(Closeable c) {
+		if (c == null)
+			return;
 		try {
 			c.close();
 		} catch (IOException e) {
@@ -56,7 +58,7 @@ public class JavaUtils {
 			}
 			return baous.toByteArray();
 		} finally {
-			in.close();
+			close(in);
 		}
 	}
 
