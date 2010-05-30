@@ -5,14 +5,9 @@ import net.fornwall.eclipsescript.ui.ErrorDetailsDialog;
 import net.fornwall.eclipsescript.util.EclipseUtils;
 import net.fornwall.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.eclipse.osgi.service.resolver.ExportPackageDescription;
 import org.eclipse.osgi.service.resolver.PlatformAdmin;
@@ -79,13 +74,11 @@ public class Activator extends AbstractUIPlugin {
 		}
 	}
 
-	private BundleContext context;
-
 	private BundleDescription bundleDescription;
 
-	private Resolver resolver;
+	private BundleContext context;
 
-	final ScriptFilesChangeListener scriptFilesChangeListener = new ScriptFilesChangeListener();
+	private Resolver resolver;
 
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
@@ -104,26 +97,10 @@ public class Activator extends AbstractUIPlugin {
 			resolver.setState(state);
 			bundleDescription = state.getBundle(plugin.getBundle().getSymbolicName(), null);
 		}
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		workspace.addResourceChangeListener(scriptFilesChangeListener, IResourceChangeEvent.POST_CHANGE);
-
-		Job job = new Job(Messages.rescanScriptsJobName) {
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				scriptFilesChangeListener.rescanAllFiles();
-				return Status.OK_STATUS;
-			}
-		};
-		job.setSystem(true);
-		job.schedule();
 	}
 
 	@Override
 	public void stop(BundleContext bundleContext) throws Exception {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		workspace.removeResourceChangeListener(scriptFilesChangeListener);
-
 		super.stop(bundleContext);
 		Activator.plugin = null;
 	}
