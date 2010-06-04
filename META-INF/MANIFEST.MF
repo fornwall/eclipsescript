@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: net.fornwall.eclipsescript; singleton:=true
-Bundle-Version: 1.0.14
-Bundle-Activator: net.fornwall.eclipsescript.core.Activator
+Bundle-SymbolicName: org.eclipsescript; singleton:=true
+Bundle-Version: 1.0.17
+Bundle-Activator: org.eclipsescript.core.Activator
 Bundle-Vendor: %bundleVendor
 Require-Bundle: org.eclipse.ui;bundle-version="3.3",
  org.eclipse.core.runtime;bundle-version="3.5.0",

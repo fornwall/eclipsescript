@@ -6,58 +6,58 @@
 		<category
 	            name="%commandCategoryName"
 	            description="%commandCategoryDescription"
-	            id="net.fornwall.eclipsescript.commandcategory"/>
+	            id="org.eclipsescript.commandcategory"/>
 		<command
 		        name="%commandRunLastName"
 		        description="%commandRunLastDescription"
-		        categoryId="net.fornwall.eclipsescript.commandcategory"
-	            id="net.fornwall.eclipsescript.runlast"/>
+		        categoryId="org.eclipsescript.commandcategory"
+	            id="org.eclipsescript.runlast"/>
 		<command
 		        name="%commandRunCurrentName"
 		        description="%commandRunCurrentDescription"
-		        categoryId="net.fornwall.eclipsescript.commandcategory"
-	            id="net.fornwall.eclipsescript.runcurrent"/>
+		        categoryId="org.eclipsescript.commandcategory"
+	            id="org.eclipsescript.runcurrent"/>
 		<command
 		        name="%commandOpenScriptDialogName"
 		        description="%commandOpenScriptDialogDescription"
-		        categoryId="net.fornwall.eclipsescript.commandcategory"
-	            id="net.fornwall.eclipsescript.openscriptdialog"/>
+		        categoryId="org.eclipsescript.commandcategory"
+	            id="org.eclipsescript.openscriptdialog"/>
 	</extension>
 
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-        	class="net.fornwall.eclipsescript.core.RunLastHandler"
-            commandId="net.fornwall.eclipsescript.runlast"/>
+        	class="org.eclipsescript.core.RunLastHandler"
+            commandId="org.eclipsescript.runlast"/>
 		<handler
-        	class="net.fornwall.eclipsescript.core.RunCurrentHandler"
-            commandId="net.fornwall.eclipsescript.runcurrent"/>
+        	class="org.eclipsescript.core.RunCurrentHandler"
+            commandId="org.eclipsescript.runcurrent"/>
 		<handler
-        	class="net.fornwall.eclipsescript.core.OpenScriptDialogHandler"
-            commandId="net.fornwall.eclipsescript.openscriptdialog"/>
+        	class="org.eclipsescript.core.OpenScriptDialogHandler"
+            commandId="org.eclipsescript.openscriptdialog"/>
 	</extension>
 
 	<extension point="org.eclipse.ui.bindings">
 		<key
-   			sequence="Ctrl+R"
-   		    commandId="net.fornwall.eclipsescript.runlast"
+   			sequence="%commandRunLastSequence"
+   		    commandId="org.eclipsescript.runlast"
    		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    		<key
-   			sequence="Alt+R"
-   		    commandId="net.fornwall.eclipsescript.runcurrent"
+   			sequence="%commandRunCurrentSequence"
+   		    commandId="org.eclipsescript.runcurrent"
    		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    		<key
-   			sequence="Alt+Space"
-   		    commandId="net.fornwall.eclipsescript.openscriptdialog"
+   			sequence="%commandOpenScriptDialogSequence"
+   		    commandId="org.eclipsescript.openscriptdialog"
    		    schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    	</extension>
 
-	<extension id="net.fornwall.eclipsescript.scriptproblemmarker" point="org.eclipse.core.resources.markers" name="%markerName">
+	<extension id="org.eclipsescript.scriptproblemmarker" point="org.eclipse.core.resources.markers" name="%markerName">
 		<super type="org.eclipse.core.resources.problemmarker"/>
 	</extension>
 
 	<extension point="org.eclipse.ui.console.consolePageParticipants">
-		<consolePageParticipant class="net.fornwall.eclipsescript.ui.CloseConsolePageParticipant" id="net.fornwall.eclipsescript.ui.CloseConsolePageParticipant">
-			<enablement><instanceof value="net.fornwall.eclipsescript.scriptobjects.Console$ConsoleClass"/></enablement>
+		<consolePageParticipant class="org.eclipsescript.ui.CloseConsolePageParticipant" id="org.eclipsescript.ui.CloseConsolePageParticipant">
+			<enablement><instanceof value="org.eclipsescript.scriptobjects.Console$ConsoleClass"/></enablement>
 		</consolePageParticipant>
 	</extension> 
 
