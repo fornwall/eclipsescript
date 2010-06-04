@@ -1,6 +1,5 @@
 package org.eclipsescript.core;
 
-
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -87,16 +86,14 @@ public class Activator extends AbstractUIPlugin {
 		Activator.plugin = this;
 		context = bundleContext;
 
-		{
-			ServiceReference platformAdminServiceRef = context.getServiceReference(PlatformAdmin.class.getName());
-			PlatformAdmin platformAdminService = (PlatformAdmin) context.getService(platformAdminServiceRef);
+		ServiceReference platformAdminServiceRef = context.getServiceReference(PlatformAdmin.class.getName());
+		PlatformAdmin platformAdminService = (PlatformAdmin) context.getService(platformAdminServiceRef);
 
-			resolver = platformAdminService.createResolver();
-			State state = platformAdminService.getState(false);
-			context.ungetService(platformAdminServiceRef);
-			resolver.setState(state);
-			bundleDescription = state.getBundle(plugin.getBundle().getSymbolicName(), null);
-		}
+		resolver = platformAdminService.createResolver();
+		State state = platformAdminService.getState(false);
+		context.ungetService(platformAdminServiceRef);
+		resolver.setState(state);
+		bundleDescription = state.getBundle(plugin.getBundle().getSymbolicName(), null);
 	}
 
 	@Override
