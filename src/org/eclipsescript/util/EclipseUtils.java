@@ -1,6 +1,5 @@
 package org.eclipsescript.util;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextSelection;
@@ -78,11 +77,10 @@ public class EclipseUtils {
 		if (activePage == null)
 			return null;
 		IEditorPart activeEditor = activePage.getActiveEditor();
-		if (activeEditor instanceof ITextEditor) {
-			ITextEditor textEditor = (ITextEditor) activeEditor;
-			return textEditor;
-		}
-		return null;
+		if (activeEditor == null)
+			return null;
+		ITextEditor textEditor = (ITextEditor) activeEditor.getAdapter(ITextEditor.class);
+		return textEditor;
 	}
 
 	public static IEditorDescriptor getDefaultEditor(final IFile file) {
