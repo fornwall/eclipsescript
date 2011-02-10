@@ -1,8 +1,16 @@
 package org.eclipsescript.core;
 
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.eclipse.osgi.service.resolver.ExportPackageDescription;
 import org.eclipse.osgi.service.resolver.PlatformAdmin;
@@ -22,6 +30,8 @@ import org.osgi.framework.ServiceReference;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
+
+	public static final String IMG_REMOVE_ALL = "img_remove_all"; //$NON-NLS-1$
 
 	private static Activator plugin;
 
@@ -56,6 +66,10 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
+	public static ImageDescriptor getImageDescriptor(String id) {
+		return getDefault().getImageRegistry().getDescriptor(id);
+	}
+
 	public static void logError(final Throwable exception) {
 		ILog log = plugin.getLog();
 		log.log(new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), exception.getMessage(), exception));
@@ -78,6 +92,15 @@ public class Activator extends AbstractUIPlugin {
 	private BundleContext context;
 
 	private Resolver resolver;
+
+	@Override
+	protected void initializeImageRegistry(ImageRegistry registry) {
+		Bundle bundle = Platform.getBundle(getBundle().getSymbolicName());
+		IPath path = new Path("icons/remove_all_terminated.gif"); //$NON-NLS-1$
+		URL url = FileLocator.find(bundle, path, null);
+		ImageDescriptor desc = ImageDescriptor.createFromURL(url);
+		registry.put(IMG_REMOVE_ALL, desc);
+	}
 
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {

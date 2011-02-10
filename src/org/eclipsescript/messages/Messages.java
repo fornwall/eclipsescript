@@ -22,6 +22,7 @@ public class Messages extends NLS {
 	public static String noSelectionSelected;
 	public static String noTextEditorSelected;
 	public static String notPossibleToScheduleObject;
+	public static String removeAllTerminatedConsoles;
 	public static String Resources_cannotReadFromObject;
 	public static String runScriptBeforeRunningLast;
 	public static String scriptAlertDialogTitle;
