@@ -3,15 +3,14 @@ package org.eclipsescript.scripts;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-
 import org.eclipsescript.core.Activator;
 import org.osgi.framework.Bundle;
 
 public class ScriptClassLoader extends ClassLoader {
 
+	private final List<Bundle> bundles = new CopyOnWriteArrayList<Bundle>();
 	private final ClassLoader loader;
-	private List<Bundle> bundles = new CopyOnWriteArrayList<Bundle>();
-	private List<ClassLoader> loaders = new CopyOnWriteArrayList<ClassLoader>();
+	private final List<ClassLoader> loaders = new CopyOnWriteArrayList<ClassLoader>();
 
 	public ScriptClassLoader(ClassLoader loader) {
 		this.loader = loader;
