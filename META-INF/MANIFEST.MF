@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipsescript; singleton:=true
-Bundle-Version: 1.0.3
+Bundle-Version: 1.0.4
 Bundle-Activator: org.eclipsescript.core.Activator
 Bundle-Vendor: %bundleVendor
 Require-Bundle: org.eclipse.ui;bundle-version="3.3",
