@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipsescript; singleton:=true
-Bundle-Version: 1.0.4
+Bundle-Version: 1.0.5
 Bundle-Activator: org.eclipsescript.core.Activator
 Bundle-Vendor: %bundleVendor
 Require-Bundle: org.eclipse.ui;bundle-version="3.3",
@@ -11,10 +11,10 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.3",
  org.eclipse.ui.editors;bundle-version="3.3",
  org.eclipse.jface.text;bundle-version="3.3",
  org.eclipse.ui.ide;bundle-version="3.3",
- org.eclipse.ui.console;bundle-version="3.2",
- org.mozilla.javascript;bundle-version="1.7.2"
+ org.eclipse.ui.console;bundle-version="3.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ js.jar
 Bundle-Localization: plugin
 DynamicImport-Package: *
