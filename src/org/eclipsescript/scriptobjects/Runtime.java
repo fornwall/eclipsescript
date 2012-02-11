@@ -3,9 +3,9 @@ package org.eclipsescript.scriptobjects;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -66,9 +66,9 @@ public class Runtime {
 		if (runnable == null)
 			throw new IllegalArgumentException(Messages.notPossibleToScheduleObject + objectToSchedule);
 		String jobName = NLS.bind(Messages.scriptBackgroundJobName, scriptRuntime.getStartingScript().getName());
-		Job job = new Job(jobName) {
+		Job job = new WorkspaceJob(jobName) {
 			@Override
-			protected IStatus run(IProgressMonitor monitor) {
+			public IStatus runInWorkspace(IProgressMonitor monitor) {
 				return runnable.run(monitor);
 			}
 		};
