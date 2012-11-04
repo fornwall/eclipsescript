@@ -109,8 +109,8 @@ public class Activator extends AbstractUIPlugin {
 		Activator.plugin = this;
 		context = bundleContext;
 
-		ServiceReference platformAdminServiceRef = context.getServiceReference(PlatformAdmin.class.getName());
-		PlatformAdmin platformAdminService = (PlatformAdmin) context.getService(platformAdminServiceRef);
+		ServiceReference<PlatformAdmin> platformAdminServiceRef = context.getServiceReference(PlatformAdmin.class);
+		PlatformAdmin platformAdminService = context.getService(platformAdminServiceRef);
 
 		resolver = platformAdminService.createResolver();
 		State state = platformAdminService.getState(false);
