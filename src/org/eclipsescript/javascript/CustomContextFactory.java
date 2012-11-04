@@ -3,15 +3,14 @@ package org.eclipsescript.javascript;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.PlatformUI;
+import org.eclipsecript.rhino.javascript.Callable;
+import org.eclipsecript.rhino.javascript.Context;
+import org.eclipsecript.rhino.javascript.ContextFactory;
+import org.eclipsecript.rhino.javascript.Scriptable;
 import org.eclipsescript.messages.Messages;
 import org.eclipsescript.scripts.ScriptClassLoader;
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Scriptable;
 
 class CustomContextFactory extends ContextFactory {
 
@@ -65,7 +64,7 @@ class CustomContextFactory extends ContextFactory {
 		});
 
 		cx.setApplicationClassLoader(classLoader);
-		cx.setLanguageVersion(Context.VERSION_1_7);
+		cx.setLanguageVersion(Context.VERSION_1_8);
 		cx.getWrapFactory().setJavaPrimitiveWrap(false);
 		return cx;
 	}

@@ -1,0 +1,1 @@
+rule org.mozilla.** org.eclipsecript.rhino.@1

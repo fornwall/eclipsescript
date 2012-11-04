@@ -4,12 +4,18 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.concurrent.Callable;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.progress.IJobRunnable;
+import org.eclipsecript.rhino.javascript.BaseFunction;
+import org.eclipsecript.rhino.javascript.Context;
+import org.eclipsecript.rhino.javascript.ContextAction;
+import org.eclipsecript.rhino.javascript.EvaluatorException;
+import org.eclipsecript.rhino.javascript.RhinoException;
+import org.eclipsecript.rhino.javascript.Scriptable;
+import org.eclipsecript.rhino.javascript.WrappedException;
 import org.eclipsescript.javascript.CustomContextFactory.CustomContext;
 import org.eclipsescript.scripts.IScriptRuntime;
 import org.eclipsescript.scripts.ScriptClassLoader;
@@ -17,13 +23,6 @@ import org.eclipsescript.scripts.ScriptException;
 import org.eclipsescript.scripts.ScriptMetadata;
 import org.eclipsescript.scripts.ScriptStore;
 import org.eclipsescript.util.JavaUtils;
-import org.mozilla.javascript.BaseFunction;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextAction;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.WrappedException;
 
 class JavascriptRuntime implements IScriptRuntime {
 

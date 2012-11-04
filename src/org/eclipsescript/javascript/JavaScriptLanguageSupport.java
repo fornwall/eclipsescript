@@ -3,16 +3,15 @@ package org.eclipsescript.javascript;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-
+import org.eclipsecript.rhino.javascript.Context;
+import org.eclipsecript.rhino.javascript.ContextAction;
+import org.eclipsecript.rhino.javascript.ImporterTopLevel;
+import org.eclipsecript.rhino.javascript.ScriptableObject;
 import org.eclipsescript.javascript.CustomContextFactory.CustomContext;
 import org.eclipsescript.scriptobjects.Eclipse;
 import org.eclipsescript.scripts.IScriptLanguageSupport;
 import org.eclipsescript.scripts.ScriptMetadata;
 import org.eclipsescript.util.JavaUtils;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextAction;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.ScriptableObject;
 
 public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 
