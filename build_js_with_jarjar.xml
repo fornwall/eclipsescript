@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="jarjar">
+	<target name="jarjar">
+		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="${user.home}/lib/jarjar-1.4.jar" />
+		<delete quiet="true" file="js.jar" />
+		<jarjar jarfile="js.jar">
+			<rule pattern="org.mozilla.**" result="org.eclipsescript.rhino.@1" />
+		<!--
+			<zipgroupfileset dir="." includes="*.jar" />
+			-->
+			<zipfileset src="js_orig.jar" />
+		</jarjar>
+	</target>
+</project>

@@ -3,11 +3,11 @@ package org.eclipsescript.javascript;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.eclipsecript.rhino.javascript.Context;
-import org.eclipsecript.rhino.javascript.ContextAction;
-import org.eclipsecript.rhino.javascript.ImporterTopLevel;
-import org.eclipsecript.rhino.javascript.ScriptableObject;
 import org.eclipsescript.javascript.CustomContextFactory.CustomContext;
+import org.eclipsescript.rhino.javascript.Context;
+import org.eclipsescript.rhino.javascript.ContextAction;
+import org.eclipsescript.rhino.javascript.ImporterTopLevel;
+import org.eclipsescript.rhino.javascript.ScriptableObject;
 import org.eclipsescript.scriptobjects.Eclipse;
 import org.eclipsescript.scripts.IScriptLanguageSupport;
 import org.eclipsescript.scripts.ScriptMetadata;

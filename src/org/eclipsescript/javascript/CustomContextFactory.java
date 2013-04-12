@@ -5,11 +5,11 @@ import java.security.PrivilegedAction;
 
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.PlatformUI;
-import org.eclipsecript.rhino.javascript.Callable;
-import org.eclipsecript.rhino.javascript.Context;
-import org.eclipsecript.rhino.javascript.ContextFactory;
-import org.eclipsecript.rhino.javascript.Scriptable;
 import org.eclipsescript.messages.Messages;
+import org.eclipsescript.rhino.javascript.Callable;
+import org.eclipsescript.rhino.javascript.Context;
+import org.eclipsescript.rhino.javascript.ContextFactory;
+import org.eclipsescript.rhino.javascript.Scriptable;
 import org.eclipsescript.scripts.ScriptClassLoader;
 
 class CustomContextFactory extends ContextFactory {
