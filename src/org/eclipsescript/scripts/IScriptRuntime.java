@@ -11,7 +11,7 @@ public interface IScriptRuntime {
 
 	public <T> T adaptTo(Object object, Class<T> clazz);
 
-	public void evaluate(Reader reader, String sourceName) throws IOException;
+	public void evaluate(Reader reader, String sourceName, boolean nested) throws IOException;
 
 	public void exitRunningScript();
 

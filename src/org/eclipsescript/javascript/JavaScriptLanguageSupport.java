@@ -3,6 +3,7 @@ package org.eclipsescript.javascript;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipsescript.javascript.CustomContextFactory.CustomContext;
 import org.eclipsescript.rhino.javascript.Context;
 import org.eclipsescript.rhino.javascript.ContextAction;
@@ -34,8 +35,10 @@ public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 
 				Reader reader = null;
 				try {
-					reader = new InputStreamReader(script.getFile().getContents(true), script.getFile().getCharset());
-					jsRuntime.evaluate(reader, script.getFile().getName());
+					IFile scriptFile = script.getFile();
+					reader = new InputStreamReader(scriptFile.getContents(true), scriptFile.getCharset());
+					String name = scriptFile.getFullPath().toPortableString();
+					jsRuntime.evaluate(reader, name, false);
 				} catch (Throwable e) {
 					jsRuntime.handleExceptionFromScriptRuntime(e);
 				} finally {

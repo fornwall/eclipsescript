@@ -116,8 +116,8 @@ class JavascriptRuntime implements IScriptRuntime {
 	}
 
 	@Override
-	public void evaluate(Reader reader, String sourceName) throws IOException {
-		Scriptable fileScope = context.newObject(topLevelScope);
+	public void evaluate(Reader reader, String sourceName, boolean nested) throws IOException {
+		Scriptable fileScope = nested ? topLevelScope : context.newObject(topLevelScope);
 		context.evaluateReader(fileScope, reader, sourceName, 1, null);
 	}
 
@@ -141,12 +141,15 @@ class JavascriptRuntime implements IScriptRuntime {
 			// do nothing, just exit quietly due to eclipse.runtime.exit() call
 		} else if (err instanceof DieError) {
 			DieError e = (DieError) err;
-			throw new ScriptException(e.getMessage(), e.evalException, e.evalException.lineNumber(), false);
+			RhinoException re = e.evalException;
+			throw new ScriptException(e.getMessage(), re, re.sourceName(), re.lineNumber(), re.getScriptStackTrace(),
+					false);
 		} else if (err instanceof RhinoException) {
-			RhinoException e = (RhinoException) err;
-			boolean showStackTrace = (e instanceof WrappedException);
-			Throwable cause = showStackTrace ? ((WrappedException) e).getCause() : e;
-			throw new ScriptException(e.getMessage(), cause, e.lineNumber(), showStackTrace);
+			RhinoException re = (RhinoException) err;
+			boolean showStackTrace = (re instanceof WrappedException);
+			Throwable cause = showStackTrace ? ((WrappedException) re).getCause() : re;
+			throw new ScriptException(re.getMessage(), cause, re.sourceName(), re.lineNumber(),
+					re.getScriptStackTrace(), showStackTrace);
 		} else {
 			if (err instanceof Error) {
 				throw (Error) err;

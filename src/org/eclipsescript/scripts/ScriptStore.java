@@ -2,7 +2,9 @@ package org.eclipsescript.scripts;
 
 import java.util.concurrent.Callable;
 
-
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.osgi.util.NLS;
@@ -25,7 +27,8 @@ public class ScriptStore {
 			try {
 				return r.call();
 			} catch (final ScriptException error) {
-				MarkerManager.addMarker(script.getFile(), error);
+				IFile file = getFile(script, error);
+				MarkerManager.addMarker(file, error);
 				EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
 					@Override
 					public void runWithDisplay(Display display) throws Exception {
@@ -53,26 +56,43 @@ public class ScriptStore {
 				return null;
 			}
 		});
+	}
 
+	static IFile getFile(ScriptMetadata script, ScriptException scriptException) {
+		IFile file = null;
+		try {
+			IPath path = new Path(scriptException.getSourceName());
+			file = script.getFile().getWorkspace().getRoot().getFile(path);
+		} catch (Throwable t) {
+			file = script.getFile();
+		}
+		return file;
 	}
 
 	static void showMessageOfferJumpToScript(ScriptMetadata script, ScriptException e) {
 		final String[] choices = new String[] { Messages.scriptErrorWhenRunningScriptOkButton,
 				Messages.scriptErrorWhenRunningScriptJumpToScriptButton };
 
+		int lineNumber = Math.max(e.getLineNumber(), 1);
+		IFile file = getFile(script, e);
+
 		String dialogTitle = Messages.scriptErrorWhenRunningScriptDialogTitle;
-		String dialogText = NLS.bind(Messages.scriptErrorWhenRunningScriptDialogText, script.getFile().getName(), e
-				.getCause().getMessage());
+		String dialogText = NLS.bind(Messages.scriptErrorWhenRunningScriptDialogText, new Object[] {
+				script.getFile().getName(), e.getCause().getMessage(), Integer.toString(lineNumber) });
+
+		if (e.getScriptStackTrace() != null && !e.getScriptStackTrace().isEmpty()) {
+			dialogText = dialogText + "\n\n" + e.getScriptStackTrace(); //$NON-NLS-1$
+		}
+
 		int result = ErrorDetailsDialog.openError(EclipseUtils.getWindowShell(), dialogTitle, dialogText, e.getCause(),
 				choices, e.isShowStackTrace());
 		if (result == 1) {
-			IEditorPart editorPart = EclipseUtils.openEditor(script.getFile());
+			IEditorPart editorPart = EclipseUtils.openEditor(file);
 			if (editorPart instanceof ITextEditor) {
 				ITextEditor textEditor = (ITextEditor) editorPart;
 				IDocumentProvider provider = textEditor.getDocumentProvider();
 				IDocument document = provider.getDocument(textEditor.getEditorInput());
 				try {
-					int lineNumber = Math.max(e.getLineNumber(), 1);
 					int start = document.getLineOffset(lineNumber - 1);
 					textEditor.selectAndReveal(start, 0);
 					IWorkbenchPage page = textEditor.getSite().getPage();
@@ -82,6 +102,5 @@ public class ScriptStore {
 				}
 			}
 		}
-
 	}
 }

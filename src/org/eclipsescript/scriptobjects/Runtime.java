@@ -47,14 +47,20 @@ public class Runtime {
 			Path includePath = new Path(includeStringPath);
 			IFile startingScript = scriptRuntime.getStartingScript();
 			IContainer startingScriptCounter = startingScript.getParent();
-			IFile fileToInclude = startingScriptCounter.getFile(includePath);
+			IFile fileToInclude;
+			if (includePath.isAbsolute()) {
+				fileToInclude = startingScriptCounter.getWorkspace().getRoot().getFile(includePath);
+			} else {
+				fileToInclude = startingScriptCounter.getFile(includePath);
+			}
 			if (!fileToInclude.exists())
 				scriptRuntime.abortRunningScript(Messages.fileToIncludeDoesNotExist
 						+ fileToInclude.getFullPath().toOSString());
 
 			Reader reader = new InputStreamReader(fileToInclude.getContents(), fileToInclude.getCharset());
 			try {
-				scriptRuntime.evaluate(reader, fileToInclude.getName());
+				String name = fileToInclude.getFullPath().toPortableString();
+				scriptRuntime.evaluate(reader, name, true);
 			} finally {
 				reader.close();
 			}
