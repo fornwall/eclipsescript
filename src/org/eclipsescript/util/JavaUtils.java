@@ -1,6 +1,5 @@
 package org.eclipsescript.util;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -80,10 +79,9 @@ public class JavaUtils {
 	}
 
 	public static String readAllToStringAndClose(Reader in) {
-		BufferedReader reader = (in instanceof BufferedReader) ? (BufferedReader) in : new BufferedReader(in);
 		StringBuilder result = new StringBuilder();
 		try {
-			char[] buffer = new char[1024];
+			char[] buffer = new char[4096];
 			int n;
 			while ((n = in.read(buffer)) != -1) {
 				result.append(buffer, 0, n);
@@ -92,7 +90,7 @@ public class JavaUtils {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			close(reader);
+			close(in);
 		}
 	}
 
