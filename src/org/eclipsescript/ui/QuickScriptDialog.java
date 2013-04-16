@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -141,7 +140,9 @@ public final class QuickScriptDialog extends PopupDialog {
 						entry.paint(event, textLayout, resourceManager, boldStyle);
 						break;
 					case SWT.EraseItem:
-						entry.erase(event);
+						QuickAccessEntry.erase(event);
+						break;
+					default:
 						break;
 					}
 				}

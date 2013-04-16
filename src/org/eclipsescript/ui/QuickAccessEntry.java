@@ -1,6 +1,5 @@
 package org.eclipsescript.ui;
 
-
 import org.eclipse.jface.resource.DeviceResourceException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ResourceManager;
@@ -15,20 +14,12 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipsescript.core.Activator;
 
 final class QuickAccessEntry {
-	QuickAccessElement element;
-	private final int[][] elementMatchRegions;
-
-	QuickAccessEntry(QuickAccessElement element, int[][] elementMatchRegions) {
-		this.element = element;
-		this.elementMatchRegions = elementMatchRegions;
-	}
-
-	public void erase(Event event) {
+	public static void erase(Event event) {
 		// We are only custom drawing the foreground.
 		event.detail &= ~SWT.FOREGROUND;
 	}
 
-	private Image findOrCreateImage(ImageDescriptor imageDescriptor, ResourceManager resourceManager) {
+	private static Image findOrCreateImage(ImageDescriptor imageDescriptor, ResourceManager resourceManager) {
 		if (imageDescriptor == null) {
 			return null;
 		}
@@ -41,6 +32,15 @@ final class QuickAccessEntry {
 			}
 		}
 		return image;
+	}
+
+	QuickAccessElement element;
+
+	private final int[][] elementMatchRegions;
+
+	QuickAccessEntry(QuickAccessElement element, int[][] elementMatchRegions) {
+		this.element = element;
+		this.elementMatchRegions = elementMatchRegions;
 	}
 
 	Image getImage(ResourceManager resourceManager) {
