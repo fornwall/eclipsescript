@@ -2,6 +2,9 @@ Eclipse plugin for scripting using javascript.
 
 Read more at http://eclipsescript.org/.
 
+For development, an eclipse project containing some tests are available at:
+	https://github.com/fornwall/eclipsescript-tests
+
 This plug-in currently uses a re-packaged version of rhino in js.jar. This was built from rhino master git on 2013-04-11 using:
 	(1) Get the source (https://developer.mozilla.org/en-US/docs/Rhino/Download_Rhino?redirectlocale=en-US&redirectslug=RhinoDownload):
 		git clone https://github.com/mozilla/rhino.git
