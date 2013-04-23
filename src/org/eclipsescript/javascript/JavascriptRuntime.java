@@ -1,10 +1,11 @@
 package org.eclipsescript.javascript;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStreamReader;
 import java.util.concurrent.Callable;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -18,6 +19,7 @@ import org.eclipsescript.rhino.javascript.RhinoException;
 import org.eclipsescript.rhino.javascript.Scriptable;
 import org.eclipsescript.rhino.javascript.WrappedException;
 import org.eclipsescript.scripts.IScriptRuntime;
+import org.eclipsescript.scripts.MarkerManager;
 import org.eclipsescript.scripts.ScriptClassLoader;
 import org.eclipsescript.scripts.ScriptException;
 import org.eclipsescript.scripts.ScriptMetadata;
@@ -54,6 +56,7 @@ class JavascriptRuntime implements IScriptRuntime {
 	}
 
 	final Context context;
+	final InheritableThreadLocal<IFile> currentFile = new InheritableThreadLocal<IFile>();
 	final ScriptMetadata script;
 	final Scriptable topLevelScope;
 
@@ -61,6 +64,7 @@ class JavascriptRuntime implements IScriptRuntime {
 		this.context = context;
 		this.topLevelScope = topLevelScope;
 		this.script = script;
+		this.currentFile.set(script.getFile());
 
 		context.jsRuntime = this;
 	}
@@ -116,9 +120,27 @@ class JavascriptRuntime implements IScriptRuntime {
 	}
 
 	@Override
-	public void evaluate(Reader reader, String sourceName, boolean nested) throws IOException {
-		Scriptable fileScope = nested ? topLevelScope : context.newObject(topLevelScope);
-		context.evaluateReader(fileScope, reader, sourceName, 1, null);
+	public void evaluate(IFile file, boolean nested) throws IOException {
+		// Cleanup eventual error markers from last run of this file since it may now be fixed - if an error remains it
+		// will be re-added later when it fails again:
+		MarkerManager.clearMarkers(file);
+
+		InputStreamReader reader = null;
+		IFile previousFile = currentFile.get();
+		try {
+			currentFile.set(file);
+			reader = new InputStreamReader(file.getContents(true), file.getCharset());
+			String sourceName = file.getFullPath().toPortableString();
+			Scriptable fileScope = nested ? topLevelScope : context.newObject(topLevelScope);
+			context.evaluateReader(fileScope, reader, sourceName, 1, null);
+		} catch (CoreException e) {
+			throw new RuntimeException(e);
+		} finally {
+			currentFile.set(previousFile);
+			if (reader != null) {
+				reader.close();
+			}
+		}
 	}
 
 	@Override
@@ -127,13 +149,13 @@ class JavascriptRuntime implements IScriptRuntime {
 	}
 
 	@Override
-	public ScriptClassLoader getScriptClassLoader() {
-		return (ScriptClassLoader) context.getApplicationClassLoader();
+	public IFile getExecutingFile() {
+		return currentFile.get();
 	}
 
 	@Override
-	public IFile getStartingScript() {
-		return script.getFile();
+	public ScriptClassLoader getScriptClassLoader() {
+		return (ScriptClassLoader) context.getApplicationClassLoader();
 	}
 
 	public void handleExceptionFromScriptRuntime(Throwable err) {

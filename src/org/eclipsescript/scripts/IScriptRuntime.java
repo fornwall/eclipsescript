@@ -1,7 +1,6 @@
 package org.eclipsescript.scripts;
 
 import java.io.IOException;
-import java.io.Reader;
 
 import org.eclipse.core.resources.IFile;
 
@@ -11,11 +10,12 @@ public interface IScriptRuntime {
 
 	public <T> T adaptTo(Object object, Class<T> clazz);
 
-	public void evaluate(Reader reader, String sourceName, boolean nested) throws IOException;
+	public void evaluate(IFile file, boolean nested) throws IOException;
 
 	public void exitRunningScript();
 
 	public ScriptClassLoader getScriptClassLoader();
 
-	public IFile getStartingScript();
+	public IFile getExecutingFile();
+
 }

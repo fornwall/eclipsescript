@@ -1,9 +1,5 @@
 package org.eclipsescript.javascript;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-
-import org.eclipse.core.resources.IFile;
 import org.eclipsescript.javascript.CustomContextFactory.CustomContext;
 import org.eclipsescript.rhino.javascript.Context;
 import org.eclipsescript.rhino.javascript.ContextAction;
@@ -12,7 +8,6 @@ import org.eclipsescript.rhino.javascript.ScriptableObject;
 import org.eclipsescript.scriptobjects.Eclipse;
 import org.eclipsescript.scripts.IScriptLanguageSupport;
 import org.eclipsescript.scripts.ScriptMetadata;
-import org.eclipsescript.util.JavaUtils;
 
 public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 
@@ -33,16 +28,10 @@ public class JavaScriptLanguageSupport implements IScriptLanguageSupport {
 				Object eclipseJsObject = Context.javaToJS(eclipseJavaObject, scope);
 				ScriptableObject.putConstProperty(scope, Eclipse.VARIABLE_NAME, eclipseJsObject);
 
-				Reader reader = null;
 				try {
-					IFile scriptFile = script.getFile();
-					reader = new InputStreamReader(scriptFile.getContents(true), scriptFile.getCharset());
-					String name = scriptFile.getFullPath().toPortableString();
-					jsRuntime.evaluate(reader, name, false);
+					jsRuntime.evaluate(script.getFile(), false);
 				} catch (Throwable e) {
 					jsRuntime.handleExceptionFromScriptRuntime(e);
-				} finally {
-					JavaUtils.close(reader);
 				}
 				return null;
 			}

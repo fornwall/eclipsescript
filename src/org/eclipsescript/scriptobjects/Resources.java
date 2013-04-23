@@ -76,7 +76,7 @@ public class Resources {
 
 	/** Get the project of the currently executing script. */
 	public IProject getScriptProject() {
-		return scriptRuntime.getStartingScript().getProject();
+		return scriptRuntime.getExecutingFile().getProject();
 	}
 
 	public IWorkspace getWorkspace() {
@@ -100,8 +100,8 @@ public class Resources {
 				return JavaUtils.readURL(url);
 			} else {
 				Path includePath = new Path(string);
-				IContainer parent = string.startsWith("/") ? scriptRuntime.getStartingScript().getProject() //$NON-NLS-1$
-						: scriptRuntime.getStartingScript().getParent();
+				IContainer parent = string.startsWith("/") ? scriptRuntime.getExecutingFile().getProject() //$NON-NLS-1$
+						: scriptRuntime.getExecutingFile().getParent();
 				IFile fileToRead = parent.getFile(includePath);
 				if (!fileToRead.exists())
 					scriptRuntime.abortRunningScript(Messages.fileToReadDoesNotExist

@@ -1,8 +1,5 @@
 package org.eclipsescript.scriptobjects;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -43,27 +40,24 @@ public class Runtime {
 
 	public void include(Object... includes) throws Exception {
 		for (Object includeObject : includes) {
-			String includeStringPath = (String) includeObject;
-			Path includePath = new Path(includeStringPath);
-			IFile startingScript = scriptRuntime.getStartingScript();
-			IContainer startingScriptCounter = startingScript.getParent();
 			IFile fileToInclude;
-			if (includePath.isAbsolute()) {
-				fileToInclude = startingScriptCounter.getWorkspace().getRoot().getFile(includePath);
+			if (includeObject instanceof IFile) {
+				fileToInclude = (IFile) includeObject;
 			} else {
-				fileToInclude = startingScriptCounter.getFile(includePath);
+				String includeStringPath = (String) includeObject;
+				Path includePath = new Path(includeStringPath);
+				IFile executingScriptFile = scriptRuntime.getExecutingFile();
+				IContainer startingScriptCounter = executingScriptFile.getParent();
+				if (includePath.isAbsolute()) {
+					fileToInclude = startingScriptCounter.getWorkspace().getRoot().getFile(includePath);
+				} else {
+					fileToInclude = startingScriptCounter.getFile(includePath);
+				}
 			}
 			if (!fileToInclude.exists())
 				scriptRuntime.abortRunningScript(Messages.fileToIncludeDoesNotExist
 						+ fileToInclude.getFullPath().toOSString());
-
-			Reader reader = new InputStreamReader(fileToInclude.getContents(), fileToInclude.getCharset());
-			try {
-				String name = fileToInclude.getFullPath().toPortableString();
-				scriptRuntime.evaluate(reader, name, true);
-			} finally {
-				reader.close();
-			}
+			scriptRuntime.evaluate(fileToInclude, true);
 		}
 	}
 
@@ -71,7 +65,7 @@ public class Runtime {
 		final IJobRunnable runnable = scriptRuntime.adaptTo(objectToSchedule, IJobRunnable.class);
 		if (runnable == null)
 			throw new IllegalArgumentException(Messages.notPossibleToScheduleObject + objectToSchedule);
-		String jobName = NLS.bind(Messages.scriptBackgroundJobName, scriptRuntime.getStartingScript().getName());
+		String jobName = NLS.bind(Messages.scriptBackgroundJobName, scriptRuntime.getExecutingFile().getName());
 		Job job = new WorkspaceJob(jobName) {
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) {

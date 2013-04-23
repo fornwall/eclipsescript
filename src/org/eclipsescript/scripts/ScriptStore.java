@@ -45,8 +45,6 @@ public class ScriptStore {
 	public static void executeScript(final ScriptMetadata script) {
 		// add this even if script execution fails
 		RunLastHandler.lastRun = script;
-		// not called from resource change listener, so no need to call in separate job
-		MarkerManager.clearMarkers(script.getFile());
 		final IScriptLanguageSupport languageSupport = ScriptLanguageHandler.getScriptSupport(script.getFile());
 
 		executeRunnableWhichMayThrowScriptException(script, new Callable<Void>() {
@@ -61,7 +59,12 @@ public class ScriptStore {
 	static IFile getFile(ScriptMetadata script, ScriptException scriptException) {
 		IFile file = null;
 		try {
-			IPath path = new Path(scriptException.getSourceName());
+			String sourceName = scriptException.getSourceName();
+			int hashIdx = sourceName.indexOf('#');
+			if (hashIdx != -1) {
+				sourceName = sourceName.substring(0, hashIdx);
+			}
+			IPath path = new Path(sourceName);
 			file = script.getFile().getWorkspace().getRoot().getFile(path);
 		} catch (Throwable t) {
 			file = script.getFile();

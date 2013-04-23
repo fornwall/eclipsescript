@@ -36,7 +36,7 @@ public class Console {
 	MessageConsoleStream out;
 
 	public Console(IScriptRuntime runtime) {
-		this.name = NLS.bind(Messages.scriptConsoleName, runtime.getStartingScript().getName());
+		this.name = NLS.bind(Messages.scriptConsoleName, runtime.getExecutingFile().getName());
 	}
 
 	void init() {
