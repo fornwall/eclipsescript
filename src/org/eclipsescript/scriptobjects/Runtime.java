@@ -47,11 +47,11 @@ public class Runtime {
 				String includeStringPath = (String) includeObject;
 				Path includePath = new Path(includeStringPath);
 				IFile executingScriptFile = scriptRuntime.getExecutingFile();
-				IContainer startingScriptCounter = executingScriptFile.getParent();
+				IContainer startingScriptContainer = executingScriptFile.getParent();
 				if (includePath.isAbsolute()) {
-					fileToInclude = startingScriptCounter.getWorkspace().getRoot().getFile(includePath);
+					fileToInclude = startingScriptContainer.getWorkspace().getRoot().getFile(includePath);
 				} else {
-					fileToInclude = startingScriptCounter.getFile(includePath);
+					fileToInclude = startingScriptContainer.getFile(includePath);
 				}
 			}
 			if (!fileToInclude.exists())
