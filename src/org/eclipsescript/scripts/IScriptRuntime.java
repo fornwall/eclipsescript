@@ -14,8 +14,10 @@ public interface IScriptRuntime {
 
 	public void exitRunningScript();
 
+	public IFile getExecutingFile();
+
 	public ScriptClassLoader getScriptClassLoader();
 
-	public IFile getExecutingFile();
+	public void setExecutingFile(IFile file);
 
 }

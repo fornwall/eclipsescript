@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -53,8 +52,16 @@ public class Resources {
 	/** Get the currently selected project. */
 	public IProject getCurrentProject() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
-		IWorkbenchWindow activeWindow = workbench.getActiveWorkbenchWindow();
-		IWorkbenchPage activePage = activeWindow.getActivePage();
+		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+		if (window == null) {
+			IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
+			if (windows != null) {
+				window = windows[0];
+			}
+		}
+		if (window == null)
+			return null;
+		IWorkbenchPage activePage = window.getActivePage();
 		if (activePage == null)
 			return null;
 		IEditorPart activeEditor = activePage.getActiveEditor();
@@ -76,6 +83,10 @@ public class Resources {
 
 	/** Get the project of the currently executing script. */
 	public IProject getScriptProject() {
+		if (scriptRuntime == null)
+			return null;
+		if (scriptRuntime.getExecutingFile() == null)
+			return null;
 		return scriptRuntime.getExecutingFile().getProject();
 	}
 
