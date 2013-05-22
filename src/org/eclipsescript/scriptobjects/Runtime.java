@@ -9,6 +9,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IJobRunnable;
 import org.eclipsescript.messages.Messages;
 import org.eclipsescript.scripts.IScriptRuntime;
@@ -24,6 +26,11 @@ public class Runtime {
 
 	public Runtime(IScriptRuntime scriptRuntime) {
 		this.scriptRuntime = scriptRuntime;
+	}
+
+	public void asyncExec(Runnable runnable) {
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		workbench.getDisplay().asyncExec(runnable);
 	}
 
 	public void die(String message) {
@@ -75,5 +82,10 @@ public class Runtime {
 		job.setSystem(false);
 		job.setUser(true);
 		job.schedule();
+	}
+
+	public void syncExec(Runnable runnable) {
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		workbench.getDisplay().syncExec(runnable);
 	}
 }
