@@ -75,4 +75,19 @@ public class Console {
 		});
 	}
 
+	public void printStackTrace(final Throwable t) throws Exception {
+		EclipseUtils.runInDisplayThreadAsync(new DisplayThreadRunnable() {
+
+			@Override
+			public void runWithDisplay(Display display) throws Exception {
+				init();
+				out.println(t.getClass().getName());
+				for (StackTraceElement stack : t.getStackTrace()) {
+					out.println("\t at " + stack.toString()); //$NON-NLS-1$
+				}
+			}
+
+		});
+	}
+
 }
