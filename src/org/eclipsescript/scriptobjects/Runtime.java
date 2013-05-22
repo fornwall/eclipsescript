@@ -73,9 +73,12 @@ public class Runtime {
 		if (runnable == null)
 			throw new IllegalArgumentException(Messages.notPossibleToScheduleObject + objectToSchedule);
 		String jobName = NLS.bind(Messages.scriptBackgroundJobName, scriptRuntime.getExecutingFile().getName());
+		final IScriptRuntime runtime = scriptRuntime;
+		final IFile executingFile = scriptRuntime.getExecutingFile();
 		Job job = new WorkspaceJob(jobName) {
 			@Override
 			public IStatus runInWorkspace(IProgressMonitor monitor) {
+				runtime.setExecutingFile(executingFile);
 				return runnable.run(monitor);
 			}
 		};

@@ -64,7 +64,7 @@ class JavascriptRuntime implements IScriptRuntime {
 		this.context = context;
 		this.topLevelScope = topLevelScope;
 		this.script = script;
-		this.currentFile.set(script.getFile());
+		setExecutingFile(script.getFile());
 
 		context.jsRuntime = this;
 	}
@@ -126,9 +126,9 @@ class JavascriptRuntime implements IScriptRuntime {
 		MarkerManager.clearMarkers(file);
 
 		InputStreamReader reader = null;
-		IFile previousFile = currentFile.get();
+		IFile previousFile = getExecutingFile();
 		try {
-			currentFile.set(file);
+			setExecutingFile(file);
 			reader = new InputStreamReader(file.getContents(true), file.getCharset());
 			String sourceName = file.getFullPath().toPortableString();
 			Scriptable fileScope = nested ? topLevelScope : context.newObject(topLevelScope);
@@ -136,7 +136,7 @@ class JavascriptRuntime implements IScriptRuntime {
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		} finally {
-			currentFile.set(previousFile);
+			setExecutingFile(previousFile);
 			if (reader != null) {
 				reader.close();
 			}
@@ -178,5 +178,10 @@ class JavascriptRuntime implements IScriptRuntime {
 			}
 			throw JavaUtils.asRuntime(err);
 		}
+	}
+
+	@Override
+	public void setExecutingFile(IFile file) {
+		currentFile.set(file);
 	}
 }
