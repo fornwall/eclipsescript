@@ -18,6 +18,7 @@ class CustomContextFactory extends ContextFactory {
 		public JavascriptRuntime jsRuntime;
 
 		long startTime;
+		boolean useTimeout = true;
 
 		public CustomContext(ContextFactory factory) {
 			super(factory);
@@ -72,6 +73,8 @@ class CustomContextFactory extends ContextFactory {
 	@Override
 	protected void observeInstructionCount(Context cx, int instructionCount) {
 		CustomContext mcx = (CustomContext) cx;
+		if (!mcx.useTimeout)
+			return;
 		final int MAX_SECONDS = 10;
 		long currentTime = System.currentTimeMillis();
 		if (currentTime - mcx.startTime > MAX_SECONDS * 1000) {

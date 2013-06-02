@@ -10,6 +10,8 @@ public interface IScriptRuntime {
 
 	public <T> T adaptTo(Object object, Class<T> clazz);
 
+	public void disableTimeout();
+
 	public void evaluate(IFile file, boolean nested) throws IOException;
 
 	public void exitRunningScript();

@@ -55,7 +55,7 @@ class JavascriptRuntime implements IScriptRuntime {
 		// just a marker class
 	}
 
-	final Context context;
+	final CustomContext context;
 	final InheritableThreadLocal<IFile> currentFile = new InheritableThreadLocal<IFile>();
 	final ScriptMetadata script;
 	final Scriptable topLevelScope;
@@ -117,6 +117,11 @@ class JavascriptRuntime implements IScriptRuntime {
 			};
 		}
 		return null;
+	}
+
+	@Override
+	public void disableTimeout() {
+		context.useTimeout = false;
 	}
 
 	@Override

@@ -37,6 +37,10 @@ public class Runtime {
 		scriptRuntime.abortRunningScript(message);
 	}
 
+	public void disableTimeout() {
+		scriptRuntime.disableTimeout();
+	}
+
 	public void exit() {
 		scriptRuntime.exitRunningScript();
 	}
