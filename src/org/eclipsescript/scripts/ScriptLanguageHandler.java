@@ -3,7 +3,6 @@ package org.eclipsescript.scripts;
 import java.util.Collections;
 import java.util.Map;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipsescript.javascript.JavaScriptLanguageSupport;
 
@@ -15,10 +14,16 @@ public class ScriptLanguageHandler {
 
 	static IScriptLanguageSupport getScriptSupport(IFile file) {
 		String fileName = file.getName();
-		int index = fileName.lastIndexOf(".eclipse."); //$NON-NLS-1$
+		int index = -1;
+		int len = 14;
+		index = fileName.lastIndexOf(".eclipse.auto."); //$NON-NLS-1$
+		if (index == -1) {
+			len = 9;
+			index = fileName.lastIndexOf(".eclipse."); //$NON-NLS-1$
+		}
 		if (index == -1)
 			return null;
-		String fileExtension = fileName.substring(index + 9);
+		String fileExtension = fileName.substring(index + len);
 		return getLanguageSupports().get(fileExtension);
 	}
 

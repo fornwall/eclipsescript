@@ -59,6 +59,12 @@
 		<consolePageParticipant class="org.eclipsescript.ui.CloseConsolePageParticipant" id="org.eclipsescript.ui.CloseConsolePageParticipant">
 			<enablement><instanceof value="org.eclipsescript.scriptobjects.Console$ConsoleClass"/></enablement>
 		</consolePageParticipant>
-	</extension> 
+	</extension>
+ <extension
+       point="org.eclipse.ui.startup">
+    <startup
+          class="org.eclipsescript.core.Autostart">
+    </startup>
+ </extension> 
 
 </plugin>
