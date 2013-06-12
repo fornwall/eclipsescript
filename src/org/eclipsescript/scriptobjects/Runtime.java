@@ -1,5 +1,8 @@
 package org.eclipsescript.scriptobjects;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -22,6 +25,7 @@ import org.eclipsescript.util.EclipseUtils;
  */
 public class Runtime {
 
+	private static final Map<String, Object> globals = new HashMap<String, Object>();
 	private final IScriptRuntime scriptRuntime;
 
 	public Runtime(IScriptRuntime scriptRuntime) {
@@ -43,6 +47,10 @@ public class Runtime {
 
 	public void exit() {
 		scriptRuntime.exitRunningScript();
+	}
+
+	public synchronized Object getGlobal(String key) {
+		return globals.get(key);
 	}
 
 	public Shell getShell() {
@@ -70,6 +78,10 @@ public class Runtime {
 						+ fileToInclude.getFullPath().toOSString());
 			scriptRuntime.evaluate(fileToInclude, true);
 		}
+	}
+
+	public synchronized void putGlobal(String key, Object value) {
+		globals.put(key, value);
 	}
 
 	public void schedule(final Object objectToSchedule) {
