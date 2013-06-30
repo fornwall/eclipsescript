@@ -18,7 +18,7 @@ class CustomContextFactory extends ContextFactory {
 		public JavascriptRuntime jsRuntime;
 
 		long startTime;
-		boolean useTimeout = true;
+		volatile boolean useTimeout = true;
 
 		public CustomContext(ContextFactory factory) {
 			super(factory);
