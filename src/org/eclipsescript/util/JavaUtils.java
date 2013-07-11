@@ -109,7 +109,11 @@ public class JavaUtils {
 			charSet = contentType.substring(charSetNameIndex + 8);
 		}
 		InputStream in = uc.getInputStream();
-		return readAllToStringAndClose(in, charSet);
+		try {
+			return readAllToStringAndClose(in, charSet);
+		} finally {
+			in.close();
+		}
 	}
 
 }
