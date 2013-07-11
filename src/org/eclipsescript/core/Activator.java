@@ -113,7 +113,7 @@ public class Activator extends AbstractUIPlugin {
 		// ServiceReference<PlatformAdmin> platformAdminServiceRef = context.getServiceReference(PlatformAdmin.class);
 		// PlatformAdmin platformAdminService = context.getService(platformAdminServiceRef);
 		// Eclipse 3.6 api:
-		ServiceReference platformAdminServiceRef = context.getServiceReference(PlatformAdmin.class.getName());
+		ServiceReference<?> platformAdminServiceRef = context.getServiceReference(PlatformAdmin.class.getName());
 		PlatformAdmin platformAdminService = (PlatformAdmin) context.getService(platformAdminServiceRef);
 
 		resolver = platformAdminService.createResolver();
