@@ -1,6 +1,8 @@
 package org.eclipsescript.core;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.ILog;
@@ -24,6 +26,7 @@ import org.eclipsescript.util.EclipseUtils;
 import org.eclipsescript.util.EclipseUtils.DisplayThreadRunnable;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -36,16 +39,8 @@ public class Activator extends AbstractUIPlugin {
 	private static Activator plugin;
 
 	public static Bundle getBundleExportingClass(String className) {
-		int lastIndexOfDot = className.lastIndexOf('.');
-		if (lastIndexOfDot > 0 && lastIndexOfDot < className.length() - 1) {
-			char firstCharOfClassName = className.charAt(lastIndexOfDot + 1);
-			if (Character.isLowerCase(firstCharOfClassName)) {
-				// probably a package requested by rhino "org.eclipse" part of "org.eclipse.ui.xxx"
-				return null;
-			}
-
-			String packageName = className.substring(0, lastIndexOfDot);
-
+		String packageName = getPackageNameFromClassName(className);
+		if (packageName != null) {
 			ExportPackageDescription desc = plugin.resolver.resolveDynamicImport(plugin.bundleDescription, packageName);
 			if (desc != null) {
 				BundleDescription exporter = desc.getExporter();
@@ -53,10 +48,29 @@ public class Activator extends AbstractUIPlugin {
 				Bundle exportingBundle = plugin.context.getBundle(exporterBundleId);
 				return exportingBundle;
 			}
+		}
+		return null;
+	}
 
+	public static Bundle[] getBundlesExportingPackage(String className) {
+		List<Bundle> bundles = new ArrayList<Bundle>();
+
+		String packageName = getPackageNameFromClassName(className);
+		if (packageName != null) {
+			BundleContext bundleContext = FrameworkUtil.getBundle(Activator.class).getBundleContext();
+			ExportPackageDescription[] exportedPackages = plugin.resolver.getState().getExportedPackages();
+			for (ExportPackageDescription packageDescription : exportedPackages) {
+				boolean found = packageName.equals(packageDescription.getName());
+				if (found) {
+					BundleDescription exporter = packageDescription.getExporter();
+					long bundleId = exporter.getBundleId();
+					Bundle bundle = bundleContext.getBundle(bundleId);
+					bundles.add(bundle);
+				}
+			}
 		}
 
-		return null;
+		return bundles.toArray(new Bundle[bundles.size()]);
 	}
 
 	/**
@@ -68,6 +82,21 @@ public class Activator extends AbstractUIPlugin {
 
 	public static ImageDescriptor getImageDescriptor(String id) {
 		return getDefault().getImageRegistry().getDescriptor(id);
+	}
+
+	private static String getPackageNameFromClassName(String className) {
+		int lastIndexOfDot = className.lastIndexOf('.');
+		if (lastIndexOfDot > 0 && lastIndexOfDot < className.length() - 1) {
+			char firstCharOfClassName = className.charAt(lastIndexOfDot + 1);
+			if (Character.isLowerCase(firstCharOfClassName)) {
+				// probably a package requested by rhino "org.eclipse" part of "org.eclipse.ui.xxx"
+				return null;
+			}
+			String packageName = className.substring(0, lastIndexOfDot);
+			return packageName;
+		}
+
+		return null;
 	}
 
 	public static void logError(final Throwable exception) {

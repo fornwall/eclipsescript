@@ -52,8 +52,23 @@ public class ScriptClassLoader extends ClassLoader {
 
 		Bundle bundleContainingClass = Activator.getBundleExportingClass(name);
 		if (bundleContainingClass != null) {
-			addBundle(bundleContainingClass);
-			return bundleContainingClass.loadClass(name);
+			try {
+				Class<?> clazz = bundleContainingClass.loadClass(name);
+				addBundle(bundleContainingClass);
+				return clazz;
+			} catch (ClassNotFoundException e) {
+				// handle classes in "split-packages" see http://wiki.osgi.org/wiki/Split_Packages
+				Bundle[] bundlesExportingPackage = Activator.getBundlesExportingPackage(name);
+				for (Bundle bundle : bundlesExportingPackage) {
+					try {
+						Class<?> clazz = bundle.loadClass(name);
+						addBundle(bundle);
+						return clazz;
+					} catch (ClassNotFoundException e1) {
+						continue;
+					}
+				}
+			}
 		}
 
 		return null;
