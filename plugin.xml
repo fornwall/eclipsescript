@@ -65,6 +65,20 @@
     <startup
           class="org.eclipsescript.core.Autostart">
     </startup>
+ </extension>
+ <extension
+       point="org.eclipse.ui.preferencePages">
+    <page
+          class="org.eclipsescript.preferences.EclipseScriptPreferencePage"
+          id="org.eclipsescript.preferences.EclipseScriptPreferencePage"
+          name="EclipseScript Preferences">
+    </page>
+ </extension>
+ <extension
+       point="org.eclipse.core.runtime.preferences">
+    <initializer
+          class="org.eclipsescript.preferences.PreferenceInitializer">
+    </initializer>
  </extension> 
 
 </plugin>

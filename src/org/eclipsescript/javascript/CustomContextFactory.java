@@ -3,9 +3,12 @@ package org.eclipsescript.javascript;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.PlatformUI;
+import org.eclipsescript.core.Activator;
 import org.eclipsescript.messages.Messages;
+import org.eclipsescript.preferences.PreferenceConstants;
 import org.eclipsescript.rhino.javascript.Callable;
 import org.eclipsescript.rhino.javascript.Context;
 import org.eclipsescript.rhino.javascript.ContextFactory;
@@ -18,10 +21,22 @@ class CustomContextFactory extends ContextFactory {
 		public JavascriptRuntime jsRuntime;
 
 		long startTime;
+		int timeout;
 		volatile boolean useTimeout = true;
 
 		public CustomContext(ContextFactory factory) {
 			super(factory);
+			try {
+				IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
+				timeout = preferenceStore.getInt(PreferenceConstants.P_TIMEOUT);
+			} catch (Throwable t) {
+				System.err.println(t.getMessage());
+			}
+
+			if (timeout == 0) {
+				timeout = PreferenceConstants.P_TIMEOUT_DEFAULT;
+			}
+			// System.out.println("timeout=" + timeout + " @" + this);
 		}
 	}
 
@@ -75,7 +90,7 @@ class CustomContextFactory extends ContextFactory {
 		CustomContext mcx = (CustomContext) cx;
 		if (!mcx.useTimeout)
 			return;
-		final int MAX_SECONDS = 10;
+		final int MAX_SECONDS = mcx.timeout;
 		long currentTime = System.currentTimeMillis();
 		if (currentTime - mcx.startTime > MAX_SECONDS * 1000) {
 			mcx.jsRuntime.abortRunningScript(NLS.bind(Messages.scriptTimeout, MAX_SECONDS));
