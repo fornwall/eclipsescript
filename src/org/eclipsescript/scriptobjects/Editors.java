@@ -1,6 +1,5 @@
 package org.eclipsescript.scriptobjects;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -14,7 +13,12 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipsescript.messages.Messages;
@@ -59,7 +63,7 @@ public class Editors {
 				IEditorInput editorInput = EclipseUtils.getCurrentEditorInput();
 				IFile fileEditorInput = null;
 				if (editorInput != null) {
-					fileEditorInput = (IFile) editorInput.getAdapter(IFile.class);
+					fileEditorInput = editorInput.getAdapter(IFile.class);
 				}
 				return fileEditorInput;
 			}
@@ -102,6 +106,22 @@ public class Editors {
 				StyledText styledText = (StyledText) editor.getAdapter(Control.class);
 				int offset = styledText.getCaretOffset();
 				document.replace(offset, 0, textToInsert);
+			}
+		});
+	}
+
+	public void open(final IFile file) throws Exception {
+		EclipseUtils.runInDisplayThreadSync(new DisplayThreadRunnable() {
+			@Override
+			public void runWithDisplay(Display display) throws Exception {
+
+				IWorkbench workbench = PlatformUI.getWorkbench();
+				IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
+
+				IEditorDescriptor editorDescriptor = PlatformUI.getWorkbench().getEditorRegistry()
+						.getDefaultEditor(file.getName());
+				activePage.openEditor(new FileEditorInput(file), editorDescriptor.getId());
+
 			}
 		});
 	}

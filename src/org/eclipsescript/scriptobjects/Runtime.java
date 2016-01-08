@@ -1,5 +1,6 @@
 package org.eclipsescript.scriptobjects;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IJobRunnable;
+import org.eclipsescript.core.Activator;
 import org.eclipsescript.messages.Messages;
 import org.eclipsescript.scripts.IScriptRuntime;
 import org.eclipsescript.util.EclipseUtils;
@@ -74,9 +76,17 @@ public class Runtime {
 				}
 			}
 			if (!fileToInclude.exists())
-				scriptRuntime.abortRunningScript(Messages.fileToIncludeDoesNotExist
-						+ fileToInclude.getFullPath().toOSString());
+				scriptRuntime.abortRunningScript(
+						Messages.fileToIncludeDoesNotExist + fileToInclude.getFullPath().toOSString());
 			scriptRuntime.evaluate(fileToInclude, true);
+		}
+	}
+
+	public void launch(String command) {
+		try {
+			java.lang.Runtime.getRuntime().exec(command);
+		} catch (IOException e) {
+			Activator.logError(e);
 		}
 	}
 
