@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -118,8 +119,14 @@ public class Editors {
 				IWorkbench workbench = PlatformUI.getWorkbench();
 				IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
 
-				IEditorDescriptor editorDescriptor = PlatformUI.getWorkbench().getEditorRegistry()
-						.getDefaultEditor(file.getName());
+				IEditorRegistry editorRegistry = PlatformUI.getWorkbench().getEditorRegistry();
+				IEditorDescriptor editorDescriptor = editorRegistry.getDefaultEditor(file.getName());
+
+				if (editorDescriptor == null) {
+					// there is no default editor for the file, use text editor
+					editorDescriptor = editorRegistry.getDefaultEditor("1.txt"); //$NON-NLS-1$
+				}
+
 				activePage.openEditor(new FileEditorInput(file), editorDescriptor.getId());
 
 			}

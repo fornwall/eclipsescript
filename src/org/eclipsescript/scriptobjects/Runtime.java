@@ -47,6 +47,14 @@ public class Runtime {
 		scriptRuntime.disableTimeout();
 	}
 
+	public void exec(String command) {
+		try {
+			java.lang.Runtime.getRuntime().exec(command);
+		} catch (IOException e) {
+			Activator.logError(e);
+		}
+	}
+
 	public void exit() {
 		scriptRuntime.exitRunningScript();
 	}
@@ -79,14 +87,6 @@ public class Runtime {
 				scriptRuntime.abortRunningScript(
 						Messages.fileToIncludeDoesNotExist + fileToInclude.getFullPath().toOSString());
 			scriptRuntime.evaluate(fileToInclude, true);
-		}
-	}
-
-	public void launch(String command) {
-		try {
-			java.lang.Runtime.getRuntime().exec(command);
-		} catch (IOException e) {
-			Activator.logError(e);
 		}
 	}
 
