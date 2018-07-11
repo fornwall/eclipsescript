@@ -1,0 +1,6 @@
+h1 { text-align: center; }
+h1, h2 { background-color: #E5ECF9; color: black; border-top: 1px solid #6F6F6F; border-bottom: 1px solid #6F6F6F; padding: 0.4em; }
+hr { margin-top: 4em; }
+dt { background-color: white; color: #65738A; font-weight: bold; }
+img { margin: 0.5em; border: none; }
+p img, li img { vertical-align: middle; margin: 0; }

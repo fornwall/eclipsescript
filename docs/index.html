@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>EclipseScript</title>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+
+<body>
+<div>
+<h1>EclipseScript</h1>
+
+<ul>
+<li><a href="#about">About</a></li>
+<li><a href="#news">News</a></li>
+<li><a href="#installing">Installing</a></li>
+<li><a href="#writing-and-running-scripts">Writing and running scripts</a></li>
+<li><a href="#basics-scripting">Basics of scripting</a></li>
+<li><a href="#example-scripts">Example scripts</a></li>
+<li><a href="#eclipse-object">The eclipse global object</a></li>
+<li><a href="#source-code">Source code</a></li>
+<li><a href="#feedback">Feedback</a></li>
+</ul>
+
+
+<h2 id="about">About</h2>
+<p>EclipseScript is an Eclipse plug-in providing support for scripting the development environment using javascript. It provides a simple API to interact with the editor while also exposing the full Eclipse platform and plug-in system.</p>
+
+<h2 id="news">News</h2>
+<dl>
+
+	<dt>2016-01-12 - Version 1.0.12 released, introducing eclipse.runtime.exec() and eclipse.editors.open()</dt>
+	<dd>The rhino javascript engine has also been updated, which brings in the changes made in <a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_6_RELEASE">rhino 1.7.6</a> and <a href="https://github.com/mozilla/rhino/releases/tag/Rhino1_7_7_RELEASE">rhino 1.7.7</a>.</dd>
+</dl>
+
+<h2 id="installing">Installing</h2>
+<p>Eclipse 3.6 and Java 6 or later is required. Update site URL:</p>
+<ul><li><a href="http://eclipsescript.org/updates/">http://eclipsescript.org/updates/</a></li></ul>
+
+
+<h2 id="writing-and-running-scripts">Writing and running scripts</h2>
+<p>EclipseScript scripts are javascript files inside the workspace with the file extension <strong>.eclipse.js</strong>. As a start, create a new file with the name <code>count-js.eclipse.js</code> and put the following content in it:</p>
+<script src="http://gist.github.com/426070.js?file=count-js.eclipse.js"></script>
+
+<p>To run a script, open the EclipseScript launch dialog by using the shortcut <strong>Ctrl+4</strong> (or <strong>Cmd+4</strong> on Mac). Start writing the name of the script and execute it by pressing return when the script is selected in the list.</p>
+<img src="script-dialog.png" alt="The script dialog" width="926" height="497"/>
+
+<h2 id="basics-scripting">Basics of scripting</h2>
+<p>Scripting is implemented using version 1.7R4 of <a href="http://www.mozilla.org/rhino/">the Rhino javascript engine</a>. For more information on using java from Rhino, see <a href="https://developer.mozilla.org/docs/Scripting_Java">the Rhino documentation on the subject</a>.</p>
+<p>Besides the general java &lt;-&gt; javascript bridging described above, the EclipseScript plug-in injects a global object with the name <strong>eclipse</strong> exposing a simplified API to interact with the Eclipse development environment. See <a href="#eclipse-object">the below documentation for the eclipse global object</a>.</p>
+<p>Besides using the eclipse global object scripts may access eclipse plug-in classes just as normal java code. Plug-in loading is on demand - when first accessing a class unknown to the runtime, the EclipseScript plug-in will resolve a plug-in providing the class and load it.</p>
+
+<h2 id="example-scripts">Example scripts</h2>
+<p>Accessing and replacing the currently selected text:</p>
+<script src="http://gist.github.com/426070.js?file=upcase-selected-text.eclipse.js"></script>
+
+<p>SWT may be used directly:</p>
+<script src="http://gist.github.com/426070.js?file=color-picker.eclipse.js"></script>
+
+<p>A plug-in such as JDT is loaded just by using a package from the plug-in:</p>
+<script src="http://gist.github.com/426070.js?file=alert-java-imports.eclipse.js"></script>
+
+<p>Debug output to the console:</p>
+<script src="http://gist.github.com/426070.js?file=warn-about-system-out.eclipse.js"></script>
+
+<p id="example-background">Operations that may take some time should be run in a background job to avoid blocking the user interface thread:</p>
+<script src="http://gist.github.com/426070.js?file=filetypes-in-project.eclipse.js"></script>
+
+<p>A script to post the current selection to gisthub:</p>
+<script src="http://gist.github.com/426070.js?file=gist-snippet.eclipse.js"></script>
+
+<p>Example using the <a href="http://www.vogella.de/articles/EclipseJDT/article.html">java AST</a> and the <a href="http://www.eclipse.org/articles/Article-Mark%20My%20Words/mark-my-words.html">eclipse markers API</a>:</p>
+<script src="http://gist.github.com/426070.js?file=system-out-markers.eclipse.js"></script>
+
+<p>Finally an example using the java AST to wrap method bodies in timing statements, adding statements to <code>void myMethod() { ... }</code> resulting in <code>void myMethod() { long _startTime = System.currentTimeMillis(); try { ... } finally { long _stopTime = System.currentTimeMillis() - _startTime; System.out.println("Time executing MyClass#myMethod: " + _passedTime) }</code>:</p>
+<script src="http://gist.github.com/426070.js?file=print-timing-in-methods.eclipse.js"></script>
+
+<h2 id="eclipse-object">The eclipse global object</h2>
+<p>The <code>eclipse</code> object is a global object injected by the EclipseScript plug-in and provides a simplified API to interact with the Eclipse environment compared to accessing the API directly.</p>
+
+<dl>
+ <dt>eclipse.console.print(String message)</dt>
+ <dd>Function to print a message to the console view.</dd>
+ <dt>eclipse.console.println(String message)</dt>
+ <dd>Function to print a message line to the console view.</dd>
+</dl>
+
+<dl>
+ <dt>eclipse.editors.clipboard</dt>
+ <dd>String property. The current clipboard text content or null if none - may both be set and read.</dd>
+ <dt>eclipse.editors.document</dt>
+ <dd>Read-only property. The currently selected text document or null if none. An instanceof of <a href="http://help.eclipse.org/indigo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/jface/text/IDocument.html">IDocument</a> which most notable contains the <code>get()</code> method to get the text of the document and the <code>set(String)</code> method to set the text.</dd>
+ <dt>eclipse.editors.file</dt>
+ <dd>Read-only property. The currently edited file or null if none. An instance of <a href="http://help.eclipse.org/indigo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IFile.html">IFile</a>.</dd>
+ <dt>eclipse.editors.insert(String textToInsert)</dt>
+ <dd>Function to insert text at the current cursor position.</dd>
+ <dt>eclipse.editors.open(IFile file)</dt>
+ <dd>Open the specified file in an eclipse editor..</dd>
+ <dt>eclipse.editors.replaceSelection(String newText)</dt>
+ <dd>Function to replace the current selection.</dd>
+ <dt>eclipse.editors.selection</dt>
+ <dd>Read-only property. The current text selection or null if no selection. This object is an instance of <a href="http://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/api/org/eclipse/jface/text/ITextSelection.html">ITextSelection</a> and contains the <code>text</code> property for the text, as well as the offset, length, startLine and endLine properties. This property is read-only, use <code>eclipse.editors.replaceSelection(String)</code> to change the content of the current selection. Example: <code>eclipse.window.alert('Selection is ' + eclipse.editors.selection.text + ' and starts at line ' + eclipse.editors.selection.startLine);</code></dd>
+</dl>
+
+<dl>
+    <dt>eclipse.resources.currentProject</dt>
+    <dd>Read-only property. The project of the current editor or null if none. An instance of <a href="http://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IProject.html">IProject</a>.</dd>
+    <dt>eclipse.resources.read(Object input)</dt>
+    <dd>Function returning a String resulting from reading the input, which may be an URL or an IFile.</dd>
+    <dt>eclipse.resources.filesMatching(String regexp, IResource startingPoint)</dt>
+    <dd>Function returning an array of <a href="http://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IFile.html">IFile</a>:s matching the regular expression and which are children of the starting point. Note that both IProject:s are IResource:s, so eclipse.resources.scriptProject and eclipse.resources.currentProject are valid starting points. Use <code>eclipse.resources.workspace.root</code> as starting point to examine the whole workspace.</dd>
+    <dt>eclipse.resources.scriptProject</dt>
+    <dd>Read-only property. The project which the currently executing script is a part of. An instance of <a href="http://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IProject.html">IProject</a>.</dd>
+    <dt>eclipse.resources.workspace</dt>
+    <dd>Read-only property. The current eclipse workspace. An instance of <a href="http://help.eclipse.org/indigo/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/core/resources/IWorkspace.html">IWorkspace</a>.</dd>
+</dl>
+
+<dl>
+ <dt>eclipse.runtime.include(String ... files)</dt>
+ <dd>Executes one or more script files in the current context. If the path starts with a slash it is workspace-relative, so use <code>eclipse.runtime.include('/' + eclipse.resources.currentProject.name + '/path/to/file')</code> to include project-absolute paths. Otherwise the path is relative to the current script, so use <code>eclipse.runtime.include('file.js')</code> to include a script being side-by-side with the current one.</dd>
+ <dt>eclipse.runtime.die(String message)</dt>
+ <dd>Function to exit the execution of the currently running script while providing a message shown to the user. An example for scripts operating on a selection would be <code>if (eclipse.editor.selection == null) die('Nothing is selected')</code>.</dd>
+ <dt>eclipse.runtime.exec(String cmd)</dt>
+ <dd>Execute the specified command in an external process.</dd>
+ <dt>eclipse.runtime.exit()</dt>
+ <dd>Function to exit the execution of the currently running script.</dd>
+ <dt>eclipse.runtime.schedule(IJobRunnable runnable)</dt>
+ <dd>Function to run a task in a background, non-ui thread. See the <a href="http://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/api/org/eclipse/ui/progress/IJobRunnable.html">IJobRunnable</a> class documentation for more info, though the <a href="#example-background">example given previously</a> should cover many use cases.</dd>
+ <dt>eclipse.runtime.putGlobal(String key, Object value), eclipse.runtime.getGlobal(String key)</dt>
+ <dd>Functions to manipulate global state bound to the lifetime of the whole eclipse process (that is, outliving the current script execution).</dd>
+</dl>
+
+<dl>
+ <dt>eclipse.window.alert(String message)</dt>
+ <dd>The normal javascript alert function as available in browsers.</dd>
+ <dt>eclipse.window.confirm(String question)</dt>
+ <dd>The normal javascript confirm function as available in browsers.</dd>
+ <dt>eclipse.window.open(String url)</dt>
+ <dd>The normal javascript open function to open a browser.</dd>
+ <dt>eclipse.window.prompt(String message, String initialValue = "")</dt>
+ <dd>The normal javascript prompt function as available in browsers.</dd>
+</dl>
+
+<dl>
+ <dt>eclipse.xml.parse(Object input)</dt>
+ <dd>Parse the input into a <a href="http://java.sun.com/webservices/docs/1.6/api/org/w3c/dom/Document.html">org.w3c.dom.Document</a> object.</dd>
+</dl>
+
+<h2 id="source-code">Source code</h2>
+<p>Source code is available at <a href="http://github.com/fornwall/eclipsescript/">http://github.com/fornwall/eclipsescript/</a>.</p>
+
+
+<h2 id="feedback">Feedback</h2>
+<p>Comments, ideas and bug reports can be filed at <a href="http://github.com/fornwall/eclipsescript/issues">the issue tracker</a>.</p>
+
+</div>
+</body>
+</html>
+
