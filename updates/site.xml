@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+  <description url="http://eclipsescript.org/updates/">
+    Update site for EclipseScript
+  </description>
+  <category-def name="EclipseScript" label="EclipseScript">
+    <description>Plug-in allowing scripting of the Eclipse IDE using javascript.</description>
+  </category-def>
+  <feature id="org.eclipsescript" url="features/org.eclipsescript_1.0.12-feature.jar" version="1.0.12"><category name="EclipseScript"/></feature>
+</site>
