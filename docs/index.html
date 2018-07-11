@@ -47,7 +47,7 @@
 
 <h2 id="basics-scripting">Basics of scripting</h2>
 <p>Scripting is implemented using version 1.7R4 of <a href="http://www.mozilla.org/rhino/">the Rhino javascript engine</a>. For more information on using java from Rhino, see <a href="https://developer.mozilla.org/docs/Scripting_Java">the Rhino documentation on the subject</a>.</p>
-<p>Besides the general java &lt;-&gt; javascript bridging described above, the EclipseScript plug-in injects a global object with the name <strong>eclipse</strong> exposing a simplified API to interact with the Eclipse development environment. See <a href="#eclipse-object">the below documentation for the eclipse global object</a>.</p>
+<p>Besides this general java &lt;-&gt; javascript bridging, the EclipseScript plug-in injects a global object with the name <strong>eclipse</strong> exposing a simplified API to interact with the Eclipse development environment. See <a href="#eclipse-object">the below documentation for the eclipse global object</a>.</p>
 <p>Besides using the eclipse global object scripts may access eclipse plug-in classes just as normal java code. Plug-in loading is on demand - when first accessing a class unknown to the runtime, the EclipseScript plug-in will resolve a plug-in providing the class and load it.</p>
 
 <h2 id="example-scripts">Example scripts</h2>
