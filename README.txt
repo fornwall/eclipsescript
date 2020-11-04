@@ -1,6 +1,6 @@
 Eclipse plugin for scripting using javascript.
 
-Read more at http://eclipsescript.org/.
+Read more at fornwall.github.io/eclipsescript/.
 
 For development, an eclipse project containing some tests are available at:
 	https://github.com/fornwall/eclipsescript-tests
